@@ -31,7 +31,7 @@ const AllJewelleryMegaMenu = ({ resetMenu, initialView = 'main' }) => {
     ];
 
     return (
-        <div className="bg-white min-w-[800px] max-w-[1000px] shadow-2xl border border-gray-100 overflow-hidden relative min-h-[400px]">
+        <div className="bg-white w-[850px] max-w-[calc(100vw-3rem)] min-w-0 shadow-2xl border border-gray-100 overflow-hidden relative min-h-[400px] rounded-b-2xl">
             <AnimatePresence mode="wait">
                 {view === 'main' && (
                     <motion.div

@@ -14,16 +14,16 @@ const CategoryNav = ({ showMetalToggle = true }) => {
     const [hoveredItem, setHoveredItem] = useState(null);
 
     const navItems = [
-        { id: 'cat', name: 'Shop by Category', path: '/collections', hasChevron: true },
+        { id: 'cat', name: 'Shop by Category', shortName: 'Category', path: '/collections', hasChevron: true },
         { id: 'all', name: 'ALL TYPE', path: '/collections', hasChevron: true },
-        { id: 'him', name: 'Gifts for Him', path: '/category/men', hasChevron: false },
-        { id: 'her', name: 'Gifts for Her', path: '/category/women', hasChevron: false },
-        { id: 'family', name: 'Gifts for Family', path: '/category/family', hasChevron: false },
+        { id: 'him', name: 'Gifts for Him', shortName: 'For Him', path: '/category/men', hasChevron: false },
+        { id: 'her', name: 'Gifts for Her', shortName: 'For Her', path: '/category/women', hasChevron: false },
+        { id: 'family', name: 'Gifts for Family', shortName: 'Family', path: '/category/family', hasChevron: false },
         // Legacy filter tags were removed from product placement. Keep these links functional via search.
-        { id: 'card', name: 'Swarna Sparsh Gift Card', path: '/gift-cards', hasChevron: false },
+        { id: 'card', name: 'Swarna Sparsh Gift Card', shortName: 'Gift Cards', path: '/gift-cards', hasChevron: false },
         { id: 'blogs', name: 'Blogs', path: '/blogs', hasChevron: false },
-        { id: 'exclusive', name: 'Exclusive Collections', path: '/shop?search=exclusive', hasChevron: false },
-        { id: 'more', name: 'More at Swarna Sparsh', path: '/about', hasChevron: false },
+        { id: 'exclusive', name: 'Exclusive Collections', shortName: 'Exclusive', path: '/shop?search=exclusive', hasChevron: false },
+        { id: 'more', name: 'More at Swarna Sparsh', shortName: 'More', path: '/about', hasChevron: false },
     ];
 
     const resetMenu = () => {
@@ -54,10 +54,10 @@ const CategoryNav = ({ showMetalToggle = true }) => {
 
     return (
         <div className="border-b hidden md:block w-full" style={{ background: '#FFFFFF', borderColor: '#EBEBEB', fontFamily: "'Inter', 'Lato', sans-serif" }}>
-            <div className="container mx-auto px-4 md:px-12 relative" onMouseLeave={resetMenu}>
-                {/* Navigation Links - Centered and Spaced Out */}
-                <div className="flex justify-center items-center py-0.5 w-full">
-                    <ul className="flex items-center justify-between lg:justify-center w-full gap-2 lg:gap-5 xl:gap-8 flex-nowrap px-1">
+            <div className="container mx-auto px-4 md:px-8 xl:px-12 relative" onMouseLeave={resetMenu}>
+                {/* Navigation Links - Centered and Spaced Out without viewport overflow */}
+                <div className="flex justify-start xl:justify-center items-center py-0.5 w-full overflow-visible">
+                    <ul className="flex items-center justify-start xl:justify-center w-full gap-2 md:gap-3 lg:gap-4 xl:gap-6 2xl:gap-8 flex-nowrap px-1">
                         {navItems.map((item) => (
                             <li
                                 key={item.id}
@@ -65,6 +65,8 @@ const CategoryNav = ({ showMetalToggle = true }) => {
                                     // Only 'Shop by Category' and 'ALL TYPE' show dropdowns on hover
                                     if (item.id === 'cat' || item.id === 'all') {
                                         setHoveredItem(item.id);
+                                    } else {
+                                        setHoveredItem(null);
                                     }
                                 }}
                                 onMouseLeave={() => setHoveredItem(null)}
@@ -72,21 +74,28 @@ const CategoryNav = ({ showMetalToggle = true }) => {
                             >
                                 <Link
                                     to={item.path}
-                                    className="text-[9px] md:text-[10px] xl:text-[12px] font-bold uppercase tracking-tighter md:tracking-normal xl:tracking-[0.08em] font-sans text-gray-800 hover:text-[#C59B27] flex items-center gap-0.5 xl:gap-1 transition-all duration-300 whitespace-nowrap"
+                                    className="text-[9px] md:text-[10px] lg:text-[11px] xl:text-[12px] font-bold uppercase tracking-tight md:tracking-normal xl:tracking-[0.06em] font-sans text-gray-800 hover:text-[#C59B27] flex items-center gap-0.5 xl:gap-1 transition-all duration-300 whitespace-nowrap"
                                 >
-                                    {item.name}
-                                    {item.hasChevron && <ChevronDown className="w-4 h-4 text-gray-500" />}
+                                    {item.shortName ? (
+                                        <>
+                                            <span className="hidden xl:inline">{item.name}</span>
+                                            <span className="inline xl:hidden">{item.shortName}</span>
+                                        </>
+                                    ) : (
+                                        item.name
+                                    )}
+                                    {item.hasChevron && <ChevronDown className="w-3.5 h-3.5 md:w-4 md:h-4 text-gray-500" />}
                                 </Link>
 
-                                {/* Dropdowns Mapping — Positioned to show "Pura Box" (Full width) */}
+                                {/* Dropdowns Mapping — Positioned cleanly from left edge without negative clipping */}
                                 <AnimatePresence>
                                     {hoveredItem === item.id && (
-                                        <div className="absolute top-full left-[-40px] pt-4 z-[110]">
+                                        <div className="absolute top-full left-0 pt-3 z-[110]">
                                             <motion.div
-                                                initial={{ opacity: 0, y: 15 }}
+                                                initial={{ opacity: 0, y: 12 }}
                                                 animate={{ opacity: 1, y: 0 }}
                                                 exit={{ opacity: 0, y: 5 }}
-                                                className="bg-white shadow-[0_30px_60px_rgba(0,0,0,0.15)] border border-gray-100 overflow-hidden"
+                                                className="bg-white shadow-[0_30px_60px_rgba(0,0,0,0.15)] border border-gray-100 overflow-hidden rounded-b-2xl"
                                             >
                                                 {item.id === 'cat' && <AllJewelleryMenu resetMenu={resetMenu} />}
                                                 {item.id === 'all' && <AllJewelleryMegaMenu resetMenu={resetMenu} />}

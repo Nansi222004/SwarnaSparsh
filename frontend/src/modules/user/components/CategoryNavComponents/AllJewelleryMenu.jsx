@@ -163,7 +163,7 @@ const AllJewelleryMenu = ({ resetMenu }) => {
         : getCategoryFilters(hoveredCategory);
 
     return (
-        <div className="flex bg-white h-[480px] w-[950px] shadow-[0_25px_60px_rgba(0,0,0,0.18)] overflow-hidden border border-gray-100 rounded-b-2xl font-sans">
+        <div className="flex bg-white h-[480px] w-[950px] max-w-[calc(100vw-2rem)] shadow-[0_25px_60px_rgba(0,0,0,0.18)] overflow-hidden border border-gray-100 rounded-b-2xl font-sans">
 
             {/* ── Left Sidebar: Category list (Compact & Scrollable) ─────────────────────────────── */}
             <div className="w-[220px] bg-[#F9FAFB] border-r border-gray-100 py-6 shrink-0 overflow-y-auto custom-scrollbar">
@@ -188,7 +188,7 @@ const AllJewelleryMenu = ({ resetMenu }) => {
             </div>
 
             {/* ── Right Content: Dynamic (Compact & Scrollable) ─────────── */}
-            <div className="flex-1 bg-white py-6 px-10 overflow-y-auto custom-scrollbar min-w-[600px]">
+            <div className="flex-1 bg-white py-6 px-6 lg:px-10 overflow-y-auto custom-scrollbar min-w-0">
                 <AnimatePresence mode="wait">
                     <motion.div
                         key={hoveredCategory}
