@@ -66,6 +66,7 @@ import latestBracelet from "@assets/latest_drop_bracelet.png";
 import latestNecklace from "@assets/latest_drop_necklace.png";
 import latestEarrings from "@assets/latest_drop_earrings.png";
 import newAnklets from "@assets/new_launch_anklets.png";
+import { getProductFallback, handleImageError } from "../../../utils/imageFallbacks";
 
 const fallbackModelMap = {
   ring: latestRing,
@@ -692,8 +693,8 @@ const ProductDetails = () => {
 
   // Compute primary image with robust fallback
   const primaryImage = useMemo(() => {
-    return selectedImage || galleryImages[0] || null;
-  }, [selectedImage, galleryImages]);
+    return selectedImage || galleryImages[0] || getProductFallback(product);
+  }, [selectedImage, galleryImages, product]);
 
   const hoverPaneImage = useMemo(() => {
     const candidate = galleryImages.find((img) => img && img !== primaryImage);
@@ -710,7 +711,7 @@ const ProductDetails = () => {
     if (searchStr.includes("earring")) return fallbackModelMap.earring;
     if (searchStr.includes("bracelet")) return fallbackModelMap.bracelet;
     if (searchStr.includes("anklet")) return fallbackModelMap.anklet;
-    return null;
+    return getProductFallback(product);
   }, [galleryImages, primaryImage, product]);
 
   const reviewCount = product?.reviewCount ?? reviews.length ?? 0;
@@ -1074,6 +1075,7 @@ const ProductDetails = () => {
                       alt={product.name}
                       fetchPriority="high"
                       decoding="sync"
+                      onError={(e) => handleImageError(e, getProductFallback(product))}
                       className={`absolute inset-0 w-full h-full object-cover z-0 transition-transform duration-500 ease-out ${isImageZoomed ? 'scale-150' : 'scale-100'}`}
                     />
 
@@ -1084,6 +1086,7 @@ const ProductDetails = () => {
                         alt={`${product.name} look`}
                         loading="lazy"
                         decoding="async"
+                        onError={(e) => handleImageError(e, getProductFallback(product))}
                         className={`absolute inset-0 w-full h-full object-cover z-10 opacity-0 group-hover:opacity-100 transition-all duration-[1200ms] ease-in-out ${isImageZoomed ? 'scale-150' : 'scale-100'}`}
                       />
                     ) : null}

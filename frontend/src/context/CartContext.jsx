@@ -10,6 +10,7 @@ import toast from "react-hot-toast";
 import { useAuth } from "./AuthContext";
 import { analytics } from "../services/analytics";
 import { adminService } from "../modules/admin/services/adminService";
+import RazorpayTestModal from "../modules/user/components/RazorpayTestModal";
 
 // ─── Helpers (shared with ShopContext aggregator) ─────────────────────────────
 export const normalizeVariantForCart = (
@@ -114,6 +115,14 @@ export const CartProvider = ({ children }) => {
   const [couponDiscount, setCouponDiscount] = useState(() => {
     const saved = localStorage.getItem("couponDiscount");
     return saved ? Number(saved) : 0;
+  });
+
+  // Razorpay Interactive Test Mode Modal state
+  const [razorpayModalState, setRazorpayModalState] = useState({
+    isOpen: false,
+    rpOrder: null,
+    orderData: null,
+    resolve: null,
   });
 
   // ── Persistence Effects ──────────────────────────────────────────────────
@@ -667,52 +676,163 @@ export const CartProvider = ({ children }) => {
   const handleRazorpayPayment = useCallback(
     (rpOrder, orderData) => {
       return new Promise((resolve) => {
-        const options = {
-          key: import.meta.env.VITE_RAZORPAY_KEY_ID,
-          amount: rpOrder.amount,
-          currency: rpOrder.currency,
-          name: "Swarna Sparsh",
-          description: "Order Payment",
-          order_id: rpOrder.id,
-          handler: async (response) => {
-            try {
-              const verifyRes = await api.post("user/payments/verify", {
-                razorpay_order_id: response.razorpay_order_id,
-                razorpay_payment_id: response.razorpay_payment_id,
-                razorpay_signature: response.razorpay_signature,
-                orderData: orderData,
-              });
-              if (verifyRes.data.success) {
-                setCart([]);
-                toast.success("Payment successful & Order placed!");
-                resolve(verifyRes.data.data.order._id);
-              } else {
-                toast.error("Payment verification failed");
+        // If this is a development test mode / mock order, open the Razorpay Test Mode Modal on screen!
+        if (
+          rpOrder?.isDevMock ||
+          String(rpOrder?.id || "").startsWith("order_dev_")
+        ) {
+          setRazorpayModalState({
+            isOpen: true,
+            rpOrder,
+            orderData,
+            resolve,
+          });
+          return;
+        }
+
+        if (typeof window.Razorpay !== "function") {
+          // Fallback to interactive test modal if Razorpay script is blocked or unavailable
+          setRazorpayModalState({
+            isOpen: true,
+            rpOrder,
+            orderData,
+            resolve,
+          });
+          return;
+        }
+
+        try {
+          const options = {
+            key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+            amount: rpOrder.amount,
+            currency: rpOrder.currency,
+            name: "Swarna Sparsh",
+            description: "Order Payment",
+            order_id: rpOrder.id,
+            handler: async (response) => {
+              try {
+                const verifyRes = await api.post("user/payments/verify", {
+                  razorpay_order_id: response.razorpay_order_id,
+                  razorpay_payment_id: response.razorpay_payment_id,
+                  razorpay_signature: response.razorpay_signature,
+                  orderData: orderData,
+                });
+                if (verifyRes.data.success) {
+                  setCart([]);
+                  clearAppliedCoupon();
+                  toast.success("Payment successful & Order placed!");
+                  resolve(verifyRes.data.data.order._id);
+                } else {
+                  toast.error("Payment verification failed");
+                  resolve(null);
+                }
+              } catch (err) {
+                toast.error(
+                  err.response?.data?.message || "Verification error",
+                );
                 resolve(null);
               }
-            } catch (err) {
-              toast.error("Verification error");
-              resolve(null);
-            }
-          },
-          prefill: {
-            name: user?.name,
-            email: user?.email,
-            contact: user?.phone,
-          },
-          theme: { color: "#C59B27" },
-          modal: {
-            ondismiss: function () {
-              toast.error("Payment cancelled");
-              resolve(null);
             },
-          },
-        };
-        const rzp = new window.Razorpay(options);
-        rzp.open();
+            prefill: {
+              name: user?.name,
+              email: user?.email,
+              contact: user?.phone,
+            },
+            theme: { color: "#C59B27" },
+            modal: {
+              ondismiss: function () {
+                toast.error("Payment cancelled");
+                resolve(null);
+              },
+            },
+          };
+          const rzp = new window.Razorpay(options);
+          rzp.on("payment.failed", function (response) {
+            toast.error(response.error?.description || "Payment failed");
+            resolve(null);
+          });
+          rzp.open();
+        } catch (err) {
+          console.warn("[Razorpay SDK Open Error, opening test modal]:", err);
+          setRazorpayModalState({
+            isOpen: true,
+            rpOrder,
+            orderData,
+            resolve,
+          });
+        }
       });
     },
-    [user],
+    [user, clearAppliedCoupon],
+  );
+
+  // Modal actions for interactive test payment
+  const handleDevModalSuccess = useCallback(
+    async ({ paymentId }) => {
+      const { rpOrder, orderData, resolve } = razorpayModalState;
+      if (!rpOrder || !orderData) return;
+
+      try {
+        const verifyRes = await api.post("user/payments/verify", {
+          razorpay_order_id: rpOrder.id,
+          razorpay_payment_id: paymentId || `pay_test_${Date.now()}`,
+          razorpay_signature: "dev_mock_signature",
+          orderData: orderData,
+        });
+
+        if (verifyRes.data?.success) {
+          const orderId = verifyRes.data.data.order._id;
+          setCart([]);
+          clearAppliedCoupon();
+          setRazorpayModalState({
+            isOpen: false,
+            rpOrder: null,
+            orderData: null,
+            resolve: null,
+          });
+          toast.success("Payment successful & Order placed!");
+          if (resolve) resolve(orderId);
+        } else {
+          toast.error(verifyRes.data?.message || "Payment verification failed");
+          if (resolve) resolve(null);
+          setRazorpayModalState({
+            isOpen: false,
+            rpOrder: null,
+            orderData: null,
+            resolve: null,
+          });
+        }
+      } catch (err) {
+        console.error("[Test Modal Verification Error]:", err);
+        toast.error(
+          err.response?.data?.message || "Payment verification failed",
+        );
+        if (resolve) resolve(null);
+        setRazorpayModalState({
+          isOpen: false,
+          rpOrder: null,
+          orderData: null,
+          resolve: null,
+        });
+      }
+    },
+    [razorpayModalState, clearAppliedCoupon],
+  );
+
+  const handleDevModalCancel = useCallback(
+    (reason) => {
+      toast.error(reason || "Payment cancelled");
+      if (razorpayModalState.resolve) {
+        razorpayModalState.resolve(null);
+      }
+      setRazorpayModalState({
+        isOpen: false,
+        rpOrder: null,
+        orderData: null,
+        resolve: null,
+      });
+    },
+    [razorpayModalState],
   );
 
   // ── placeOrder ───────────────────────────────────────────────────────────
@@ -815,7 +935,7 @@ export const CartProvider = ({ children }) => {
             return await handleRazorpayPayment(rpOrder, orderData);
           } catch (err) {
             toast.error(
-              err.response?.data?.message || "Payment initiation failed",
+              err.response?.data?.message || err.message || "Payment initiation failed",
             );
             return null;
           }
@@ -889,7 +1009,20 @@ export const CartProvider = ({ children }) => {
     updateGiftMessage,
   };
 
-  return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
+  return (
+    <CartContext.Provider value={value}>
+      {children}
+      {razorpayModalState.isOpen && (
+        <RazorpayTestModal
+          isOpen={razorpayModalState.isOpen}
+          rpOrder={razorpayModalState.rpOrder}
+          orderData={razorpayModalState.orderData}
+          onSuccess={handleDevModalSuccess}
+          onCancel={handleDevModalCancel}
+        />
+      )}
+    </CartContext.Provider>
+  );
 };
 
 export const useCart = () => {

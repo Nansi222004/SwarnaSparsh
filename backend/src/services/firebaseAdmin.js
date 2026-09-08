@@ -1,22 +1,47 @@
 const admin = require('firebase-admin');
 
-// Dummy credentials for now
-const serviceAccount = {
-  "type": "service_account",
-  "project_id": process.env.FIREBASE_PROJECT_ID || "dummy-project-id",
-  "private_key": (process.env.FIREBASE_PRIVATE_KEY || "")
-    .replace(/^["']|["']$/g, '') // Remove accidental quotes
-    .replace(/\\n/g, '\n')       // Replace literal \n with newlines
-    .replace(/\\/g, '\n')        // Replace any stray backslashes with newlines
-    .trim() || "-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n",
-  "client_email": process.env.FIREBASE_CLIENT_EMAIL || "firebase-adminsdk-dummy@dummy-project-id.iam.gserviceaccount.com",
-};
+const fs = require('fs');
+const path = require('path');
+
+let credential = null;
+
+// Option 1: serviceAccountKey.json if present in backend/
+const keyPath = path.join(__dirname, '../../serviceAccountKey.json');
+if (fs.existsSync(keyPath)) {
+  try {
+    const serviceAccountJson = JSON.parse(fs.readFileSync(keyPath, 'utf8'));
+    credential = admin.credential.cert(serviceAccountJson);
+  } catch (err) {
+    console.warn('Failed to parse serviceAccountKey.json:', err.message);
+  }
+}
+
+// Option 2: environment variables
+if (!credential && process.env.FIREBASE_PRIVATE_KEY && process.env.FIREBASE_CLIENT_EMAIL) {
+  const serviceAccount = {
+    type: "service_account",
+    project_id: process.env.FIREBASE_PROJECT_ID || "swarnasparsh-fc86a",
+    private_key: (process.env.FIREBASE_PRIVATE_KEY || "")
+      .replace(/^["']|["']$/g, '') // Remove accidental quotes
+      .replace(/\\n/g, '\n')       // Replace literal \n with newlines
+      .replace(/\\/g, '\n')        // Replace any stray backslashes with newlines
+      .trim(),
+    client_email: process.env.FIREBASE_CLIENT_EMAIL,
+  };
+  try {
+    credential = admin.credential.cert(serviceAccount);
+  } catch (err) {
+    console.warn('Failed to build credential from env:', err.message);
+  }
+}
 
 try {
-  admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount)
-  });
-  console.log('Firebase Admin initialized successfully');
+  if (credential && admin.apps.length === 0) {
+    admin.initializeApp({ credential });
+    console.log('Firebase Admin initialized successfully');
+  } else if (admin.apps.length === 0) {
+    console.warn('Firebase Admin credentials not found, skipping initialization');
+  }
 } catch (error) {
   console.error('Firebase Admin initialization error:', error);
 }

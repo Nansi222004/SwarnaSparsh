@@ -21,28 +21,28 @@ const FALLBACK_PROMISES = [
         iconKey: 'gem',
         title: 'Pure 925',
         subtitle: 'SILVER',
-        desc: 'Certified Authenticity'
+        desc: 'Authentic Craftsmanship'
     },
     {
         id: 2,
         iconKey: 'rotate-ccw',
-        title: '30-Day Easy',
-        subtitle: 'RETURN',
-        desc: 'Hassle-free Refund'
+        title: 'Easy Returns',
+        subtitle: 'POLICY',
+        desc: 'Hassle-free Support'
     },
     {
         id: 3,
         iconKey: 'truck',
-        title: 'Free Delivery',
-        subtitle: 'ABOVE INR 999',
-        desc: 'Fast Shipping'
+        title: 'Insured Delivery',
+        subtitle: 'SHIPPING',
+        desc: 'Safe Doorstep Delivery'
     },
     {
         id: 4,
         iconKey: 'file-text',
-        title: 'T&C Apply',
-        subtitle: 'SECURE SHOP',
-        desc: '100% Protection'
+        title: 'Secure Shopping',
+        subtitle: 'EXPERIENCE',
+        desc: 'Protected Transactions'
     }
 ];
 
@@ -61,54 +61,54 @@ const BrandPromises = () => {
         : FALLBACK_PROMISES;
 
     return (
-        <section className="py-12 md:py-16 bg-[#FAF8F5]/80 relative overflow-hidden border-t border-[#E8DFD0]/40">
-            <div className="container mx-auto px-4 md:px-6">
-                <div className="text-center mb-10 md:mb-14">
-                    <motion.h2 
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        className="font-serif text-2xl md:text-3xl text-stone-900 font-bold tracking-tight"
-                    >
+        <section className="py-12 md:py-20 bg-[#FAF8F5] relative overflow-hidden border-t border-[#E8DFD0]/70">
+            <div className="container mx-auto px-4 md:px-8 max-w-[1400px]">
+                {/* Header */}
+                <div className="text-center mb-10 md:mb-16">
+                    <div className="inline-flex items-center gap-2 mb-2 text-[#C59B27] text-[10px] uppercase font-bold tracking-[0.3em]">
+                        <Sparkles className="w-3.5 h-3.5" />
+                        <span>The Swarna Sparsh Touch</span>
+                    </div>
+                    <h2 className="font-serif text-2xl md:text-4xl text-[#141211] font-normal tracking-tight">
                         {sectionData?.label || 'Our Commitments'}
-                    </motion.h2>
-                    <div className="w-12 h-[2px] bg-[#C59B27] mx-auto mt-4 rounded-full" />
+                    </h2>
+                    <div className="w-12 h-[1px] bg-[#C59B27] mx-auto mt-4" />
                 </div>
 
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 max-w-6xl mx-auto">
+                {/* ── EDITORIAL COLUMN PILLARS WITH VERTICAL DIVIDERS ── */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-[#E8DFD0] border-y border-[#E8DFD0] py-6 md:py-10 bg-white/60 rounded-3xl shadow-xs">
                     {promises.map((item, index) => {
                         const Icon = iconMap[item.iconKey] || Gem;
 
                         return (
                             <motion.div
                                 key={item.id}
-                                initial={{ opacity: 0, y: 20 }}
+                                initial={{ opacity: 0, y: 15 }}
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
-                                transition={{ duration: 0.5, delay: index * 0.1 }}
-                                className="relative group flex flex-col items-center p-6 md:p-8 bg-gradient-to-br from-[#1C1917] via-[#141211] to-[#0A0908] rounded-[2rem] border border-[#C59B27]/30 hover:border-[#C59B27] shadow-lg hover:shadow-2xl hover:shadow-[#C59B27]/10 transition-all duration-500 overflow-hidden cursor-default"
+                                transition={{ duration: 0.5, delay: index * 0.08 }}
+                                className="flex flex-col items-center text-center p-6 md:p-8 group cursor-default"
                             >
-                                {/* Inner Glow Effect */}
-                                <div className="absolute inset-0 bg-[#C59B27]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
-                                
-                                <div className="relative z-10 flex flex-col items-center text-center w-full">
-                                    {/* Icon Container */}
-                                    <div className="mb-4 md:mb-6 p-3.5 md:p-4 rounded-2xl bg-[#C59B27]/10 border border-[#C59B27]/40 text-[#E8D198] group-hover:scale-110 group-hover:rotate-[360deg] transition-all duration-700">
-                                        <Icon strokeWidth={1.5} className="w-6 h-6 md:w-8 md:h-8" />
-                                    </div>
+                                {/* Delicate Gold Ring Icon Emblem */}
+                                <div className="w-14 h-14 rounded-full bg-white border border-[#C59B27]/40 shadow-xs flex items-center justify-center text-[#C59B27] mb-5 group-hover:scale-110 group-hover:border-[#C59B27] group-hover:bg-[#141211] group-hover:text-[#E8D198] transition-all duration-500">
+                                    <Icon strokeWidth={1.5} className="w-6 h-6 transition-transform duration-500" />
+                                </div>
 
-                                    <div className="space-y-1 md:space-y-2">
-                                        <h3 className="font-serif font-bold text-base md:text-lg text-white leading-tight">
-                                            {item.title}
-                                        </h3>
-                                        <h4 className="text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-[#C59B27]">
+                                {/* Typography */}
+                                <div className="space-y-1.5">
+                                    {item.subtitle && (
+                                        <span className="text-[9px] font-sans font-bold uppercase tracking-[0.25em] text-[#8C6A12] block">
                                             {item.subtitle}
-                                        </h4>
-                                        <div className="w-8 h-px bg-[#C59B27]/30 mx-auto my-2 group-hover:w-12 group-hover:bg-[#C59B27] transition-all duration-500" />
-                                        <p className="text-[10px] md:text-xs text-stone-300 font-light leading-relaxed max-w-[150px] mx-auto group-hover:text-white transition-colors">
+                                        </span>
+                                    )}
+                                    <h3 className="font-serif text-base md:text-lg font-medium text-[#141211] tracking-tight">
+                                        {item.title}
+                                    </h3>
+                                    {item.desc && (
+                                        <p className="text-stone-500 font-sans text-xs leading-relaxed max-w-[200px] mx-auto pt-1 font-light">
                                             {item.desc}
                                         </p>
-                                    </div>
+                                    )}
                                 </div>
                             </motion.div>
                         );

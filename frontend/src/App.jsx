@@ -207,7 +207,7 @@ const AppContent = () => {
           <PincodeModal />
           <LeadCapturePopup />
           <CookieConsent />
-          <div className={`h-[104px] ${showMetalToggle ? 'md:h-[180px]' : 'md:h-[166px]'} w-full`}></div>
+          <div className={`${showMetalToggle ? 'h-[160px] md:h-[180px]' : 'h-[126px] md:h-[166px]'} w-full`}></div>
         </>
       )}
       <main className={`flex-grow ${!isAdminPath && !isSellerPath && !isScannerPath && !isLoginPath ? 'pb-16 md:pb-0' : ''}`}>

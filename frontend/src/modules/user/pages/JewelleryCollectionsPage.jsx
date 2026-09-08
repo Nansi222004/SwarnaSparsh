@@ -3,8 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useShop } from '../../../context/ShopContext';
 import Loader from '../../shared/components/Loader';
-
-import fallbackCategoryImage from '@assets/cat_all_premium.png';
+import { getCategoryFallback, handleImageError } from '../../../utils/imageFallbacks';
 
 const toSlug = (value) => String(value || '').trim();
 
@@ -51,7 +50,8 @@ const JewelleryCollectionsPage = () => {
               const href = slug
                 ? `/category/${slug}`
                 : (cat?._id ? `/shop?category=${encodeURIComponent(String(cat._id))}` : '/shop');
-              const image = cat?.image || fallbackCategoryImage;
+              const fallback = getCategoryFallback(cat);
+              const image = cat?.image || fallback;
 
               return (
                 <motion.div
@@ -63,10 +63,11 @@ const JewelleryCollectionsPage = () => {
                 >
                   <Link to={href} className="group block text-center">
                     <div className="relative aspect-square mb-4 transition-all duration-700">
-                      <div className="w-full h-full rounded-[2rem] overflow-hidden border border-[#E8DFD0] shadow-sm relative group-hover:shadow-[0_20px_40px_rgba(197,155,39,0.2)] group-hover:-translate-y-2 transition-all duration-500">
+                      <div className="w-full h-full rounded-[2rem] overflow-hidden border border-[#E8DFD0] shadow-sm relative group-hover:shadow-[0_20px_40px_rgba(197,155,39,0.2)] group-hover:-translate-y-2 transition-all duration-500 bg-[#FAF8F5]">
                         <img
                           src={image}
                           alt={cat?.name || 'Category'}
+                          onError={(e) => handleImageError(e, fallback)}
                           className="w-full h-full object-cover transition-transform duration-[1200ms] group-hover:scale-110"
                         />
 

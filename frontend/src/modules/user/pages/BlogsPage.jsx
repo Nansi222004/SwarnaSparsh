@@ -2,15 +2,14 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Calendar, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import api from "../../../services/api";
-import blogFallback from "@assets/trending_heritage.png";
 import Loader from "../../shared/components/Loader";
+import { getBlogFallback, handleImageError } from "../../../utils/imageFallbacks";
 
 const stripHtml = (html) =>
   String(html || "")
     .replace(/<[^>]+>/g, " ")
     .replace(/\s+/g, " ")
     .trim();
-const blogFallbackImage = blogFallback;
 
 const BlogsPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -84,8 +83,9 @@ const BlogsPage = () => {
                   className="block aspect-[4/3] bg-gray-100 overflow-hidden"
                 >
                   <img
-                    src={blog.coverImage || blogFallbackImage}
+                    src={blog.coverImage || getBlogFallback(blog.category || blog.title)}
                     alt={blog.title}
+                    onError={(e) => handleImageError(e, getBlogFallback(blog.category || blog.title))}
                     className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
                   />
                 </Link>

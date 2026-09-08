@@ -2,11 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { ArrowLeft, Calendar } from "lucide-react";
 import api from "../../../services/api";
-import blogFallback from "@assets/trending_heritage.png";
 import Loader from "../../shared/components/Loader";
 import { sanitizeHtml } from "../../../utils/sanitizeHtml";
-
-const blogFallbackImage = blogFallback;
+import { getBlogFallback, handleImageError } from "../../../utils/imageFallbacks";
 
 const BlogDetailPage = () => {
   const { slug } = useParams();
@@ -102,8 +100,9 @@ const BlogDetailPage = () => {
         <div className="overflow-hidden rounded-[2.5rem] border border-[#E8DFD0] shadow-sm bg-white">
           <div className="aspect-[16/8] bg-gray-100">
             <img
-              src={blog.coverImage || blogFallbackImage}
+              src={blog.coverImage || getBlogFallback(blog.category || blog.title)}
               alt={blog.title}
+              onError={(e) => handleImageError(e, getBlogFallback(blog.category || blog.title))}
               className="w-full h-full object-cover"
             />
           </div>

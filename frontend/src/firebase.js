@@ -1,7 +1,7 @@
 import { initializeApp } from 'firebase/app';
+import { getAnalytics, isSupported as isAnalyticsSupported } from 'firebase/analytics';
 import { getMessaging, getToken, onMessage, isSupported } from 'firebase/messaging';
 
-// Dummy configuration for now
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
@@ -13,6 +13,19 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
+
+let analytics = null;
+if (typeof window !== 'undefined') {
+  isAnalyticsSupported()
+    .then((supported) => {
+      if (supported) {
+        analytics = getAnalytics(app);
+      }
+    })
+    .catch((err) => {
+      console.debug('Firebase Analytics initialization skipped:', err?.message || err);
+    });
+}
 
 let messagingInstance = null;
 let isMessagingChecked = false;
@@ -35,5 +48,6 @@ export const getMessagingInstance = async () => {
   return messagingInstance;
 };
 
-export { getToken, onMessage };
+export { app, analytics, getToken, onMessage };
+export default app;
 

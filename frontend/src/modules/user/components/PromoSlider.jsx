@@ -4,6 +4,9 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useHomepageCms } from '../hooks/useHomepageCms';
 
+import { resolveLegacyCmsAsset } from '../utils/legacyCmsAssets';
+import { IMAGE_FALLBACKS, handleImageError } from '../../../utils/imageFallbacks';
+
 // Hero Banner Fallback Images (AI-generated premium jewellery scenes)
 import heroDiamondBrilliance from '@assets/hero/eternal_diamond_brilliance.png';
 import heroGoldFusion from '@assets/hero/modern_gold_fusion.png';
@@ -41,17 +44,17 @@ const SLIDES = [
 
 const PromoSlider = ({ externalSlides, autoplayInterval }) => {
     const { data: homepageSections = {} } = useHomepageCms();
-    const sectionData = homepageSections?.['hero-banners'];
+    const sectionData = homepageSections?.['hero-banners'] || homepageSections?.['dynamic-promo-banner'];
     const dynamicSlides = Array.isArray(sectionData?.items)
         ? sectionData.items
-            .filter((item) => Boolean(item?.image && item?.label))
+            .filter((item) => Boolean(item?.image && (item?.label || item?.title || item?.name)))
             .map((item, index) => ({
                 id: item.itemId || item.id || `hero-slide-${index + 1}`,
-                image: item.image,
-                mobileImage: item.mobileImage || null,
-                title: item.label,
+                image: resolveLegacyCmsAsset(item.image, item.image),
+                mobileImage: item.mobileImage ? resolveLegacyCmsAsset(item.mobileImage, item.mobileImage) : null,
+                title: item.label || item.title || 'Swarna Sparsh Atelier',
                 subtitle: item.subtitle || '',
-                tag: item.tag || item.name || '',
+                tag: item.tag || item.name || 'Signature Collection',
                 link: item.path || '/shop',
                 ctaLabel: item.ctaLabel || 'Shop Collection'
             }))
@@ -102,11 +105,11 @@ const PromoSlider = ({ externalSlides, autoplayInterval }) => {
 
     return (
         <section
-            className="w-full bg-white pt-4 md:pt-6 pb-6 md:pb-8 overflow-hidden select-none"
+            className="w-full bg-white pt-2 sm:pt-3 md:pt-5 pb-4 md:pb-6 overflow-hidden select-none"
             onMouseEnter={() => setIsSuspended(true)}
             onMouseLeave={() => setIsSuspended(false)}
         >
-            <div className={`relative w-full overflow-hidden group transition-all duration-300 ${extendedSlides[currentIndex]?.mobileImage ? 'aspect-[2/1] md:aspect-[3.5/1] md:min-h-[350px]' : 'aspect-[4/1] md:aspect-[3.5/1] md:min-h-[350px]'}`}>
+            <div className={`relative w-full overflow-hidden group transition-all duration-300 min-h-[220px] sm:min-h-[280px] md:min-h-[380px] ${extendedSlides[currentIndex]?.mobileImage ? 'aspect-[2/1] md:aspect-[3.5/1]' : 'aspect-[16/9] sm:aspect-[2.2/1] md:aspect-[3.5/1]'}`}>
                 <motion.div
                     className="absolute inset-0 flex h-full w-full"
                     animate={{
@@ -135,7 +138,8 @@ const PromoSlider = ({ externalSlides, autoplayInterval }) => {
                                     loading={idx === 1 ? 'eager' : 'lazy'}
                                     fetchPriority={idx === 1 ? 'high' : 'low'}
                                     decoding={idx === 1 ? 'sync' : 'async'}
-                                    className="absolute inset-0 w-full h-full object-cover pointer-events-none group-hover:scale-110 transition-transform duration-[4000ms] ease-out block md:hidden"
+                                    onError={(e) => handleImageError(e, IMAGE_FALLBACKS.editorial)}
+                                    className="absolute inset-0 w-full h-full object-cover pointer-events-none group-hover:scale-105 transition-transform duration-[4000ms] ease-out block md:hidden"
                                 />
                             )}
                             <img
@@ -144,7 +148,8 @@ const PromoSlider = ({ externalSlides, autoplayInterval }) => {
                                 loading={idx === 1 ? 'eager' : 'lazy'}
                                 fetchPriority={idx === 1 ? 'high' : 'low'}
                                 decoding={idx === 1 ? 'sync' : 'async'}
-                                className={`absolute inset-0 w-full h-full object-cover pointer-events-none group-hover:scale-110 transition-transform duration-[4000ms] ease-out ${slide.mobileImage ? 'hidden md:block' : 'block'}`}
+                                onError={(e) => handleImageError(e, IMAGE_FALLBACKS.editorial)}
+                                className={`absolute inset-0 w-full h-full object-cover pointer-events-none group-hover:scale-105 transition-transform duration-[4000ms] ease-out ${slide.mobileImage ? 'hidden md:block' : 'block'}`}
                             />
 
                             {/* Subtle Brand Watermark */}

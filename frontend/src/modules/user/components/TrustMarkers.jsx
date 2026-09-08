@@ -65,23 +65,26 @@ const TrustMarkers = () => {
     ];
 
     return (
-        <section className="w-full bg-gradient-to-r from-[#FAF8F5] via-[#FFFDF9] to-[#FAF8F5] py-3 md:py-5 border-y border-[#E8DFD0]/60">
+        <section className="w-full bg-[#FAF8F5] py-4 md:py-5 border-b border-[#E8DFD0]/80">
             <div className="container mx-auto px-4 max-w-[1400px]">
-                <div className="grid grid-cols-2 gap-2 md:flex md:flex-wrap md:items-center md:justify-center md:gap-6">
+                <div className="flex flex-wrap items-center justify-center gap-x-6 md:gap-x-10 gap-y-2.5">
                     {markers.map((marker, index) => (
                         <motion.div
                             key={marker.id}
-                            initial={{ opacity: 0, y: 10 }}
+                            initial={{ opacity: 0, y: 8 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
-                            transition={{ duration: 0.6, delay: index * 0.08 }}
-                            className={`bg-white px-3 md:px-7 py-2 md:py-3 rounded-xl shadow-xs border border-[#E8DFD0]/70 hover:border-[#C59B27]/60 hover:shadow-sm flex items-center justify-center text-center whitespace-normal md:whitespace-nowrap group cursor-default transition-all duration-300 ${index === markers.length - 1 ? 'col-span-2' : ''}`}
+                            transition={{ duration: 0.4, delay: index * 0.05 }}
+                            className="flex items-center gap-2 cursor-default group"
                         >
-                            <span className="text-[#141211] text-[12px] md:text-[14px] tracking-tight flex items-center gap-1.5">
-                                <span className="w-1.5 h-1.5 rounded-full bg-[#C59B27] shrink-0 opacity-70 group-hover:scale-125 transition-transform" />
-                                <span className="font-bold">{marker.bold}</span>{" "}
-                                <span className="font-normal text-stone-600">{marker.normal}</span>
+                            <span className="w-1.5 h-1.5 rotate-45 bg-[#C59B27] shrink-0 opacity-80 group-hover:scale-125 transition-transform" />
+                            <span className="text-[#141211] text-[11px] sm:text-xs md:text-[13px] font-sans tracking-wide">
+                                <strong className="font-semibold text-[#141211]">{marker.bold}</strong>{" "}
+                                <span className="font-light text-stone-600">{marker.normal}</span>
                             </span>
+                            {index < markers.length - 1 && (
+                                <div className="hidden lg:block w-px h-3 bg-[#E8DFD0] ml-6" />
+                            )}
                         </motion.div>
                     ))}
                 </div>

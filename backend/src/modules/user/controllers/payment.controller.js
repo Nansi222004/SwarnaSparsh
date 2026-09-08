@@ -22,14 +22,6 @@ const {
 // POST /api/user/payment/razorpay-order
 exports.createRazorpayOrder = async (req, res) => {
   try {
-    if (!razorpay) {
-      return error(
-        res,
-        "Payment service is not configured on the server.",
-        503,
-      );
-    }
-
     const { orderId } = req.body;
     if (!mongoose.Types.ObjectId.isValid(orderId)) {
       return error(res, "Invalid order id", 400);
@@ -46,16 +38,74 @@ exports.createRazorpayOrder = async (req, res) => {
       return error(res, "This order is already paid", 400);
     }
 
-    const options = {
-      amount: Math.round(order.total * 100),
-      currency: "INR",
-      receipt: order.orderId,
-    };
+    if (!razorpay) {
+      if (process.env.NODE_ENV === "development") {
+        console.warn(
+          "[Razorpay] Payment service not configured. Returning dev sandbox order.",
+        );
+        const rpOrder = {
+          id: `order_dev_${Date.now()}`,
+          amount: Math.round(order.total * 100),
+          currency: "INR",
+          status: "created",
+          receipt: order.orderId,
+          isDevMock: true,
+        };
+        return success(res, { rpOrder }, "Razorpay order created (dev sandbox)");
+      }
+      return error(
+        res,
+        "Payment service is not configured on the server.",
+        503,
+      );
+    }
 
-    const rpOrder = await razorpay.orders.create(options);
+    let rpOrder;
+    try {
+      const options = {
+        amount: Math.round(order.total * 100),
+        currency: "INR",
+        receipt: order.orderId,
+      };
+      rpOrder = await razorpay.orders.create(options);
+    } catch (rpErr) {
+      console.error("[Razorpay createRazorpayOrder error]:", rpErr);
+      const isAuthError =
+        rpErr?.statusCode === 401 ||
+        rpErr?.error?.description === "Authentication failed" ||
+        rpErr?.error?.code === "BAD_REQUEST_ERROR";
+
+      if (process.env.NODE_ENV === "development" && isAuthError) {
+        console.warn(
+          "[Razorpay] API credentials invalid/expired in development. Falling back to development sandbox order.",
+        );
+        rpOrder = {
+          id: `order_dev_${Date.now()}`,
+          amount: Math.round(order.total * 100),
+          currency: "INR",
+          status: "created",
+          receipt: order.orderId,
+          isDevMock: true,
+        };
+      } else {
+        const errMsg =
+          rpErr?.error?.description ||
+          rpErr?.message ||
+          "Failed to create payment gateway order.";
+        return error(
+          res,
+          `Payment gateway error: ${errMsg}`,
+          rpErr?.statusCode || 400,
+        );
+      }
+    }
+
     return success(res, { rpOrder }, "Razorpay order created");
   } catch (err) {
-    return error(res, err.message);
+    console.error("[createRazorpayOrder error]:", err);
+    const errMsg =
+      err?.error?.description || err?.message || "Razorpay order creation failed";
+    return error(res, errMsg, err?.statusCode || 500);
   }
 };
 
@@ -289,6 +339,24 @@ exports.initiatePayment = async (req, res) => {
     }
 
     if (!razorpay) {
+      if (process.env.NODE_ENV === "development") {
+        console.warn(
+          "[Razorpay] Credentials not configured in .env. Using development sandbox order.",
+        );
+        const rpOrder = {
+          id: `order_dev_${Date.now()}`,
+          amount: Math.round(orderData.total * 100),
+          currency: "INR",
+          status: "created",
+          receipt: orderData.orderId,
+          isDevMock: true,
+        };
+        return success(
+          res,
+          { rpOrder, orderData },
+          "Development sandbox payment initiated",
+        );
+      }
       return error(
         res,
         "Payment service is not configured on the server.",
@@ -296,32 +364,61 @@ exports.initiatePayment = async (req, res) => {
       );
     }
 
-    const options = {
-      amount: Math.round(orderData.total * 100),
-      currency: "INR",
-      receipt: orderData.orderId,
-    };
+    let rpOrder;
+    try {
+      const options = {
+        amount: Math.round(orderData.total * 100),
+        currency: "INR",
+        receipt: orderData.orderId,
+      };
+      rpOrder = await razorpay.orders.create(options);
+    } catch (rpErr) {
+      console.error("[Razorpay Order Creation Error]:", rpErr);
+      const isAuthError =
+        rpErr?.statusCode === 401 ||
+        rpErr?.error?.description === "Authentication failed" ||
+        rpErr?.error?.code === "BAD_REQUEST_ERROR";
 
-    const rpOrder = await razorpay.orders.create(options);
+      if (process.env.NODE_ENV === "development" && isAuthError) {
+        console.warn(
+          "[Razorpay] API credentials invalid/expired in development. Falling back to development sandbox order.",
+        );
+        rpOrder = {
+          id: `order_dev_${Date.now()}`,
+          amount: Math.round(orderData.total * 100),
+          currency: "INR",
+          status: "created",
+          receipt: orderData.orderId,
+          isDevMock: true,
+        };
+      } else {
+        const errMsg =
+          rpErr?.error?.description ||
+          rpErr?.message ||
+          "Failed to initiate payment gateway order.";
+        return error(
+          res,
+          `Payment gateway error: ${errMsg}`,
+          rpErr?.statusCode || 400,
+        );
+      }
+    }
 
     // Return both the razorpay order and the calculated data so frontend can pass it back for verification
     return success(res, { rpOrder, orderData }, "Razorpay payment initiated");
   } catch (err) {
-    return error(res, err.message);
+    console.error("[initiatePayment error]:", err);
+    const errMsg =
+      err?.error?.description || err?.message || "Payment initiation failed";
+    const statusCode =
+      err?.statusCode || (err?.name === "ValidationError" ? 400 : 500);
+    return error(res, errMsg, statusCode);
   }
 };
 
 // POST /api/user/payment/verify
 exports.verifyPayment = async (req, res) => {
   try {
-    if (!process.env.RAZORPAY_KEY_SECRET) {
-      return error(
-        res,
-        "Payment verification is not configured on the server.",
-        503,
-      );
-    }
-
     const {
       razorpay_payment_id,
       razorpay_order_id,
@@ -339,21 +436,36 @@ exports.verifyPayment = async (req, res) => {
     }
 
     // 1. Verify Razorpay signature
-    const body = razorpay_order_id + "|" + razorpay_payment_id;
-    const expectedSignature = crypto
-      .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
-      .update(body.toString())
-      .digest("hex");
+    const isDevMock =
+      process.env.NODE_ENV === "development" &&
+      (String(razorpay_order_id || "").startsWith("order_dev_") ||
+        razorpay_signature === "dev_mock_signature");
 
-    const isSignatureValid = expectedSignature === razorpay_signature;
+    if (!isDevMock) {
+      if (!process.env.RAZORPAY_KEY_SECRET) {
+        return error(
+          res,
+          "Payment verification is not configured on the server.",
+          503,
+        );
+      }
 
-    if (!isSignatureValid) {
-      return error(
-        res,
-        "Invalid payment signature",
-        400,
-        "PAYMENT_SIGNATURE_INVALID",
-      );
+      const body = razorpay_order_id + "|" + razorpay_payment_id;
+      const expectedSignature = crypto
+        .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
+        .update(body.toString())
+        .digest("hex");
+
+      const isSignatureValid = expectedSignature === razorpay_signature;
+
+      if (!isSignatureValid) {
+        return error(
+          res,
+          "Invalid payment signature",
+          400,
+          "PAYMENT_SIGNATURE_INVALID",
+        );
+      }
     }
 
     // 2. Signature is valid - Now create the order in DB
@@ -379,7 +491,7 @@ exports.verifyPayment = async (req, res) => {
       razorpay_payment_id,
       razorpay_order_id,
       razorpay_signature,
-      gateway: "razorpay",
+      gateway: isDevMock ? "razorpay_dev_mock" : "razorpay",
     });
 
     return success(
@@ -388,6 +500,11 @@ exports.verifyPayment = async (req, res) => {
       "Payment verified and order created successfully",
     );
   } catch (err) {
-    return error(res, err.message);
+    console.error("[verifyPayment error]:", err);
+    const errMsg =
+      err?.error?.description || err?.message || "Payment verification failed";
+    const statusCode =
+      err?.statusCode || (err?.name === "ValidationError" ? 400 : 500);
+    return error(res, errMsg, statusCode);
   }
 };

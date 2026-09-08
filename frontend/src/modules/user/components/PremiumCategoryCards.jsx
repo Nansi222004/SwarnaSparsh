@@ -4,6 +4,7 @@ import { motion, useInView } from 'framer-motion';
 import { ChevronRight, ChevronLeft } from 'lucide-react';
 import menImg from '@assets/collections/cat_men_nobg.png';
 import womenImg from '@assets/collections/cat_women_nobg.png';
+import { handleImageError } from '../../../utils/imageFallbacks';
 
 const PremiumCategoryCards = () => {
     const navigate = useNavigate();
@@ -21,7 +22,7 @@ const PremiumCategoryCards = () => {
         {
             id: 'her',
             title: 'For Her',
-            image: '/Gemini_Generated_Image_42n9yj42n9yj42n9-removebg-preview.png',
+            image: womenImg,
             path: '/category/women',
             layout: 'right',
         }
@@ -80,6 +81,7 @@ const PremiumCategoryCards = () => {
                                     alt={item.title}
                                     loading="lazy"
                                     decoding="async"
+                                    onError={(e) => handleImageError(e, idx === 0 ? menImg : womenImg)}
                                     className={`h-full w-auto object-contain drop-shadow-[10px_15px_30px_rgba(0,0,0,0.2)] transition-all duration-700 ${item.layout === 'left' ? 'translate-x-[5%] group-hover:translate-x-[8%]' : 'scale-x-[-1] -translate-x-[5%] group-hover:-translate-x-[8%]'}`}
                                 />
                             </div>

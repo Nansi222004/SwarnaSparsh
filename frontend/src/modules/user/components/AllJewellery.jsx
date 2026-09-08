@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { ShoppingBag } from 'lucide-react';
+import { ShoppingBag, Sparkles } from 'lucide-react';
 import { useShop } from '../../../context/ShopContext';
 import ProductCard from './ProductCard';
 import { matchesRequestedMetal } from '../utils/productMetal';
@@ -31,54 +31,85 @@ const AllJewellery = () => {
                 .map((id) => productMap.get(id))
                 .filter(Boolean)
                 .slice(0, productLimit);
-            // If curated list resolves to real products, use it; otherwise fall through to all products
             if (curated.length > 0) return curated;
         }
 
-        // Always fall back to latest products from catalogue
+        // Fall back to catalogue order
         return validProducts
             .filter((product) => product?.id && product?.name)
             .sort((a, b) => new Date(b.createdAt || b.updatedAt || 0) - new Date(a.createdAt || a.updatedAt || 0))
             .slice(0, productLimit);
     }, [curatedProductIds, productLimit, products]);
 
-    // Only hide if admin has explicitly deactivated this section
     if (sectionData?.isActive === false) return null;
-
-    // Don't render until products have loaded
     if (displayProducts.length === 0) return null;
 
-    const eyebrow = settings.eyebrow?.trim() || 'Our Collection';
+    const eyebrow = settings.eyebrow?.trim() || 'Signature Showcase';
     const title = settings.title?.trim() || 'All Jewellery';
-    const ctaLabel = settings.ctaLabel?.trim() || 'View Full Collection';
+    const ctaLabel = settings.ctaLabel?.trim() || 'Explore Full Atelier';
     const ctaLink = '/shop';
 
+    const leadProduct = displayProducts[0];
+    const topSupportingProducts = displayProducts.slice(1, 5);
+    const remainingProducts = displayProducts.slice(5);
+
     return (
-        <section className="pt-4 pb-2 md:py-12 bg-white">
-            <div className="container mx-auto px-4 md:px-6">
-                <div className="flex flex-col md:flex-row md:justify-between items-center md:items-end text-center md:text-left mb-10 md:mb-16 gap-6">
-                    <div className="flex flex-col items-center md:items-start">
-                        <span className="text-[10px] md:text-sm uppercase tracking-[0.4em] text-[#C59B27] font-bold mb-1 md:mb-2">{eyebrow}</span>
-                        <h2 className="text-xl md:text-4xl font-display text-[#141211]">{title}</h2>
-                        <div className="h-1 w-12 bg-[#C59B27] mt-2 rounded-full md:hidden"></div>
+        <section className="py-10 md:py-20 bg-white">
+            <div className="container mx-auto px-4 md:px-8 max-w-[1440px]">
+                {/* Editorial Section Header */}
+                <div className="flex flex-col md:flex-row md:items-end justify-between text-left mb-10 md:mb-14">
+                    <div>
+                        <div className="inline-flex items-center gap-2 mb-2 text-[#C59B27] text-[10px] uppercase font-bold tracking-[0.3em]">
+                            <Sparkles className="w-3.5 h-3.5" />
+                            <span>{eyebrow}</span>
+                        </div>
+                        <h2 className="font-serif text-2xl md:text-4xl text-[#141211] font-normal tracking-tight">
+                            {title}
+                        </h2>
                     </div>
-                </div>
-
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
-                    {displayProducts.map((product) => (
-                        <ProductCard key={product.id || product._id} product={product} />
-                    ))}
-                </div>
-
-                <div className="mt-5 md:mt-16 flex justify-center">
                     <Link
                         to={ctaLink}
-                        className="group flex items-center gap-3 text-sm font-medium text-[#141211] transition-all"
+                        className="hidden md:inline-flex items-center gap-2 text-xs font-sans font-bold uppercase tracking-[0.18em] text-[#141211] hover:text-[#C59B27] transition-colors pb-1 border-b border-[#141211] hover:border-[#C59B27]"
                     >
-                        <span className="border-b border-[#141211] pb-0.5 group-hover:text-[#C59B27] group-hover:border-[#C59B27] transition-all">
-                            {ctaLabel}
-                        </span>
-                        <ShoppingBag className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                        <span>{ctaLabel}</span>
+                        <ShoppingBag className="w-3.5 h-3.5" />
+                    </Link>
+                </div>
+
+                {/* ── ASYMMETRIC LEAD PRODUCT SHOWCASE ── */}
+                {leadProduct && (
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-6 mb-6">
+                        {/* Featured Lead Product Slot (Desktop: 5 cols, Mobile: full width) */}
+                        <div className="lg:col-span-5 flex flex-col">
+                            <ProductCard product={leadProduct} />
+                        </div>
+
+                        {/* Top Supporting Products (Desktop: 7 cols arranged in 2x2 grid) */}
+                        <div className="lg:col-span-7 grid grid-cols-2 gap-4 md:gap-6">
+                            {topSupportingProducts.map((product) => (
+                                <ProductCard key={product.id || product._id} product={product} />
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {/* Remaining Products in Balances Grid */}
+                {remainingProducts.length > 0 && (
+                    <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 mt-6">
+                        {remainingProducts.map((product) => (
+                            <ProductCard key={product.id || product._id} product={product} />
+                        ))}
+                    </div>
+                )}
+
+                {/* Mobile Bottom CTA */}
+                <div className="mt-8 flex justify-center md:hidden">
+                    <Link
+                        to={ctaLink}
+                        className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.16em] text-[#141211] hover:text-[#C59B27] border-b border-[#141211] pb-1 transition-all"
+                    >
+                        <span>{ctaLabel}</span>
+                        <ShoppingBag className="w-4 h-4" />
                     </Link>
                 </div>
             </div>

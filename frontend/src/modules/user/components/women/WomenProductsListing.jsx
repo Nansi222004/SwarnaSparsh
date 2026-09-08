@@ -106,6 +106,9 @@ const matchesCategory = (product = {}, categoryId = '') => {
 
 const GOLD = '#C59B27';
 const OBSIDIAN = '#141211';
+const GOLD_LIGHT = '#FAF8F5';
+const PINK = '#C59B27';
+const PINK_BG = '#FAF8F5';
 
 const WomenProductsListing = ({ sectionData = null }) => {
     const navigate = useNavigate();
@@ -167,8 +170,8 @@ const WomenProductsListing = ({ sectionData = null }) => {
     const handleAddToCart = (product) => {
         addToCart(product);
         toast.success(`${product.name || 'Product'} added to your bag!`, {
-            style: { background: PINK, color: '#fff', fontSize: '12px' },
-            icon: '💖'
+            style: { background: OBSIDIAN, color: '#FAF8F5', fontSize: '12px' },
+            icon: '✨'
         });
         setTimeout(() => navigate('/cart'), 800);
     };
@@ -181,7 +184,7 @@ const WomenProductsListing = ({ sectionData = null }) => {
     });
 
     return (
-        <section className="py-6 md:py-10" style={{ background: PINK_BG }}>
+        <section className="py-6 md:py-10 bg-[#FAF8F5]">
             <div className="container mx-auto px-4 md:px-8 max-w-[1500px]">
                 <div className="text-center mb-6 md:mb-8">
                     <motion.div
@@ -189,11 +192,10 @@ const WomenProductsListing = ({ sectionData = null }) => {
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.6 }}
-                        className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-4"
-                        style={{ background: `${PINK}22`, border: `1px solid ${PINK}44` }}
+                        className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-4 border border-[#C59B27]/40 bg-[#C59B27]/10"
                     >
-                        <Sparkles className="w-3.5 h-3.5" style={{ color: PINK }} />
-                        <span className="text-xs font-black uppercase tracking-widest" style={{ color: PINK }}>For Her</span>
+                        <Sparkles className="w-3.5 h-3.5 text-[#C59B27]" />
+                        <span className="text-xs font-black uppercase tracking-widest text-[#C59B27]">For Her</span>
                     </motion.div>
                     <motion.h2
                         initial={{ opacity: 0, y: 20 }}
@@ -204,7 +206,7 @@ const WomenProductsListing = ({ sectionData = null }) => {
                     >
                         {resolvedSettings.title}
                     </motion.h2>
-                    <div className="w-20 h-1 mx-auto rounded-full" style={{ background: PINK }} />
+                    <div className="w-20 h-1 mx-auto rounded-full bg-[#C59B27]" />
                 </div>
 
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-8">

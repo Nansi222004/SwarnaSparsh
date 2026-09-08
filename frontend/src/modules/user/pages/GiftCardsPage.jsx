@@ -15,9 +15,8 @@ import { useShop } from "../../../context/ShopContext";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import api from "../../../services/api";
-
-// Import the generated mockup image
-import giftCardMockup from "@assets/sands_gift_card_mockup_1777455722986.png";
+import giftCardMockup from "@assets/lifestyle_gift_card.png";
+import { handleImageError } from "../../../utils/imageFallbacks";
 
 const GIFT_AMOUNTS = [1000, 2500, 5000, 10000, 25000];
 
@@ -179,8 +178,9 @@ const GiftCardsPage = () => {
               <div className="absolute -inset-4 bg-[#C59B27]/10 blur-3xl rounded-full" />
               <img
                 src={giftCardMockup}
-                alt="Swarna Sparsh Gift Card Mockup"
-                className="relative z-10 w-full max-w-lg mx-auto rounded-[2rem] shadow-2xl shadow-black/10 transform hover:scale-[1.02] transition-transform duration-700"
+                alt="Swarna Sparsh Gift Card"
+                onError={(e) => handleImageError(e, giftCardMockup)}
+                className="relative z-10 w-full max-w-lg mx-auto rounded-[2rem] shadow-2xl shadow-black/10 transform hover:scale-[1.02] transition-transform duration-700 object-cover"
               />
 
               {/* Floating Badges */}

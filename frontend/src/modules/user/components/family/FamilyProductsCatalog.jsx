@@ -484,9 +484,9 @@ const FamilyProductsCatalog_OLD = ({
                                     onClick={() => handleSelectRecipient(recipientId)}
                                     className={`w-full lg:flex-none lg:w-auto px-3 py-1.5 md:px-4 md:py-2 rounded-none text-[8px] md:text-[10px] font-black uppercase tracking-[0.15em] whitespace-nowrap transition-all border leading-none ${isLastOdd ? 'col-span-2 lg:col-span-1' : ''}`}
                                     style={{
-                                        background: isActive ? PINK_LIGHT : '#fff',
-                                        color: isActive ? MAROON : '#444',
-                                        borderColor: isActive ? PINK_LIGHT : '#eee'
+                                        background: isActive ? GOLD : '#fff',
+                                        color: isActive ? '#141211' : '#444',
+                                        borderColor: isActive ? GOLD : '#eee'
                                     }}
                                 >
                                     {label}
@@ -518,8 +518,7 @@ const FamilyProductsCatalog_OLD = ({
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         onClick={() => handleSelectRecipient('all')}
-                        className="px-8 py-3 md:px-10 md:py-3.5 rounded-none font-bold uppercase tracking-widest text-[10px] transition-all shadow-md hover:shadow-lg"
-                        style={{ background: PINK_LIGHT, color: MAROON }}
+                        className="px-8 py-3 md:px-10 md:py-3.5 rounded-none font-bold uppercase tracking-widest text-[10px] transition-all shadow-md hover:shadow-lg text-[#141211] bg-[#C59B27] hover:bg-[#D4AF37]"
                     >
                         {resolvedSettings.ctaLabel}
                     </motion.button>

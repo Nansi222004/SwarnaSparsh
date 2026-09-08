@@ -1,8 +1,10 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import { ArrowRight, Sparkles } from 'lucide-react';
 import { useHomepageCms } from '../hooks/useHomepageCms';
 import { resolveLegacyCmsAsset } from '../utils/legacyCmsAssets';
+import { IMAGE_FALLBACKS, handleImageError } from '../../../utils/imageFallbacks';
 
 const DynamicPromoBanner = () => {
     const { data: homepageSections = {} } = useHomepageCms();
@@ -11,7 +13,7 @@ const DynamicPromoBanner = () => {
     const bannerItems = useMemo(() => {
         const items = Array.isArray(sectionData?.items) ? sectionData.items : [];
         return items
-            .filter((item) => Boolean(item?.image)) // image is required
+            .filter((item) => Boolean(item?.image))
             .filter((item) => {
                 const label = String(item.label || item.title || '').toLowerCase();
                 return !label.includes('unique story in golds') && !label.includes('unique story in gold');
@@ -21,16 +23,16 @@ const DynamicPromoBanner = () => {
                 image: resolveLegacyCmsAsset(item.image, item.image),
                 mobileImage: item.mobileImage ? resolveLegacyCmsAsset(item.mobileImage, item.mobileImage) : null,
                 link: item.path || '/shop',
-                title: item.label || 'Promo Banner',
+                title: item.label || 'Timeless Indian Elegance',
                 name: item.name || '',
-                tag: item.tag || '',
-                subtitle: item.subtitle || '',
-                ctaLabel: item.ctaLabel || 'Shop Collection'
+                tag: item.tag || 'Atelier Collection',
+                subtitle: item.subtitle || 'Handcrafted heirlooms designed for life’s most cherished celebrations.',
+                ctaLabel: item.ctaLabel || 'Explore Atelier'
             }));
     }, [sectionData?.items]);
 
     const [currentIndex, setCurrentIndex] = useState(0);
-    const autoplayMs = Number(sectionData?.settings?.autoplayMs) || 3000;
+    const autoplayMs = Number(sectionData?.settings?.autoplayMs) || 5000;
 
     useEffect(() => {
         if (bannerItems.length <= 1) return;
@@ -50,115 +52,142 @@ const DynamicPromoBanner = () => {
         return null;
     }
 
-    const renderBannerItem = (banner, idx) => {
-        const aspectClass = banner.mobileImage ? 'aspect-[2/1] md:aspect-[3.5/1] md:min-h-[350px]' : 'aspect-[4/1] md:aspect-[3.5/1] md:min-h-[350px]';
+    const renderBannerSlide = (banner) => {
         return (
-            <Link to={banner.link} className="block w-full">
-                <div className={`w-full relative rounded-none md:rounded-2xl overflow-hidden shadow-sm group ${aspectClass}`}>
-                    
-                    {/* Mobile Image */}
-                    {banner.mobileImage && (
+            <Link to={banner.link} className="block w-full group focus:outline-none">
+                {/* ── DESKTOP EDITORIAL COMPOSITION (md+) ── */}
+                <div className="hidden md:grid md:grid-cols-12 w-full min-h-[440px] lg:min-h-[500px] bg-[#141211] rounded-3xl overflow-hidden border border-[#C59B27]/30 shadow-2xl relative">
+                    {/* Left Wing: Editorial Typography & Copy */}
+                    <div className="md:col-span-6 lg:col-span-5 flex flex-col justify-between p-8 lg:p-14 z-10 relative bg-gradient-to-r from-[#141211] via-[#1A1816] to-[#141211]">
+                        {/* Eyebrow & Brand Tag */}
+                        <div className="space-y-4">
+                            <div className="inline-flex items-center gap-2.5 px-3 py-1 rounded-full bg-[#C59B27]/10 border border-[#C59B27]/30 text-[#E8D198] text-[10px] uppercase font-bold tracking-[0.25em]">
+                                <Sparkles className="w-3 h-3 text-[#C59B27]" />
+                                <span>{banner.tag || 'Swarna Sparsh Atelier'}</span>
+                            </div>
+
+                            {/* Headline */}
+                            <h1 className="font-serif text-3xl lg:text-5xl text-[#FAF8F5] font-normal tracking-tight leading-[1.12]">
+                                {banner.title}
+                            </h1>
+
+                            {/* Gold Divider Rule */}
+                            <div className="w-16 h-[2px] bg-gradient-to-r from-[#C59B27] to-transparent" />
+
+                            {/* Subtitle */}
+                            {banner.subtitle && (
+                                <p className="text-stone-300 font-sans text-sm lg:text-base font-light leading-relaxed max-w-md pt-2">
+                                    {banner.subtitle}
+                                </p>
+                            )}
+                        </div>
+
+                        {/* CTA Button */}
+                        <div className="pt-8">
+                            <span className="inline-flex items-center gap-3 bg-gradient-to-r from-[#C59B27] via-[#D8AD38] to-[#C59B27] text-[#141211] font-sans font-bold text-xs uppercase tracking-[0.18em] px-8 py-4 rounded-full shadow-[0_8px_24px_rgba(197,155,39,0.25)] transition-all duration-300 group-hover:shadow-[0_12px_32px_rgba(197,155,39,0.4)] group-hover:scale-[1.02]">
+                                <span>{banner.ctaLabel}</span>
+                                <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
+                            </span>
+                        </div>
+                    </div>
+
+                    {/* Right Wing: Large Editorial Jewellery Image */}
+                    <div className="md:col-span-6 lg:col-span-7 relative overflow-hidden bg-stone-900">
                         <img
-                            src={banner.mobileImage}
+                            src={banner.image}
                             alt={banner.title}
-                            className="absolute inset-0 w-full h-full object-cover block md:hidden"
-                            loading={idx === 0 ? "eager" : "lazy"}
+                            loading="eager"
                             decoding="async"
+                            onError={(e) => handleImageError(e, IMAGE_FALLBACKS.editorial)}
+                            className="w-full h-full object-cover object-center transition-transform duration-[1.8s] ease-out group-hover:scale-105"
                         />
-                    )}
+                        {/* Refined gradient overlay at junction */}
+                        <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-[#141211] to-transparent pointer-events-none" />
+                        <div className="absolute inset-0 border-l border-[#C59B27]/20 pointer-events-none" />
+                    </div>
+                </div>
 
-                    {/* Desktop Image */}
-                    <img
-                        src={banner.image}
-                        alt={banner.title}
-                        className={`absolute inset-0 w-full h-full object-cover ${banner.mobileImage ? 'hidden md:block' : 'block'}`}
-                        loading={idx === 0 ? "eager" : "lazy"}
-                        decoding="async"
-                    />
-
-                    {/* Professional Gradient Overlay for Left-aligned Text Readability */}
-                    <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/35 to-transparent pointer-events-none z-[5]" />
-
-                    {/* Text Overlay - Left-aligned and Mobile Scale Friendly */}
-                    <div className="absolute inset-y-0 left-0 w-full md:w-[65%] flex flex-col justify-center px-6 md:px-20 z-10 text-white text-left">
+                {/* ── MOBILE EDITORIAL COMPOSITION (< md) ── */}
+                <div className="block md:hidden w-full bg-[#141211] overflow-hidden rounded-2xl border border-[#C59B27]/30 shadow-lg">
+                    {/* Visual Banner */}
+                    <div className="relative aspect-[16/9] w-full overflow-hidden bg-stone-900">
+                        <img
+                            src={banner.mobileImage || banner.image}
+                            alt={banner.title}
+                            loading="eager"
+                            decoding="async"
+                            onError={(e) => handleImageError(e, IMAGE_FALLBACKS.editorial)}
+                            className="w-full h-full object-cover"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#141211] via-black/20 to-transparent" />
+                        
                         {banner.tag && (
-                            <div className="flex items-center gap-2 md:gap-3 mb-1 md:mb-4">
-                                <div className="w-4 md:w-8 h-[1px] md:h-[2px] bg-[#C59B27]"></div>
-                                <span className="text-[8px] sm:text-[10px] md:text-sm text-[#E8D198] font-bold uppercase tracking-[0.3em]">
-                                    {banner.tag}
-                                </span>
+                            <div className="absolute top-3 left-3 bg-[#141211]/85 backdrop-blur-sm border border-[#C59B27]/40 px-2.5 py-0.5 rounded-full text-[#E8D198] text-[9px] font-bold uppercase tracking-wider">
+                                {banner.tag}
                             </div>
                         )}
+                    </div>
 
-                        {banner.title && (
-                            <h2 className="font-serif text-sm sm:text-2xl md:text-5xl font-bold leading-normal md:leading-tight mb-1 md:mb-3 drop-shadow-lg max-w-[95%] md:max-w-xl text-left text-white">
-                                {banner.title}
-                            </h2>
-                        )}
+                    {/* Content Box below image for optimal mobile readability */}
+                    <div className="p-5 flex flex-col items-start gap-2 bg-[#141211]">
+                        <h2 className="font-serif text-xl sm:text-2xl text-[#FAF8F5] font-normal leading-snug tracking-tight">
+                            {banner.title}
+                        </h2>
 
                         {banner.subtitle && (
-                            <p className="text-white/85 text-[8px] sm:text-xs md:text-base font-light leading-relaxed mb-2 md:mb-6 max-w-[90%] md:max-w-md tracking-wide line-clamp-2 md:line-clamp-none text-left">
+                            <p className="text-stone-300 text-xs font-light leading-relaxed line-clamp-2">
                                 {banner.subtitle}
                             </p>
                         )}
 
-                        <span
-                            className="relative group inline-flex items-center justify-center bg-gradient-to-r from-[#C59B27] via-[#D8AD38] to-[#C59B27] text-[#141211] hover:from-[#141211] hover:to-[#1C1917] hover:text-[#E8D198] hover:border hover:border-[#C59B27] font-bold text-[8px] sm:text-xs md:text-sm uppercase tracking-[0.2em] px-4 py-1.5 md:px-10 md:py-3.5 rounded-full transition-all duration-300 overflow-hidden shadow-xl w-max"
-                        >
-                            <span className="relative z-10">{banner.ctaLabel}</span>
-                        </span>
+                        <div className="w-full pt-3">
+                            <span className="w-full inline-flex items-center justify-center gap-2 bg-[#C59B27] text-[#141211] font-bold text-xs uppercase tracking-wider py-3 rounded-xl shadow-md">
+                                <span>{banner.ctaLabel}</span>
+                                <ArrowRight className="w-3.5 h-3.5" />
+                            </span>
+                        </div>
                     </div>
                 </div>
             </Link>
         );
     };
 
-    if (bannerItems.length === 1) {
-        return (
-            <section className="w-full bg-white">
-                <div className="container mx-auto px-0 md:px-4">
-                    {renderBannerItem(bannerItems[0], 0)}
-                </div>
-            </section>
-        );
-    }
-
-    const activeBanner = bannerItems[currentIndex];
-    const bannerContainerAspect = activeBanner.mobileImage ? 'aspect-[2/1] md:aspect-[3.5/1] md:min-h-[350px]' : 'aspect-[4/1] md:aspect-[3.5/1] md:min-h-[350px]';
+    const activeBanner = bannerItems[currentIndex] || bannerItems[0];
 
     return (
-        <section className="w-full bg-white relative">
-            <div className="container mx-auto px-0 md:px-4">
-                <div className={`w-full relative ${bannerContainerAspect}`}>
+        <section className="w-full bg-white py-3 md:py-6 relative">
+            <div className="container mx-auto px-3 md:px-6 max-w-[1440px]">
+                <div className="relative">
                     <AnimatePresence mode="wait">
                         <motion.div
                             key={currentIndex}
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
-                            transition={{ duration: 0.8 }}
-                            className="absolute inset-0 w-full h-full"
+                            transition={{ duration: 0.6 }}
+                            className="w-full"
                         >
-                            {renderBannerItem(activeBanner, currentIndex)}
+                            {renderBannerSlide(activeBanner)}
                         </motion.div>
                     </AnimatePresence>
 
-                    {/* Sliding Line Indicators */}
-                    <div className="absolute bottom-2 md:bottom-6 left-1/2 -translate-x-1/2 flex items-center justify-center gap-1.5 md:gap-3 z-30">
-                        {bannerItems.map((_, i) => {
-                            const isActive = i === currentIndex;
-                            return (
+                    {/* Elegant Slide Indicators (When multiple slides exist) */}
+                    {bannerItems.length > 1 && (
+                        <div className="absolute bottom-3 md:bottom-6 right-6 md:right-10 flex items-center gap-2 z-20">
+                            {bannerItems.map((_, i) => (
                                 <button
                                     key={i}
                                     onClick={() => setCurrentIndex(i)}
-                                    className={`h-[2px] md:h-1 transition-all duration-500 rounded-full ${
-                                        isActive ? 'w-6 md:w-10 bg-[#C59B27]' : 'w-2 md:w-4 bg-white/50 hover:bg-white/80'
+                                    className={`h-1.5 transition-all duration-400 rounded-full ${
+                                        i === currentIndex
+                                            ? 'w-8 bg-[#C59B27]'
+                                            : 'w-2 bg-white/40 hover:bg-white/70'
                                     }`}
-                                    aria-label={`Go to slide ${i + 1}`}
+                                    aria-label={`Slide ${i + 1}`}
                                 />
-                            );
-                        })}
-                    </div>
+                            ))}
+                        </div>
+                    )}
                 </div>
             </div>
         </section>

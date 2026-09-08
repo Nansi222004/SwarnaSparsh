@@ -6,6 +6,7 @@ import { useResetScroll } from '../../../hooks/useResetScroll';
 import LazySection from '../../../components/LazySection';
 
 // ─── ABOVE-FOLD: eagerly imported — these are visible immediately on page load ───
+import PromoSlider from '../components/PromoSlider';
 import CategoryGrid from '../components/CategoryGrid';
 import DynamicPromoBanner from '../components/DynamicPromoBanner';
 import TrustMarkers from '../components/TrustMarkers';
@@ -30,7 +31,7 @@ import ProposalBanner from '../components/ProposalBanner';
 import Testimonials from '../components/Testimonials';
 import BrandPromises from '../components/BrandPromises';
 import ChitChatSection from '../components/ChitChatSection';
-import FAQSection from '../components/FAQSection';
+import Newsletter from '../components/Newsletter';
 
 // Lightweight fallback for lazy sections — invisible so layout doesn't shift
 
@@ -84,8 +85,9 @@ const Home = () => {
             )}
 
             {/* ── ABOVE FOLD: loaded eagerly (visible immediately) ── */}
-            <DynamicPromoBanner />
+            <PromoSlider />
             <CategoryGrid />
+            <DynamicPromoBanner />
             <TrustMarkers />
 
             {/* ── BELOW FOLD: lazy loaded inside SectionShell ── */}
@@ -107,7 +109,7 @@ const Home = () => {
             <Testimonials />
             <BrandPromises />
             <ChitChatSection />
-            <FAQSection />
+            <Newsletter />
         </div>
     );
 };
