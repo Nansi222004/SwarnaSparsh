@@ -2,7 +2,7 @@ import React from 'react';
 import { ArrowLeft, Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-const PageHeader = ({ title, subtitle, action, backPath }) => {
+const PageHeader = ({ title, subtitle, action, actions, extraActions, backPath }) => {
     const navigate = useNavigate();
 
     return (
@@ -22,15 +22,32 @@ const PageHeader = ({ title, subtitle, action, backPath }) => {
                 </div>
             </div>
 
-            {action && (
-                <button
-                    onClick={action.onClick}
-                    className="bg-[#3E2723] text-white px-4 md:px-5 py-2 md:py-2.5 rounded-lg text-sm font-medium flex items-center justify-center gap-2 hover:bg-[#2D1B18] transition-all shadow-sm active:scale-95"
-                >
-                    {action.icon || <Plus className="w-4 h-4" />}
-                    <span>{action.label}</span>
-                </button>
-            )}
+            <div className="flex items-center gap-2.5 flex-wrap">
+                {extraActions}
+
+                {Array.isArray(actions) && actions.map((act, idx) => (
+                    <button
+                        key={idx}
+                        onClick={act.onClick}
+                        disabled={act.disabled}
+                        className={act.className || "bg-[#3E2723] text-white px-4 md:px-5 py-2 md:py-2.5 rounded-lg text-sm font-medium flex items-center justify-center gap-2 hover:bg-[#2D1B18] transition-all shadow-sm active:scale-95 disabled:opacity-50"}
+                    >
+                        {act.icon || <Plus className="w-4 h-4" />}
+                        <span>{act.label}</span>
+                    </button>
+                ))}
+
+                {action && !actions && (
+                    <button
+                        onClick={action.onClick}
+                        disabled={action.disabled}
+                        className={action.className || "bg-[#3E2723] text-white px-4 md:px-5 py-2 md:py-2.5 rounded-lg text-sm font-medium flex items-center justify-center gap-2 hover:bg-[#2D1B18] transition-all shadow-sm active:scale-95 disabled:opacity-50"}
+                    >
+                        {action.icon || <Plus className="w-4 h-4" />}
+                        <span>{action.label}</span>
+                    </button>
+                )}
+            </div>
         </div>
     );
 };

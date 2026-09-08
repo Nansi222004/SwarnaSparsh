@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Edit2, Trash2, Eye, EyeOff, Box, CheckCircle } from 'lucide-react';
+import { Edit2, Trash2, Eye, EyeOff, Box, CheckCircle, RefreshCw, Plus } from 'lucide-react';
 import PageHeader from '../../components/common/PageHeader';
 import DataTable from '../../components/common/DataTable';
 import AdminStatsCard from '../../components/AdminStatsCard';
@@ -13,20 +13,40 @@ const CategoryPage = () => {
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
+    const [isSyncing, setIsSyncing] = useState(false);
+
+    const fetchCategories = async () => {
+        try {
+            const data = await adminService.getCategories();
+            setCategories(data);
+        } catch (err) {
+            toast.error("Failed to load categories");
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-        const fetchCategories = async () => {
-            try {
-                const data = await adminService.getCategories();
-                setCategories(data);
-            } catch (err) {
-                toast.error("Failed to load categories");
-            } finally {
-                setLoading(false);
-            }
-        };
         fetchCategories();
     }, []);
+
+    const handleSyncSwarnaSparsh = async () => {
+        setIsSyncing(true);
+        const toastId = toast.loading("Syncing categories & products from SwarnaSparsh.com...");
+        try {
+            const res = await adminService.syncExternalCatalog();
+            if (res.success) {
+                toast.success(`Catalog Synced! ${res.data?.categoriesCount || 31} categories, ${res.data?.productsCount || 67} products`, { id: toastId });
+                await fetchCategories();
+            } else {
+                toast.error(res.message || "Sync failed", { id: toastId });
+            }
+        } catch (err) {
+            toast.error("Failed to sync catalog", { id: toastId });
+        } finally {
+            setIsSyncing(false);
+        }
+    };
 
     const handleDelete = async (id) => {
         if (window.confirm('Are you sure you want to delete this category?')) {
@@ -182,10 +202,21 @@ const CategoryPage = () => {
             <PageHeader
                 title="Category Management"
                 subtitle="Manage shared categories across all collections."
-                action={{
-                    label: "Add New Category",
-                    onClick: () => navigate(`/admin/categories/new`)
-                }}
+                actions={[
+                    {
+                        label: isSyncing ? "Syncing..." : "Sync from SwarnaSparsh.com",
+                        icon: <RefreshCw className={`w-4 h-4 ${isSyncing ? "animate-spin" : ""}`} />,
+                        onClick: handleSyncSwarnaSparsh,
+                        disabled: isSyncing,
+                        className: "border border-[#C59B27] text-[#8C6A12] bg-[#FAF8F5] hover:bg-[#C59B27] hover:text-white px-3.5 md:px-4 py-2 md:py-2.5 rounded-lg text-xs md:text-sm font-semibold flex items-center justify-center gap-2 transition-all shadow-sm active:scale-95 disabled:opacity-50"
+                    },
+                    {
+                        label: "Add New Category",
+                        icon: <Plus className="w-4 h-4" />,
+                        onClick: () => navigate(`/admin/categories/new`),
+                        className: "bg-[#3E2723] text-white px-4 md:px-5 py-2 md:py-2.5 rounded-lg text-xs md:text-sm font-medium flex items-center justify-center gap-2 hover:bg-[#2D1B18] transition-all shadow-sm active:scale-95"
+                    }
+                ]}
             />
 
             {/* Stats Cards */}

@@ -6,6 +6,7 @@ const { categoryUpload } = require("../../../middlewares/uploadMiddleware");
 
 // ── Categories ───────────────────────────────────────────────────────────────
 router.get("/", categoryController.getCategories);
+router.post("/sync-external", categoryController.syncExternalCatalog);
 router.get("/:id", categoryController.getCategoryById);
 
 router.post(

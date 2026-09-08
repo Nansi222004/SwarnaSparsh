@@ -223,3 +223,14 @@ exports.deleteCategory = async (req, res) => {
     return success(res, {}, "Category deleted");
   } catch (err) { return error(res, err.message); }
 };
+
+exports.syncExternalCatalog = async (req, res) => {
+  try {
+    const { syncSwarnaSparshCatalog } = require("../../../../scripts/sync-swarnasparsh-catalog");
+    const result = await syncSwarnaSparshCatalog();
+    return success(res, result, "SwarnaSparsh.com catalog synchronized successfully");
+  } catch (err) {
+    console.error("[Admin] Sync catalog failed:", err);
+    return error(res, `Failed to sync catalog: ${err.message}`, 500);
+  }
+};

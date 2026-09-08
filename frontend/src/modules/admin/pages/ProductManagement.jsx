@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Edit2, Trash2, Eye, Package, TrendingUp, Check, Plus, Download } from 'lucide-react';
+import { Edit2, Trash2, Eye, Package, TrendingUp, Check, Plus, Download, RefreshCw } from 'lucide-react';
 import PageHeader from '../components/common/PageHeader';
 import DataTable from '../components/common/DataTable';
 import BulkUpdateModal from '../components/BulkUpdateModal';
@@ -34,6 +34,25 @@ const ProductManagement = () => {
         limit: 20
     });
     const [pagination, setPagination] = useState(null);
+    const [isSyncing, setIsSyncing] = useState(false);
+
+    const handleSyncSwarnaSparsh = async () => {
+        setIsSyncing(true);
+        const toastId = toast.loading("Syncing categories & products from SwarnaSparsh.com...");
+        try {
+            const res = await adminService.syncExternalCatalog();
+            if (res.success) {
+                toast.success(`Catalog Synced! ${res.data?.categoriesCount || 31} categories, ${res.data?.productsCount || 67} products`, { id: toastId });
+                await fetchProducts();
+            } else {
+                toast.error(res.message || "Sync failed", { id: toastId });
+            }
+        } catch (err) {
+            toast.error("Failed to sync catalog", { id: toastId });
+        } finally {
+            setIsSyncing(false);
+        }
+    };
 
     const handleExport = async () => {
         const loadingToast = toast.loading("Generating product export...");
@@ -384,10 +403,21 @@ const ProductManagement = () => {
                     : sellerId
                         ? "Showing products for selected seller."
                         : "Manage your inventory, pricing, and product details."}
-                action={!isSelectMode ? {
-                    label: "Add New Product",
-                    onClick: () => navigate('/admin/products/new')
-                } : undefined}
+                actions={!isSelectMode ? [
+                    {
+                        label: isSyncing ? "Syncing..." : "Sync from SwarnaSparsh.com",
+                        icon: <RefreshCw className={`w-4 h-4 ${isSyncing ? "animate-spin" : ""}`} />,
+                        onClick: handleSyncSwarnaSparsh,
+                        disabled: isSyncing,
+                        className: "border border-[#C59B27] text-[#8C6A12] bg-[#FAF8F5] hover:bg-[#C59B27] hover:text-white px-3.5 md:px-4 py-2 md:py-2.5 rounded-lg text-xs md:text-sm font-semibold flex items-center justify-center gap-2 transition-all shadow-sm active:scale-95 disabled:opacity-50"
+                    },
+                    {
+                        label: "Add New Product",
+                        icon: <Plus className="w-4 h-4" />,
+                        onClick: () => navigate('/admin/products/new'),
+                        className: "bg-[#3E2723] text-white px-4 md:px-5 py-2 md:py-2.5 rounded-lg text-xs md:text-sm font-medium flex items-center justify-center gap-2 hover:bg-[#2D1B18] transition-all shadow-sm active:scale-95"
+                    }
+                ] : undefined}
                 backPath={sellerId ? `/admin/seller-details/${sellerId}` : undefined}
             />
 

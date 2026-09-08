@@ -238,6 +238,15 @@ export const adminService = {
   },
 
   // Category Management
+  syncExternalCatalog: async () => {
+    try {
+      const res = await api.post('admin/categories/sync-external');
+      return res.data;
+    } catch (err) {
+      console.error("Admin sync external catalog failed:", err);
+      return { success: false, message: err.response?.data?.message || "Failed to sync catalog" };
+    }
+  },
   getCategories: async () => {
     try {
       const res = await api.get('admin/categories');
