@@ -19,6 +19,24 @@ const {
   accrueCommissionsForOrder,
 } = require("../../../services/commissionService");
 
+const isPaymentSandboxAllowed = () => {
+  return (
+    process.env.NODE_ENV === "development" ||
+    process.env.ALLOW_PAYMENT_SANDBOX === "true" ||
+    !process.env.RAZORPAY_KEY_ID ||
+    String(process.env.RAZORPAY_KEY_ID || "").startsWith("rzp_test_")
+  );
+};
+
+const createSandboxOrder = (orderId, total) => ({
+  id: `order_dev_${Date.now()}`,
+  amount: Math.round(Number(total || 0) * 100),
+  currency: "INR",
+  status: "created",
+  receipt: String(orderId || `ORD-${Date.now()}`),
+  isDevMock: true,
+});
+
 // POST /api/user/payment/razorpay-order
 exports.createRazorpayOrder = async (req, res) => {
   try {
@@ -39,19 +57,12 @@ exports.createRazorpayOrder = async (req, res) => {
     }
 
     if (!razorpay) {
-      if (process.env.NODE_ENV === "development") {
+      if (isPaymentSandboxAllowed()) {
         console.warn(
-          "[Razorpay] Payment service not configured. Returning dev sandbox order.",
+          "[Razorpay] Payment service not configured. Returning test sandbox order.",
         );
-        const rpOrder = {
-          id: `order_dev_${Date.now()}`,
-          amount: Math.round(order.total * 100),
-          currency: "INR",
-          status: "created",
-          receipt: order.orderId,
-          isDevMock: true,
-        };
-        return success(res, { rpOrder }, "Razorpay order created (dev sandbox)");
+        const rpOrder = createSandboxOrder(order.orderId, order.total);
+        return success(res, { rpOrder }, "Razorpay order created (sandbox mode)");
       }
       return error(
         res,
@@ -75,18 +86,11 @@ exports.createRazorpayOrder = async (req, res) => {
         rpErr?.error?.description === "Authentication failed" ||
         rpErr?.error?.code === "BAD_REQUEST_ERROR";
 
-      if (process.env.NODE_ENV === "development" && isAuthError) {
+      if (isPaymentSandboxAllowed() && isAuthError) {
         console.warn(
-          "[Razorpay] API credentials invalid/expired in development. Falling back to development sandbox order.",
+          "[Razorpay] API credentials invalid/expired. Falling back to test sandbox order.",
         );
-        rpOrder = {
-          id: `order_dev_${Date.now()}`,
-          amount: Math.round(order.total * 100),
-          currency: "INR",
-          status: "created",
-          receipt: order.orderId,
-          isDevMock: true,
-        };
+        rpOrder = createSandboxOrder(order.orderId, order.total);
       } else {
         const errMsg =
           rpErr?.error?.description ||
@@ -339,22 +343,15 @@ exports.initiatePayment = async (req, res) => {
     }
 
     if (!razorpay) {
-      if (process.env.NODE_ENV === "development") {
+      if (isPaymentSandboxAllowed()) {
         console.warn(
-          "[Razorpay] Credentials not configured in .env. Using development sandbox order.",
+          "[Razorpay] Credentials not configured in .env. Using test sandbox order.",
         );
-        const rpOrder = {
-          id: `order_dev_${Date.now()}`,
-          amount: Math.round(orderData.total * 100),
-          currency: "INR",
-          status: "created",
-          receipt: orderData.orderId,
-          isDevMock: true,
-        };
+        const rpOrder = createSandboxOrder(orderData.orderId, orderData.total);
         return success(
           res,
           { rpOrder, orderData },
-          "Development sandbox payment initiated",
+          "Test sandbox payment initiated",
         );
       }
       return error(
@@ -379,18 +376,11 @@ exports.initiatePayment = async (req, res) => {
         rpErr?.error?.description === "Authentication failed" ||
         rpErr?.error?.code === "BAD_REQUEST_ERROR";
 
-      if (process.env.NODE_ENV === "development" && isAuthError) {
+      if (isPaymentSandboxAllowed() && isAuthError) {
         console.warn(
-          "[Razorpay] API credentials invalid/expired in development. Falling back to development sandbox order.",
+          "[Razorpay] API credentials invalid/expired. Falling back to test sandbox order.",
         );
-        rpOrder = {
-          id: `order_dev_${Date.now()}`,
-          amount: Math.round(orderData.total * 100),
-          currency: "INR",
-          status: "created",
-          receipt: orderData.orderId,
-          isDevMock: true,
-        };
+        rpOrder = createSandboxOrder(orderData.orderId, orderData.total);
       } else {
         const errMsg =
           rpErr?.error?.description ||
@@ -410,8 +400,10 @@ exports.initiatePayment = async (req, res) => {
     console.error("[initiatePayment error]:", err);
     const errMsg =
       err?.error?.description || err?.message || "Payment initiation failed";
-    const statusCode =
-      err?.statusCode || (err?.name === "ValidationError" ? 400 : 500);
+    const isClientError =
+      err?.name === "ValidationError" ||
+      /stock|not found|unavailable|required|invalid|must contain|variant/i.test(errMsg);
+    const statusCode = err?.statusCode || (isClientError ? 400 : 500);
     return error(res, errMsg, statusCode);
   }
 };
@@ -437,7 +429,7 @@ exports.verifyPayment = async (req, res) => {
 
     // 1. Verify Razorpay signature
     const isDevMock =
-      process.env.NODE_ENV === "development" &&
+      isPaymentSandboxAllowed() &&
       (String(razorpay_order_id || "").startsWith("order_dev_") ||
         razorpay_signature === "dev_mock_signature");
 
