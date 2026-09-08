@@ -1,0 +1,393 @@
+import React, { useState, useEffect } from 'react';
+import { Search, HelpCircle, ShoppingBag, Truck, CreditCard, RefreshCw, MessageCircle, ChevronRight, Phone, Mail, Clock, Send, Ticket, ArrowLeft, History, User, Loader2 } from 'lucide-react';
+import { useShop } from '../../../context/ShopContext';
+import { useSettings } from '../../../context/SettingsContext';
+import { Link, useNavigate } from 'react-router-dom';
+import { useResetScroll } from '../../../hooks/useResetScroll';
+import api from '../../../services/api';
+
+const DEFAULT_FAQS = [
+    {
+        category: 'orders',
+        question: 'How can I track my order?',
+        answer: 'You can track your order by visiting the "My Orders" section in your profile or by using the tracking link sent to your email.'
+    },
+    {
+        category: 'returns',
+        question: 'What is your return policy?',
+        answer: 'We offer a 7-day easy return policy for most items. The product must be unused and in its original packaging.'
+    },
+    {
+        category: 'payments',
+        question: 'What payment methods do you accept?',
+        answer: 'We accept all major credit/debit cards, UPI, Wallets, and Net Banking. Cash on Delivery is also available for selected locations.'
+    },
+    {
+        category: 'shopping',
+        question: 'Are your silver ornaments hallmarked?',
+        answer: 'Yes, all our 925 Silver ornaments are hallmarked and come with an authenticity certificate.'
+    }
+];
+
+const SupportForm = ({ onCancel, initialOrder = '' }) => {
+    const { createTicket, user } = useShop();
+    const [formData, setFormData] = useState({
+        subject: '',
+        orderId: initialOrder,
+        category: 'General Inquiry',
+        message: ''
+    });
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        createTicket({
+            ...formData,
+            userEmail: user?.email,
+            userName: user?.name
+        });
+        onCancel(); // Return to FAQ/Main view
+    };
+
+    return (
+        <div className="bg-white p-6 md:p-8 rounded-3xl shadow-lg border border-gray-100 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <h2 className="text-xl md:text-2xl font-display font-bold text-black mb-4 md:mb-6">Create Support Ticket</h2>
+            <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                    <div>
+                        <label className="block text-[10px] md:text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 md:mb-2">Subject</label>
+                        <input
+                            required
+                            type="text"
+                            placeholder="Brief description of issue"
+                            value={formData.subject}
+                            onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+                            className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 md:px-4 md:py-3 text-sm md:text-base text-gray-900 focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition-all"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-[10px] md:text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 md:mb-2">Order ID (Optional)</label>
+                        <input
+                            type="text"
+                            placeholder="e.g. 1735123456"
+                            value={formData.orderId}
+                            onChange={(e) => setFormData({ ...formData, orderId: e.target.value })}
+                            className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 md:px-4 md:py-3 text-sm md:text-base text-gray-900 focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition-all"
+                        />
+                    </div>
+                </div>
+                <div>
+                    <label className="block text-[10px] md:text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 md:mb-2">Category</label>
+                    <select
+                        value={formData.category}
+                        onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                        className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 md:px-4 md:py-3 text-sm md:text-base text-gray-900 focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition-all"
+                    >
+                        <option value="General Inquiry">General Enquiry</option>
+                        <option value="Order Tracking">Order Tracking</option>
+                        <option value="Payment Issue">Payment Issue</option>
+                        <option value="Return/Refund">Returns & Refunds</option>
+                        <option value="Product Feedback">Product Feedback</option>
+                    </select>
+                </div>
+                <div>
+                    <label className="block text-[10px] md:text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 md:mb-2">Detailed Message</label>
+                    <textarea
+                        required
+                        rows="4"
+                        placeholder="Please describe your problem in detail..."
+                        value={formData.message}
+                        onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                        className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 md:px-4 md:py-3 text-sm md:text-base text-gray-900 focus:outline-none focus:border-black focus:ring-1 focus:ring-black resize-none transition-all"
+                    ></textarea>
+                </div>
+                <div className="flex gap-3 md:gap-4">
+                    <button
+                        type="submit"
+                        className="flex-grow bg-[#141211] text-[#E8D198] border border-[#C59B27]/40 py-3 md:py-4 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-[#1C1917] transition-all shadow-sm text-sm md:text-base"
+                    >
+                        <Send className="w-4 h-4 text-[#C59B27]" />
+                        Submit Request
+                    </button>
+                    <button
+                        type="button"
+                        onClick={onCancel}
+                        className="px-6 md:px-8 py-3 md:py-4 rounded-xl border border-gray-200 font-bold text-gray-500 hover:bg-gray-50 transition-all text-sm md:text-base"
+                    >
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+    );
+};
+
+const HelpCenter = () => {
+    useResetScroll();
+    const navigate = useNavigate();
+    const { user, orders, showNotification } = useShop();
+    const { settings } = useSettings();
+    const [activeCategory, setActiveCategory] = useState('all');
+    const [searchQuery, setSearchQuery] = useState('');
+    const [expandedFaq, setExpandedFaq] = useState(null);
+    const [view, setView] = useState('home'); // 'home', 'contact', 'ticket', 'history'
+    const [prefilledOrder, setPrefilledOrder] = useState('');
+    const [faqs, setFaqs] = useState(DEFAULT_FAQS);
+    const [isLoadingFaqs, setIsLoadingFaqs] = useState(true);
+    const [contactDetails, setContactDetails] = useState({
+        phone: settings?.phone || '+919921128662',
+        email: settings?.email || 'support@swarnasparsh.com'
+    });
+
+    useEffect(() => {
+        if (settings?.phone || settings?.email) {
+            setContactDetails({
+                phone: settings?.phone || '+919921128662',
+                email: settings?.email || 'support@swarnasparsh.com'
+            });
+        }
+    }, [settings]);
+
+    useEffect(() => {
+        let isMounted = true;
+        const fetchData = async () => {
+            try {
+                const [faqRes, settingsRes] = await Promise.all([
+                    api.get('public/faqs').catch(() => null),
+                    api.get('public/settings').catch(() => null)
+                ]);
+
+                if (isMounted && faqRes?.data) {
+                    const fetchedFaqs = faqRes.data?.data?.faqs || faqRes.data?.faqs;
+                    if (Array.isArray(fetchedFaqs) && fetchedFaqs.length > 0) {
+                        setFaqs(fetchedFaqs);
+                    }
+                }
+
+                if (isMounted && settingsRes?.data) {
+                    const s = settingsRes.data?.data?.settings || settingsRes.data?.settings || settingsRes.data;
+                    const phone = s?.contactPhone || s?.phone || settings?.phone || '+919921128662';
+                    const email = s?.contactEmail || s?.email || settings?.email || 'support@swarnasparsh.com';
+                    setContactDetails({ phone, email });
+                }
+            } catch (err) {
+                console.error("Failed to fetch public help center data:", err);
+            } finally {
+                if (isMounted) setIsLoadingFaqs(false);
+            }
+        };
+        fetchData();
+        return () => { isMounted = false; };
+    }, []);
+
+    const categories = [
+        { id: 'orders', icon: <ShoppingBag className="w-6 h-6" />, title: 'Orders', description: 'Tracking, shipping, and delivery details' },
+        { id: 'payments', icon: <CreditCard className="w-6 h-6" />, title: 'Payments', description: 'Pricing, billing, and payment methods' },
+        { id: 'returns', icon: <RefreshCw className="w-6 h-6" />, title: 'Returns & Refunds', description: 'Policies and process for returns' },
+        { id: 'shopping', icon: <Truck className="w-6 h-6" />, title: 'Shopping', description: 'Product info, stock, and sizing' },
+    ];
+
+    const matchesCategory = (faqCategory, targetCatId) => {
+        if (targetCatId === 'all') return true;
+        if (!faqCategory) return false;
+        const normFaq = faqCategory.toLowerCase().trim();
+        const normTarget = targetCatId.toLowerCase().trim();
+        return normFaq === normTarget || normFaq.includes(normTarget) || normTarget.includes(normFaq);
+    };
+
+    const filteredFaqs = faqs.filter(f => {
+        const matchesSearch = searchQuery
+            ? (f.question?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+               f.answer?.toLowerCase().includes(searchQuery.toLowerCase()))
+            : true;
+        const matchesCat = matchesCategory(f.category, activeCategory);
+        return matchesSearch && matchesCat;
+    });
+
+    const handleNeedHelpWithOrder = (orderId) => {
+        if (!user) {
+            showNotification("Please login to create a support ticket.");
+            return;
+        }
+        setPrefilledOrder(orderId.split('-')[1]);
+        setView('contact');
+    };
+
+    return (
+        <div className="min-h-screen bg-white font-body pb-10 md:pb-20 selection:bg-[#C59B27] selection:text-[#141211]">
+            {/* Back Button */}
+            <div className="container mx-auto px-4 pt-4 mb-2">
+                <button
+                    onClick={() => navigate(-1)}
+                    className="flex items-center gap-2 text-stone-800 hover:text-[#C59B27] transition-all group font-bold uppercase tracking-widest text-[10px]"
+                >
+                    <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+                    Back
+                </button>
+            </div>
+            {/* Hero Section */}
+            <div className="bg-white border-b border-stone-200 py-6 md:py-10 px-4 relative overflow-hidden">
+                {/* Decorative */}
+                <div className="absolute top-0 right-0 w-96 h-96 bg-[#C59B27]/10 rounded-full -mr-48 -mt-48 blur-3xl"></div>
+                <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#C59B27]/5 rounded-full -ml-32 -mb-32 blur-3xl"></div>
+
+                <div className="max-w-4xl mx-auto text-center relative z-10">
+                    <span className="text-[#C59B27] text-[10px] md:text-xs font-bold uppercase tracking-[0.2em] mb-2 block">Support Center</span>
+                    <h1 className="text-2xl md:text-4xl font-serif font-bold mb-4 text-[#141211]">How can we help you?</h1>
+                    <div className="relative max-w-xl mx-auto">
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400 w-4 h-4" />
+                        <input
+                            type="text"
+                            placeholder="Search for topics, questions..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="w-full bg-stone-50 border border-stone-200 text-[#141211] rounded-full py-2.5 px-10 md:py-3 md:px-12 text-sm focus:outline-none focus:ring-2 focus:ring-[#C59B27]/30 focus:border-[#C59B27] shadow-sm transition-all"
+                        />
+                    </div>
+                </div>
+            </div>
+
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-4 md:-mt-8 relative z-20">
+                {/* Category Grid */}
+                <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-2 md:gap-4 mb-4 md:mb-8">
+                    {categories.map((cat) => (
+                        <button
+                            key={cat.id}
+                            onClick={() => {
+                                setActiveCategory(cat.id);
+                                setView('home');
+                            }}
+                            className={`bg-white p-3 md:p-6 rounded-2xl shadow-sm border transition-all text-left group hover:shadow-lg hover:-translate-y-1 ${activeCategory === cat.id && view === 'home' ? 'border-black ring-1 ring-black' : 'border-gray-100'}`}
+                        >
+                            <div className={`w-8 h-8 md:w-10 md:h-10 rounded-xl flex items-center justify-center mb-2 md:mb-4 transition-colors ${activeCategory === cat.id && view === 'home' ? 'bg-[#141211] text-[#E8D198]' : 'bg-gray-50 text-black group-hover:bg-[#FAF8F5] group-hover:text-[#C59B27]'}`}>
+                                {cat.icon}
+                            </div>
+                            <h3 className="text-sm md:text-base font-bold text-black mb-1 font-display">{cat.title}</h3>
+                            <p className="text-xs text-gray-500 leading-relaxed hidden md:block font-serif">{cat.description}</p>
+                        </button>
+                    ))}
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
+                    {/* Main Content Area */}
+                    <div className="lg:col-span-2">
+                        {view === 'home' ? (
+                            <div className="animate-in fade-in slide-in-from-left-4 duration-500">
+                                <div className="flex justify-between items-center mb-4 md:mb-6">
+                                    <h2 className="text-lg md:text-xl font-display font-bold text-black">Frequently Asked Questions</h2>
+                                    {activeCategory !== 'all' && (
+                                        <button onClick={() => setActiveCategory('all')} className="text-gray-500 text-xs md:text-sm font-bold uppercase tracking-widest hover:text-black transition-colors">Clear Filter</button>
+                                    )}
+                                </div>
+                                <div className="space-y-3 md:space-y-4">
+                                    {filteredFaqs.length > 0 ? (
+                                        filteredFaqs.map((faq, idx) => (
+                                            <div key={idx} className="bg-white rounded-2xl border border-gray-100 overflow-hidden transition-all hover:bg-gray-50/50 hover:border-gray-200">
+                                                <details className="group">
+                                                    <summary className="flex items-center justify-between p-4 md:p-6 cursor-pointer list-none">
+                                                        <h4 className="text-sm md:text-base font-bold text-black pr-4">{faq.question}</h4>
+                                                        <ChevronRight className="w-4 h-4 md:w-5 md:h-5 text-gray-400 transition-transform group-open:rotate-90" />
+                                                    </summary>
+                                                    <div className="px-4 pb-4 md:px-6 md:pb-6 text-xs md:text-sm text-gray-600 leading-relaxed animate-in fade-in slide-in-from-top-2 font-serif">
+                                                        {faq.answer}
+                                                    </div>
+                                                </details>
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <div className="text-center py-8 md:py-12 bg-white rounded-2xl border border-dashed border-gray-200">
+                                            <HelpCircle className="w-8 h-8 md:w-12 md:h-12 text-gray-300 mx-auto mb-4" />
+                                            <p className="text-sm md:text-base text-gray-500">No results found for your search.</p>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        ) : (
+                            <SupportForm
+                                onCancel={() => {
+                                    setView('home');
+                                    setPrefilledOrder('');
+                                }}
+                                initialOrder={prefilledOrder}
+                            />
+                        )}
+                    </div>
+
+                    {/* Support Sidebar */}
+                    <div className="space-y-6 md:space-y-8">
+                        {/* Contact Card */}
+                        <div className="bg-black text-white p-6 md:p-8 rounded-3xl shadow-xl relative overflow-hidden">
+                            <div className="relative z-10">
+                                <h3 className="text-xl md:text-2xl font-display font-bold mb-2 md:mb-4">Still need help?</h3>
+                                <p className="text-white/80 mb-6 md:mb-8 text-xs md:text-sm leading-relaxed font-serif">Our support team is available from 10 AM to 7 PM to help you.</p>
+
+                                <div className="space-y-4 md:space-y-6">
+                                    <button
+                                        onClick={() => {
+                                            if (!user) return showNotification("Please login to contact support.");
+                                            setView('contact');
+                                        }}
+                                        className="w-full bg-white text-[#141211] py-3 md:py-4 rounded-xl font-bold flex items-center justify-center gap-2 md:gap-3 hover:bg-[#FAF8F5] hover:text-[#C59B27] transition-all shadow-lg active:scale-95 text-sm md:text-base"
+                                    >
+                                        <MessageCircle className="w-4 h-4 md:w-5 md:h-5 text-[#C59B27]" />
+                                        Contact Support
+                                    </button>
+
+                                    <div className="pt-4 space-y-4">
+                                        <div className="flex items-center gap-4 text-xs md:text-sm font-medium">
+                                            <div className="w-8 h-8 md:w-10 md:h-10 bg-white/10 rounded-full flex items-center justify-center">
+                                                <Phone className="w-4 h-4 md:w-5 md:h-5" />
+                                            </div>
+                                            <div>
+                                                <p className="text-white/60 text-[10px] md:text-xs uppercase tracking-widest font-bold">Call us</p>
+                                                <p>{contactDetails.phone}</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center gap-4 text-xs md:text-sm font-medium">
+                                            <div className="w-8 h-8 md:w-10 md:h-10 bg-white/10 rounded-full flex items-center justify-center">
+                                                <Mail className="w-4 h-4 md:w-5 md:h-5" />
+                                            </div>
+                                            <div>
+                                                <p className="text-white/60 text-[10px] md:text-xs uppercase tracking-widest font-bold">Email us</p>
+                                                <p>{contactDetails.email}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-[#C59B27]/10 rounded-full blur-3xl"></div>
+                        </div>
+
+                        {/* Order Help Card */}
+                        {user && orders.length > 0 && (
+                            <div className="bg-white p-6 md:p-8 rounded-3xl border border-stone-200 shadow-sm">
+                                <h3 className="text-base md:text-lg font-bold text-[#141211] mb-4 md:mb-6 flex items-center gap-2 font-serif">
+                                    <Clock className="w-4 h-4 md:w-5 md:h-5 text-[#C59B27]" />
+                                    Recent Orders
+                                </h3>
+                                <div className="space-y-4">
+                                    {orders.slice(0, 2).map((order) => (
+                                        <div
+                                            key={order.id}
+                                            onClick={() => handleNeedHelpWithOrder(order.id)}
+                                            className="p-3 md:p-4 rounded-xl bg-stone-50 border border-stone-100 group cursor-pointer hover:border-[#C59B27] transition-colors"
+                                        >
+                                            <div className="flex justify-between items-start mb-1">
+                                                <span className="text-xs font-bold text-[#141211]">#{order.id.split('-')[1]}</span>
+                                                <span className="text-[10px] font-bold uppercase tracking-widest text-stone-500">{new Date(order.date).toLocaleDateString()}</span>
+                                            </div>
+                                            <p className="text-[10px] md:text-xs text-stone-600 line-clamp-1 mb-2 md:mb-3">{order.items[0].name}</p>
+                                            <button className="text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-[#C59B27] group-hover:underline group-hover:text-[#141211]">Need help?</button>
+                                        </div>
+                                    ))}
+                                </div>
+                                <Link to="/profile/orders" className="text-xs font-bold text-gray-400 uppercase tracking-widest mt-4 md:mt-6 block text-center hover:text-black transition-colors">View all orders</Link>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export default HelpCenter;

@@ -1,0 +1,86 @@
+{
+  "admin": {
+    "id": "69c3ba00d27da2d8014b3a43",
+    "name": "Phase 10 Admin 1774434816485",
+    "productCode": "PRD-2026-816537824",
+    "huid": "HUID-ADMIN-1774434816485",
+    "supplierInfo": "Admin workshop",
+    "faqs": 2,
+    "stylingTips": true,
+    "careTips": true,
+    "variants": [
+      {
+        "name": "Light",
+        "variantCode": "VAR-PRD2026816537824-01",
+        "weight": 2,
+        "weightUnit": "Grams",
+        "metalPrice": 20,
+        "makingCharge": 100,
+        "diamondPrice": 50,
+        "gst": 68,
+        "finalPrice": 238,
+        "price": 238,
+        "mrp": 238,
+        "stock": 2,
+        "serialCount": 2
+      },
+      {
+        "name": "Heavy",
+        "variantCode": "VAR-PRD2026816537824-02",
+        "weight": 5,
+        "weightUnit": "Grams",
+        "metalPrice": 50,
+        "makingCharge": 100,
+        "diamondPrice": 50,
+        "gst": 80,
+        "finalPrice": 280,
+        "price": 280,
+        "mrp": 280,
+        "stock": 2,
+        "serialCount": 2
+      }
+    ]
+  },
+  "seller": {
+    "id": "69c3ba00d27da2d8014b3a55",
+    "name": "Phase 10 Seller 1774434816485",
+    "productCode": "PRD-2026-816753119",
+    "huid": "HUID-SELLER-1774434816485",
+    "supplierInfo": "Seller atelier",
+    "faqs": 1,
+    "stylingTips": true,
+    "careTips": true,
+    "variants": [
+      {
+        "name": "Slim",
+        "variantCode": "VAR-PRD2026816753119-01",
+        "weight": 1.5,
+        "weightUnit": "Grams",
+        "metalPrice": 15,
+        "makingCharge": 120,
+        "diamondPrice": 0,
+        "gst": 54,
+        "finalPrice": 189,
+        "price": 189,
+        "mrp": 189,
+        "stock": 2,
+        "serialCount": 2
+      },
+      {
+        "name": "Bold",
+        "variantCode": "VAR-PRD2026816753119-02",
+        "weight": 4.5,
+        "weightUnit": "Grams",
+        "metalPrice": 45,
+        "makingCharge": 120,
+        "diamondPrice": 0,
+        "gst": 66,
+        "finalPrice": 231,
+        "price": 231,
+        "mrp": 231,
+        "stock": 2,
+        "serialCount": 2
+      }
+    ]
+  }
+}

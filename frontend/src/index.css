@@ -1,0 +1,540 @@
+/* Google Fonts are loaded via <link> in index.html — do NOT add @import here (render-blocking) */
+@import "tailwindcss";
+
+@theme {
+    --font-display: 'Cinzel', serif;
+    --font-body: 'Lato', sans-serif;
+    --font-serif: 'Cormorant Garamond', serif;
+
+    --color-pure-white: #FFFFFF;
+    --color-primary: #1C1917;
+    --color-obsidian: #141211;
+    --color-dark: #1F1C1A;
+    --color-muted: #706760;
+    --color-gold: #C59B27;
+    --color-gold-light: #E8D198;
+    --color-gold-dark: #A47E1B;
+    --color-wine: #7A1C28;
+    --color-beige: #FAF8F5;
+    --color-champagne: #F5EFEB;
+    --color-border-gold: #E8DFD0;
+}
+
+/* Swarna Sparsh Luxury UI Utilities */
+.luxury-card {
+    background-color: #FFFFFF;
+    border: 1px solid #E8DFD0;
+    box-shadow: 0 4px 20px -2px rgba(20, 18, 17, 0.04);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.luxury-card:hover {
+    border-color: #D4AF37;
+    box-shadow: 0 10px 30px -4px rgba(197, 155, 39, 0.12);
+}
+
+.luxury-btn-primary {
+    background: linear-gradient(135deg, #1C1917 0%, #141211 100%);
+    color: #FFFFFF;
+    border: 1px solid rgba(197, 155, 39, 0.35);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+}
+.luxury-btn-primary:hover {
+    background: linear-gradient(135deg, #2A2522 0%, #1C1917 100%);
+    border-color: #C59B27;
+    box-shadow: 0 6px 20px rgba(197, 155, 39, 0.25);
+    transform: translateY(-1px);
+}
+
+.luxury-btn-gold {
+    background: linear-gradient(135deg, #D4AF37 0%, #C59B27 100%);
+    color: #141211;
+    font-weight: 700;
+    box-shadow: 0 4px 15px rgba(197, 155, 39, 0.25);
+    transition: all 0.3s ease;
+}
+.luxury-btn-gold:hover {
+    background: linear-gradient(135deg, #E5C158 0%, #D4AF37 100%);
+    box-shadow: 0 6px 22px rgba(197, 155, 39, 0.35);
+    transform: translateY(-1px);
+}
+
+.luxury-badge-gold {
+    background: linear-gradient(135deg, #FAF4E6 0%, #F5E8C7 100%);
+    color: #8C6A12;
+    border: 1px solid #E5CE93;
+}
+
+/* Utility classes for font families used across components */
+.font-lato {
+    font-family: 'Lato', sans-serif;
+}
+
+.font-cinzel {
+    font-family: 'Cinzel', serif;
+}
+
+.font-dancing {
+    font-family: 'Dancing Script', cursive;
+}
+
+/* Disable Zooming on Mobile & Horizontal Scroll */
+html,
+body {
+    touch-action: pan-y;
+    -webkit-text-size-adjust: 100%;
+    overflow-x: hidden;
+    width: 100%;
+    min-height: 100%;
+    overflow-y: auto;
+}
+
+#root {
+    min-height: 100%;
+}
+
+/* Admin & Seller app-shell layouts use h-screen + overflow-hidden.
+   Override Lenis's `height: auto` so the fixed layout is not broken. */
+.admin-app-shell,
+.seller-app-shell {
+    height: 100dvh;
+    overflow: hidden;
+}
+
+.admin-app-shell html,
+.admin-app-shell body,
+.seller-app-shell html,
+.seller-app-shell body {
+    height: 100% !important;
+    overflow: hidden !important;
+}
+
+html.lenis,
+html.lenis body {
+    height: auto;
+}
+
+.lenis.lenis-smooth {
+    scroll-behavior: auto !important;
+}
+
+.lenis.lenis-stopped {
+    overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+    pointer-events: none;
+}
+
+/* Custom Animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-50px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes dropdownOpen {
+    0% {
+        opacity: 0;
+        transform: scaleY(0.8) translateY(-20px);
+        filter: blur(10px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scaleY(1) translateY(0);
+        filter: blur(0);
+    }
+}
+
+.animate-fade-in-up {
+    animation: fadeInUp 1s ease-out forwards;
+}
+
+.animate-fade-in-left {
+    animation: fadeInLeft 1s ease-out forwards;
+}
+
+.animate-scale-in {
+    animation: scaleIn 0.8s ease-out forwards;
+}
+
+.animate-dropdown-open {
+    animation: dropdownOpen 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    transform-origin: top center;
+}
+
+.delay-200 {
+    animation-delay: 0.2s;
+}
+
+.delay-400 {
+    animation-delay: 0.4s;
+}
+
+.delay-600 {
+    animation-delay: 0.6s;
+}
+
+.scrollbar-hide::-webkit-scrollbar,
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+.scrollbar-hide,
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(156, 91, 97, 0.2);
+    border-radius: 10px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(156, 91, 97, 0.4);
+}
+
+@keyframes slowZoom {
+    0% {
+        transform: scale(1);
+    }
+
+    100% {
+        transform: scale(1.1);
+    }
+}
+
+.animate-slow-zoom {
+    animation: slowZoom 8s linear infinite alternate;
+}
+
+@keyframes scan {
+
+    0%,
+    100% {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+
+    50% {
+        transform: translateY(100%);
+        opacity: 1;
+    }
+}
+
+.animate-scan {
+    animation: scan 2s linear infinite;
+}
+
+@keyframes loader-pulse {
+
+    0%,
+    100% {
+        transform: scale(0.9);
+        opacity: 0.7;
+        filter: drop-shadow(0 0 0px rgba(156, 91, 97, 0));
+    }
+
+    50% {
+        transform: scale(1.1);
+        opacity: 1;
+        filter: drop-shadow(0 0 20px rgba(156, 91, 97, 0.3));
+    }
+}
+
+.mens-section,
+.mens-section :where(h1, h2, h3, h4, h5, h6, p, span, a, button, label, input, textarea, select, option, li) {
+    font-family: var(--font-serif) !important;
+}
+
+/* ============================================================
+   Flying Cart / Wishlist Animation — shared by ProductCard
+   & ProductDetails. Defined here ONCE to avoid injecting a
+   <style> tag per card on product grids.
+   ============================================================ */
+@keyframes flyToCart {
+    0% {
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+        border-radius: 20px;
+    }
+
+    50% {
+        opacity: 0.8;
+        transform: translate(-50%, -50%) scale(0.4);
+    }
+
+    100% {
+        top: 30px;
+        left: 92%;
+        transform: translate(-50%, -50%) scale(0.1);
+        opacity: 0;
+        border-radius: 50%;
+    }
+}
+
+@keyframes flyToHeart {
+    0% {
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+        border-radius: 20px;
+    }
+
+    50% {
+        opacity: 0.8;
+        transform: translate(-50%, -50%) scale(0.4);
+    }
+
+    100% {
+        top: 30px;
+        left: 88%;
+        transform: translate(-50%, -50%) scale(0.1);
+        opacity: 0;
+        border-radius: 50%;
+    }
+}
+
+.animate-fly-cart {
+    animation: flyToCart 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+.animate-fly-heart {
+    animation: flyToHeart 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+/* Shared utility — moved from ShopByPrice inline style */
+.shadow-glow {
+    box-shadow: 0 0 10px rgba(201, 162, 77, 0.5);
+}
+
+/* Marquee animation — moved from OfferStrip inline style */
+@keyframes marquee-scroll {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
+.animate-marquee-infinite {
+    display: inline-flex;
+    animation: marquee-scroll 25s linear infinite;
+}
+
+.animate-marquee-infinite:hover {
+    animation-play-state: paused;
+}
+
+/* hide-scrollbar — moved from MenExploreCollections inline style */
+.hide-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+.hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* Override autofill styling to match design system colors */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 50px #FDFBF7 inset !important;
+    -webkit-text-fill-color: #1F1F1F !important;
+    transition: background-color 5000s ease-in-out 0s;
+}
+
+/* Rich Text / CMS Content Typography & Layout System */
+.rich-text-content {
+    color: #374151;
+    font-family: inherit;
+    font-size: 0.975rem;
+    line-height: 1.75;
+    word-break: normal !important;
+    overflow-wrap: break-word !important;
+    hyphens: none !important;
+    -webkit-hyphens: none !important;
+}
+
+.rich-text-content h1 {
+    font-size: 2.25rem;
+    font-weight: 700;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    color: #111827;
+    line-height: 1.25;
+}
+
+.rich-text-content h2 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-top: 1.75rem;
+    margin-bottom: 0.875rem;
+    color: #111827;
+    line-height: 1.3;
+}
+
+.rich-text-content h3 {
+    font-size: 1.35rem;
+    font-weight: 700;
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+    color: #111827;
+    line-height: 1.4;
+}
+
+.rich-text-content h4 {
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin-top: 1.25rem;
+    margin-bottom: 0.5rem;
+    color: #111827;
+}
+
+.rich-text-content p {
+    margin-bottom: 1.25rem;
+    line-height: 1.8;
+    word-break: normal !important;
+    overflow-wrap: break-word !important;
+    hyphens: none !important;
+}
+
+.rich-text-content strong,
+.rich-text-content b,
+.rich-text-content em,
+.rich-text-content span,
+.rich-text-content a {
+    display: inline !important;
+    font-weight: 700;
+    color: #111827;
+}
+
+.rich-text-content ul {
+    list-style-type: disc !important;
+    padding-left: 1.75rem !important;
+    margin-top: 0.75rem !important;
+    margin-bottom: 1.25rem !important;
+}
+
+.rich-text-content ol {
+    list-style-type: decimal !important;
+    padding-left: 1.75rem !important;
+    margin-top: 0.75rem !important;
+    margin-bottom: 1.25rem !important;
+}
+
+.rich-text-content li {
+    margin-bottom: 0.5rem !important;
+    padding-left: 0.25rem !important;
+    line-height: 1.7;
+    word-break: normal !important;
+    overflow-wrap: break-word !important;
+    hyphens: none !important;
+}
+
+.rich-text-content li[data-list="bullet"],
+.rich-text-content ul > li {
+    display: list-item !important;
+    list-style-type: disc !important;
+}
+
+.rich-text-content li[data-list="ordered"],
+.rich-text-content ol > li {
+    display: list-item !important;
+    list-style-type: decimal !important;
+}
+
+.rich-text-content li > ul {
+    margin-top: 0.5rem !important;
+    margin-bottom: 0.5rem !important;
+    list-style-type: circle !important;
+}
+
+/* Quill Indent Utilities */
+.rich-text-content .ql-indent-1 {
+    padding-left: 2rem !important;
+}
+.rich-text-content .ql-indent-2 {
+    padding-left: 4rem !important;
+}
+.rich-text-content .ql-indent-3 {
+    padding-left: 6rem !important;
+}
+
+/* Quill Text Alignment Utilities */
+.rich-text-content .ql-align-center {
+    text-align: center !important;
+}
+.rich-text-content .ql-align-right {
+    text-align: right !important;
+}
+.rich-text-content .ql-align-justify {
+    text-align: justify !important;
+}
+
+.rich-text-content blockquote {
+    border-left: 4px solid #C59B27;
+    padding-left: 1.25rem;
+    margin-top: 1.25rem;
+    margin-bottom: 1.25rem;
+    font-style: italic;
+    color: #4B5563;
+    background-color: #FAF8F5;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    border-top-right-radius: 0.5rem;
+    border-bottom-right-radius: 0.5rem;
+}
+
+.rich-text-content a {
+    color: #C59B27;
+    text-decoration: underline;
+    font-weight: 500;
+}
