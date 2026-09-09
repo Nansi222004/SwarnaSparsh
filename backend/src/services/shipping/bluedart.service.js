@@ -78,7 +78,7 @@ class BlueDartProvider extends ShippingProvider {
             ConsigneeState: deliveryAddress.state || "",
           },
           Shipper: {
-            ShipperName: pickupAddress.name || sellerName || "Seller",
+            ShipperName: pickupAddress.name || sellerName || "Swarna Sparsh",
             ShipperAddress1: pickupAddress.address,
             ShipperPincode: pickupAddress.pincode,
             ShipperMobile: pickupAddress.phone,
@@ -134,7 +134,7 @@ class BlueDartProvider extends ShippingProvider {
           AWBNo: awbNumber,
           PickupDate: pickupDate || new Date().toISOString().split("T")[0],
           PickupTime: "1400",
-          ShipperName: pickupAddress ? pickupAddress.name : "Seller",
+          ShipperName: pickupAddress ? pickupAddress.name : "Swarna Sparsh",
           ShipperAddress: pickupAddress ? pickupAddress.address : "",
           ShipperPincode: pickupAddress ? pickupAddress.pincode : "",
           ShipperPhone: pickupAddress ? pickupAddress.phone : "",

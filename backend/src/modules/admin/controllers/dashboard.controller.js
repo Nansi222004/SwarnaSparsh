@@ -1,9 +1,6 @@
 const Order   = require("../../../models/Order");
 const User    = require("../../../models/User");
 const Product = require("../../../models/Product");
-const Seller  = require("../../../models/Seller");
-const Commission     = require("../../../models/Commission");
-const PayoutRequest  = require("../../../models/PayoutRequest");
 const { success, error } = require("../../../utils/apiResponse");
 
 exports.getStats = async (req, res) => {
@@ -14,7 +11,7 @@ exports.getStats = async (req, res) => {
     const totalOrders = await Order.countDocuments();
     const totalUsers = await User.countDocuments({ role: "user" });
     const totalProducts = await Product.countDocuments();
-    const totalSellers = await Seller.countDocuments();
+    const totalSellers = 0;
 
     // 2. Revenue Aggregation
     const revenueData = await Order.aggregate([
@@ -81,28 +78,6 @@ exports.getStats = async (req, res) => {
       ]);
     }
 
-    // 6. Admin commission earnings
-    const [commissionEarningsData] = await Commission.aggregate([
-      {
-        $match: {
-          type:   { $in: ["accrual", "backfill"] },
-          status: "confirmed",
-        },
-      },
-      {
-        $group: {
-          _id:  null,
-          totalCommissionsEarned: { $sum: "$commissionAmount" },
-        },
-      },
-    ]);
-    const totalCommissionsEarned = Math.round(commissionEarningsData?.totalCommissionsEarned || 0);
-
-    // 7. Pending payout requests count (action required)
-    const pendingPayoutRequests = await PayoutRequest.countDocuments({
-      status: { $in: ["PENDING", "PROCESSING"] },
-    });
-
     return success(res, {
       summary: { totalOrders, totalUsers, totalProducts, totalRevenue, totalSellers },
       pendingOrders,
@@ -111,9 +86,8 @@ exports.getStats = async (req, res) => {
       salesOverTime,
       statusDistribution,
       categoryStats,
-      // Admin earnings & wallet alerts
-      totalCommissionsEarned,
-      pendingPayoutRequests,
+      totalCommissionsEarned: 0,
+      pendingPayoutRequests: 0,
     }, "Dashboard stats retrieved");
 
   } catch (err) { return error(res, err.message); }

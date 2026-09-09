@@ -138,7 +138,7 @@ const MetalPricing = () => {
 
       <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-4 space-y-6">
         <div className="rounded-2xl border border-amber-100 bg-amber-50 p-4 text-sm text-amber-900">
-          Set admin metal pricing per 10 grams. These rates apply only to admin-owned products. Seller products continue using seller-specific metal rates from the seller module. Global GST is managed separately in Tax Settings, and final product prices still include making charge, hidden charge, GST, and optional payment gateway charge based on each product configuration.
+          Configure store metal pricing per 10 grams. These centralized rates apply across the entire Swarna Sparsh catalog. Global GST is managed separately in Tax Settings, and final product prices include making charges, GST, and payment gateway charge configuration.
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">

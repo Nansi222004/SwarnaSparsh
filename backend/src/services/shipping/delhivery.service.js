@@ -82,7 +82,7 @@ class DelhiveryProvider extends ShippingProvider {
             return_add: pickupAddress.address,
             return_state: pickupAddress.state,
             return_country: "India",
-            return_name: pickupAddress.name || sellerName || "Seller",
+            return_name: pickupAddress.name || sellerName || "Swarna Sparsh",
             weight: pkg.weight || 500,
             quantity: items ? items.reduce((sum, i) => sum + (i.quantity || 1), 0) : 1,
             shipment_width: pkg.breadth || 10,
@@ -90,7 +90,7 @@ class DelhiveryProvider extends ShippingProvider {
             shipment_length: pkg.length || 10,
             products_desc: items ? items.map(i => i.name).join(", ") : "Jewellery",
             hsn_code: "",
-            seller_name: sellerName || pickupAddress.name || "Seller",
+            seller_name: sellerName || pickupAddress.name || "Swarna Sparsh",
             pickup_location: {
               name: this.pickupName,
               add: pickupAddress.address,

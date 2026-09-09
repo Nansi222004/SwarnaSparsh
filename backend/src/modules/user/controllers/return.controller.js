@@ -3,9 +3,6 @@ const Replacement = require("../../../models/Replacement");
 const Order = require("../../../models/Order");
 const { generateReturnId } = require("../../../utils/generateId");
 const { success, error } = require("../../../utils/apiResponse");
-const {
-  createSellerNotification,
-} = require("../../../services/sellerNotificationService");
 const { enqueueEmail } = require("../../../services/emailService");
 const emailTemplates = require("../../../services/emailTemplates");
 
@@ -100,17 +97,20 @@ exports.requestReturn = async (req, res) => {
     });
     await order.save();
 
-    // Notify seller (if this item belongs to a seller listing).
-    if (item?.sellerId) {
-      await createSellerNotification({
-        sellerId: item.sellerId,
-        title: "Return requested",
-        message: `Return requested for order ${order.orderId || order._id}. Item: ${item.name || "Order item"}.`,
+    // Centralized Admin notification for return request
+    try {
+      const Notification = require("../../../models/Notification");
+      await Notification.create({
+        role: "admin",
+        isAdmin: true,
+        title: "Return Requested",
+        message: `Return requested for order #${order.orderId || order._id}. Item: ${item.name || "Order item"}.`,
         type: "RETURN",
         priority: "High",
-        link: `/seller/return-details/${returnRequest._id}`,
+        link: `/admin/returns`,
+        isRead: false,
       });
-    }
+    } catch (_e) {}
 
     // -- Email: return request confirmation to customer --
     const reqUser = await require("../../../models/User")

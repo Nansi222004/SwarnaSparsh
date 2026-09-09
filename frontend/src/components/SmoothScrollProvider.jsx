@@ -5,12 +5,12 @@ import { destroyLenis, initLenis } from '../lib/lenis';
 const SmoothScrollProvider = () => {
     const location = useLocation();
 
-    // Disable Lenis on admin/seller routes — those layouts use h-screen overflow-hidden
+    // Disable Lenis on admin routes — those layouts use h-screen overflow-hidden
     // and Lenis's `html { height: auto }` CSS rule would break the fixed header/sidebar.
-    const isAppShell = location.pathname.startsWith('/admin') || location.pathname.startsWith('/seller');
+    const isAppShell = location.pathname.startsWith('/admin');
 
     useEffect(() => {
-        // Always clean up Lenis classes when entering admin/seller routes
+        // Always clean up Lenis classes when entering admin routes
         if (isAppShell) {
             destroyLenis();
             document.documentElement.classList.remove('lenis');

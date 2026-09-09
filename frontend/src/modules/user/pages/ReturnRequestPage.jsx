@@ -246,7 +246,7 @@ const ReturnRequestPage = () => {
                                 <p className="text-xs text-amber-700 leading-relaxed mb-4">
                                     {requiresVoidTagPhoto
                                         ? <>To prevent return fraud, this item must have its <strong>Security Void Tag</strong> attached and unbroken. Please upload a clear photo of the intact tag as shown in the example.</>
-                                        : <>If this item was delivered with a seller security seal, upload a clear photo of the intact tag to speed up review.</>}
+                                        : <>If this item was delivered with a Swarna Sparsh security seal or tamper-evident tag, upload a clear photo of the intact tag to speed up review.</>}
                                 </p>
                                 {requiresVoidTagPhoto && selectedOrderItem?.voidTagId && (
                                     <p className="text-[11px] font-bold text-amber-900 mb-4">

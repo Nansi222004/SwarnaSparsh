@@ -6,6 +6,15 @@ const shippingController = require("../controllers/shipping.controller");
 // Reports must be before /:shipmentId to avoid route conflict
 router.get("/reports", shippingController.getReports);
 
+// Check route serviceability
+router.post("/serviceability", shippingController.checkServiceability);
+
+// Get shipments for a specific order
+router.get("/orders/:orderId", shippingController.getOrderShipments);
+
+// Create shipment for an order
+router.post("/orders/:orderId/create", shippingController.createShipment);
+
 // List all shipments
 router.get("/", shippingController.getAllShipments);
 
@@ -14,6 +23,9 @@ router.get("/:shipmentId", shippingController.getShipmentDetail);
 
 // Track shipment
 router.post("/:shipmentId/track", shippingController.trackShipment);
+
+// Request courier pickup
+router.post("/:shipmentId/pickup", shippingController.requestPickup);
 
 // Cancel shipment
 router.post("/:shipmentId/cancel", shippingController.cancelShipment);

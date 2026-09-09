@@ -1,5 +1,4 @@
 const { error } = require("../utils/apiResponse");
-const Seller = require("../models/Seller");
 
 const requireRole = (...args) => async (req, res, next) => {
   try {
@@ -12,21 +11,6 @@ const requireRole = (...args) => async (req, res, next) => {
 
     if (!req.user || !roles.includes(req.user.role)) {
       return error(res, "Forbidden. Insufficient permissions.", 403, "FORBIDDEN");
-    }
-
-    if (req.user.role === "seller" && !options.allowUnapproved) {
-      const seller = await Seller.findById(req.user.userId).select("status");
-      if (!seller) {
-        return error(res, "Seller account not found.", 401, "UNAUTHENTICATED");
-      }
-
-      if (seller.status !== "APPROVED") {
-        const message =
-          seller.status === "REJECTED"
-            ? "Seller account is rejected. Contact support for assistance."
-            : "Seller account is pending approval.";
-        return error(res, message, 403, "SELLER_NOT_APPROVED");
-      }
     }
 
     next();

@@ -1,13 +1,13 @@
 import React, { useRef, useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { ChevronRight, ChevronLeft, Sparkles } from 'lucide-react';
+import { ArrowRight, Sparkles } from 'lucide-react';
 import { useHomepageCms } from '../hooks/useHomepageCms';
 import { resolveLegacyCmsAsset } from '../utils/legacyCmsAssets';
-import { handleImageError, IMAGE_FALLBACKS } from '../../../utils/imageFallbacks';
+import { handleImageError } from '../../../utils/imageFallbacks';
 
-// Import thematic assets
-import bannerImg from '@assets/banner_elegant_silver.png';
+// Import thematic assets & new atelier editorial fallback
+import bannerImg from '@assets/pure_silver_atelier_hero.jpg';
 import themeInfinity from '@assets/theme_infinity.png';
 import themeKnots from '@assets/theme_knots.png';
 import themeDrops from '@assets/theme_drops.png';
@@ -138,42 +138,65 @@ const SilverCollectionSection = () => {
     return (
         <section className="w-full bg-[#FAF8F5] py-10 md:py-20 overflow-hidden font-sans border-t border-[#E8DFD0]/60">
             <div className="max-w-[1440px] mx-auto px-4 md:px-8">
-                {/* ── EDITORIAL COLLECTION BANNER ── */}
+                {/* ── EDITORIAL ATELIER SHOWCASE BANNER ── */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    className="relative w-full rounded-3xl overflow-hidden mb-8 md:mb-14 shadow-xl group border border-[#C59B27]/30 cursor-pointer bg-[#141211]"
+                    className="relative w-full rounded-2xl md:rounded-3xl overflow-hidden mb-10 md:mb-16 shadow-xl border border-[#C59B27]/25 bg-[#171513] group cursor-pointer"
                     onClick={() => navigate('/shop?metal=silver')}
                 >
-                    <div className="grid grid-cols-1 md:grid-cols-12 min-h-[220px] md:min-h-[340px]">
-                        {/* Banner Image */}
-                        <div className="md:col-span-7 relative overflow-hidden h-[180px] md:h-full bg-stone-900">
+                    <div className="grid grid-cols-1 md:grid-cols-12 items-stretch min-h-[340px] md:min-h-[400px] lg:min-h-[440px]">
+                        {/* 1. Left Visual Area (58–60% on Desktop) */}
+                        <div className="md:col-span-7 relative overflow-hidden h-[240px] sm:h-[300px] md:h-full bg-[#171513]">
                             <img
                                 src={bannerData.image}
-                                alt="Silver Collection"
+                                alt={bannerData.title}
+                                loading="lazy"
+                                decoding="async"
                                 onError={(e) => handleImageError(e, bannerImg)}
-                                className="w-full h-full object-cover transition-transform duration-[2s] ease-out group-hover:scale-105"
+                                className="w-full h-full object-cover object-center transition-transform duration-1000 ease-out group-hover:scale-[1.02]"
                             />
-                            <div className="absolute inset-y-0 right-0 w-28 bg-gradient-to-l from-[#141211] to-transparent hidden md:block pointer-events-none" />
+                            {/* Seamless soft editorial gradient dissolving image into warm charcoal panel */}
+                            <div className="absolute inset-y-0 right-0 w-40 bg-gradient-to-l from-[#171513] via-[#171513]/70 to-transparent hidden md:block pointer-events-none" />
+                            {/* Mobile bottom vignette for comfortable text transition */}
+                            <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#171513] to-transparent md:hidden pointer-events-none" />
                         </div>
 
-                        {/* Banner Typography Panel */}
-                        <div className="md:col-span-5 flex flex-col items-center justify-center p-6 md:p-10 text-center relative z-10 bg-[#141211]">
-                            <div className="inline-flex items-center gap-2 mb-2 text-[#C59B27] text-[9px] md:text-[10px] uppercase font-bold tracking-[0.3em]">
-                                <Sparkles className="w-3 h-3" />
+                        {/* 2. Right Content Panel (40–42% on Desktop) */}
+                        <div className="md:col-span-5 flex flex-col justify-center px-6 py-8 sm:px-8 sm:py-10 md:px-10 md:py-12 lg:px-14 relative z-10 bg-[#171513] text-left">
+                            {/* Subtle Warm Luxury Ambient Glow */}
+                            <div className="absolute -top-16 -right-16 w-52 h-52 rounded-full bg-[#C59B27]/5 blur-3xl pointer-events-none" />
+
+                            {/* Eyebrow */}
+                            <div className="inline-flex items-center gap-2 mb-2 md:mb-3 text-[#C59B27] text-[9.5px] md:text-[10.5px] uppercase font-bold tracking-[0.3em]">
+                                <Sparkles className="w-3 h-3 text-[#C59B27]" />
                                 <span>Sterling Masterpieces</span>
                             </div>
-                            <h3 className="font-serif text-2xl md:text-4xl text-[#FAF8F5] font-normal tracking-tight mb-2">
+
+                            {/* Heading */}
+                            <h3 className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-[2.6rem] text-[#FAF8F5] font-normal tracking-tight leading-[1.18] mb-2 md:mb-3">
                                 {bannerData.title}
                             </h3>
-                            <div className="w-12 h-[1.5px] bg-[#C59B27] my-2" />
-                            <p className="text-stone-300 font-sans text-xs md:text-sm font-light tracking-wider uppercase mb-4">
+
+                            {/* Thin Gold Decorative Line */}
+                            <div className="w-10 h-[1.5px] bg-[#C59B27] my-2 md:my-3 rounded-full" />
+
+                            {/* Subtitle / Description */}
+                            <p className="text-stone-300 font-sans text-xs md:text-sm font-light tracking-wide leading-relaxed mb-6 md:mb-8 max-w-[360px]">
                                 {bannerData.subtitle}
                             </p>
-                            <span className="inline-flex items-center gap-1.5 text-[10px] md:text-xs font-bold uppercase tracking-[0.2em] text-[#E8D198] group-hover:text-[#C59B27] transition-colors border-b border-[#C59B27]/40 pb-0.5">
-                                {bannerData.footerText} <ChevronRight className="w-3.5 h-3.5" />
-                            </span>
+
+                            {/* Refined Editorial Text-Link CTA */}
+                            <div>
+                                <div className="inline-flex items-center gap-2.5 text-xs md:text-sm font-semibold uppercase tracking-[0.2em] text-[#E5C378] group/cta relative pb-1">
+                                    <span className="relative">
+                                        {bannerData.footerText}
+                                        <span className="absolute left-0 bottom-0 w-full h-[1px] bg-[#C59B27]/60 group-hover/cta:bg-[#DFB750] group-hover/cta:w-[calc(100%+4px)] transition-all duration-300" />
+                                    </span>
+                                    <ArrowRight className="w-3.5 h-3.5 transition-transform duration-300 ease-out group-hover/cta:translate-x-1.5 text-[#C59B27]" />
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </motion.div>

@@ -102,7 +102,7 @@ const AdminShipments = () => {
             <div className="w-10 h-10 bg-gradient-to-br from-[#3E2723] to-[#5D4037] rounded-xl flex items-center justify-center"><Truck className="w-5 h-5 text-white" /></div>
             Shipping Management
           </h1>
-          <p className="text-sm text-gray-500 mt-1">Monitor all seller shipments across couriers</p>
+          <p className="text-sm text-gray-500 mt-1">Monitor all store shipments across couriers</p>
         </div>
         <button onClick={fetchReports} className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-50 text-indigo-700 text-sm font-bold hover:bg-indigo-100 border border-indigo-200">
           <BarChart3 className="w-4 h-4" /> Reports
@@ -170,7 +170,7 @@ const AdminShipments = () => {
               <div className="space-y-2">{reports.failedDeliveries.map(f => (
                 <div key={f._id} className="flex items-center justify-between px-4 py-2 rounded-xl bg-red-50 border border-red-100 text-sm">
                   <span className="font-mono font-bold text-red-700">{f.awbNumber}</span>
-                  <span className="text-xs text-gray-500">{f.sellerId?.shopName} • {COURIER_LABELS[f.courier]}</span>
+                  <span className="text-xs text-gray-500">{COURIER_LABELS[f.courier]}</span>
                 </div>
               ))}</div></div>
           )}
@@ -187,7 +187,7 @@ const AdminShipments = () => {
           <div className="p-6 grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
             <div><p className="text-[10px] uppercase tracking-wider text-gray-400 font-bold mb-1">AWB</p><p className="text-sm font-bold font-mono">{selectedShipment.awbNumber}</p></div>
             <div><p className="text-[10px] uppercase tracking-wider text-gray-400 font-bold mb-1">Courier</p><p className="text-sm font-bold capitalize">{selectedShipment.courier}</p></div>
-            <div><p className="text-[10px] uppercase tracking-wider text-gray-400 font-bold mb-1">Seller</p><p className="text-sm font-bold">{selectedShipment.sellerId?.shopName || 'N/A'}</p></div>
+            <div><p className="text-[10px] uppercase tracking-wider text-gray-400 font-bold mb-1">Origin</p><p className="text-sm font-bold">{selectedShipment.pickupLocationId?.name || selectedShipment.sellerId?.shopName || 'Store Warehouse'}</p></div>
             <div><p className="text-[10px] uppercase tracking-wider text-gray-400 font-bold mb-1">Order</p><p className="text-sm font-bold">{selectedShipment.orderId?.orderId || 'N/A'}</p></div>
           </div>
           <div className="px-6 pb-4 flex gap-2 flex-wrap">
@@ -229,7 +229,7 @@ const AdminShipments = () => {
             <div className="overflow-x-auto">
               <table className="w-full text-left">
                 <thead><tr className="bg-gray-50/50 border-b border-gray-100">
-                  {['AWB','Order','Courier','Seller','Status','Created','Actions'].map(h => (
+                  {['AWB','Order','Courier','Origin','Status','Created','Actions'].map(h => (
                     <th key={h} className="px-4 py-3 text-[10px] font-bold uppercase tracking-wider text-gray-500">{h}</th>
                   ))}
                 </tr></thead>
@@ -239,7 +239,7 @@ const AdminShipments = () => {
                       <td className="px-4 py-3 text-sm font-bold font-mono text-gray-900">{s.awbNumber || '—'}</td>
                       <td className="px-4 py-3"><button onClick={() => navigate(`/admin/orders/${s.orderId?._id || s.orderId}`)} className="text-sm text-[#3E2723] font-semibold hover:underline">{s.orderId?.orderId || 'View'}</button></td>
                       <td className="px-4 py-3 text-sm text-gray-700">{COURIER_LABELS[s.courier] || s.courier}</td>
-                      <td className="px-4 py-3 text-xs text-gray-600">{s.sellerId?.shopName || s.sellerId?.fullName || '—'}</td>
+                      <td className="px-4 py-3 text-xs text-gray-600">{s.pickupLocationId?.name || s.sellerId?.shopName || 'Store Warehouse'}</td>
                       <td className="px-4 py-3"><span className={`inline-flex px-2.5 py-1 rounded-full text-[10px] font-bold uppercase border ${STATUS_COLORS[s.status]}`}>{STATUS_LABELS[s.status] || s.status}</span></td>
                       <td className="px-4 py-3 text-xs text-gray-500">{new Date(s.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })}</td>
                       <td className="px-4 py-3">

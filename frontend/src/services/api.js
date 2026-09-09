@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '/api' : 'http://localhost:5000/api');
 
 const api = axios.create({
   baseURL: API_URL,
@@ -14,29 +14,23 @@ const clearStoredSession = () => {
   if (path.startsWith('/admin')) {
     localStorage.removeItem('sands_admin_token');
     localStorage.removeItem('sands_admin_user');
-  } else if (path.startsWith('/seller')) {
-    localStorage.removeItem('sands_seller_token');
-    localStorage.removeItem('sands_seller_user');
   } else {
     localStorage.removeItem('sands_token');
     localStorage.removeItem('sands_current_user');
   }
-  // Clean up legacy keys
+  // Clean up any obsolete/legacy keys
   localStorage.removeItem('sellerToken');
   localStorage.removeItem('sellerAuth');
   localStorage.removeItem('currentSeller');
+  localStorage.removeItem('sands_seller_token');
+  localStorage.removeItem('sands_seller_user');
 };
 
 // Request interceptor to add JWT token
 api.interceptors.request.use(
   (config) => {
     const path = window.location.pathname;
-    let tokenKey = 'sands_token';
-    if (path.startsWith('/admin')) {
-      tokenKey = 'sands_admin_token';
-    } else if (path.startsWith('/seller')) {
-      tokenKey = 'sands_seller_token';
-    }
+    const tokenKey = path.startsWith('/admin') ? 'sands_admin_token' : 'sands_token';
 
     const token = localStorage.getItem(tokenKey);
     if (token && token !== 'undefined' && token !== 'null') {

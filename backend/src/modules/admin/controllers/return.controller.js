@@ -10,10 +10,6 @@ const {
   isSerializedVariant,
   restockSerializedUnits,
 } = require("../../../utils/inventorySync");
-const {
-  reverseCommissionsForOrder,
-  adjustCommissionsForReturn,
-} = require("../../../services/commissionService");
 const { createNotification } = require("../../../services/notificationService");
 
 const VALID_STATUSES = [
@@ -452,22 +448,6 @@ exports.updateReturnStatus = async (req, res) => {
             },
           },
         );
-      }
-
-      // ── Platform commission adjustment ──
-      // Fire only when the refund actually completes.
-      if (nextStatus === "Refunded") {
-        try {
-          await adjustCommissionsForReturn(order._id, returnReq, {
-            session: null,
-            safe: true,
-          });
-        } catch (e) {
-          console.error(
-            "[Commission] Return-refund adjustment error:",
-            e.message,
-          );
-        }
       }
     }
 

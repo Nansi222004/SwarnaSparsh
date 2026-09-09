@@ -1,5 +1,4 @@
 const Banner = require("../../../models/Banner");
-const Blog = require("../../../models/Blog");
 const FAQ = require("../../../models/FAQ");
 const slugify = require("../../../utils/slugify");
 const { deleteFromCloudinary } = require("../../../utils/cloudinaryUtils");
@@ -157,54 +156,6 @@ exports.deleteBanner = async (req, res) => {
       await deleteFromCloudinary(banner.image).catch(() => null);
     }
     return success(res, {}, "Banner deleted");
-  } catch (err) { return error(res, err.message); }
-};
-
-// ── Blogs (Admin CRUD) ──────────────────────────────────────────────────────
-exports.createBlog = async (req, res) => {
-  try {
-    const data = req.body;
-    data.slug = data.slug ? slugify(data.slug) : slugify(data.title);
-    if (req.file) data.image = req.file.path;
-    data.author = req.user.name || "Admin";
-
-    const blog = await Blog.create(data);
-    return success(res, { blog }, "Blog published", 201);
-  } catch (err) { return error(res, err.message); }
-};
-
-exports.getBlogs = async (req, res) => {
-  try {
-    const blogs = await Blog.find().sort({ createdAt: -1 });
-    return success(res, { blogs });
-  } catch (err) { return error(res, err.message); }
-};
-
-exports.getBlogDetail = async (req, res) => {
-  try {
-    const blog = await Blog.findById(req.params.id);
-    if (!blog) return error(res, "Blog not found", 404);
-    return success(res, { blog });
-  } catch (err) { return error(res, err.message); }
-};
-
-exports.updateBlog = async (req, res) => {
-  try {
-    const data = req.body;
-    if (data.title && !data.slug) data.slug = slugify(data.title);
-    else if (data.slug) data.slug = slugify(data.slug);
-    
-    if (req.file) data.image = req.file.path;
-    const blog = await Blog.findByIdAndUpdate(req.params.id, data, { new: true });
-    if (!blog) return error(res, "Blog not found", 404);
-    return success(res, { blog }, "Blog updated");
-  } catch (err) { return error(res, err.message); }
-};
-
-exports.deleteBlog = async (req, res) => {
-  try {
-    await Blog.findByIdAndDelete(req.params.id);
-    return success(res, {}, "Blog deleted");
   } catch (err) { return error(res, err.message); }
 };
 

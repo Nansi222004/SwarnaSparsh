@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Eye, Trash2, Mail, Calendar, Inbox, AlertCircle, ShoppingBag, FileText, CheckCircle2, Send, Clock, User, MessageSquare, X, Headphones, Paperclip } from 'lucide-react';
+import { Trash2, Inbox, AlertCircle, FileText, CheckCircle2, Send, User, Headphones, X, Paperclip } from 'lucide-react';
 import PageHeader from '../components/common/PageHeader';
 import DataTable from '../components/common/DataTable';
 import AdminStatsCard from '../components/AdminStatsCard';
@@ -9,7 +9,6 @@ import toast from 'react-hot-toast';
 
 const SupportManagement = () => {
     const { socket } = useSocket();
-    const [activeTab, setActiveTab] = useState('user'); // 'user' or 'seller'
     const [tickets, setTickets] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
@@ -59,8 +58,8 @@ const SupportManagement = () => {
             setStagedAttachments(prev => [...prev, attachment]);
             toast.success("File uploaded successfully");
         } catch (err) {
-            console.error(err);
-            toast.error("Upload failed: " + (err.message || "Unknown error"));
+            console.error("Upload error:", err);
+            toast.error(err.response?.data?.message || err.message || "Failed to upload file");
         } finally {
             setIsUploading(false);
             setUploadProgress(0);
@@ -68,8 +67,8 @@ const SupportManagement = () => {
         }
     };
 
-    const removeStagedAttachment = (idx) => {
-        setStagedAttachments(prev => prev.filter((_, i) => i !== idx));
+    const removeStagedAttachment = (index) => {
+        setStagedAttachments(prev => prev.filter((_, i) => i !== index));
     };
 
     const renderAttachments = (attachments) => {
@@ -103,8 +102,7 @@ const SupportManagement = () => {
     const fetchTickets = async () => {
         setIsLoading(true);
         try {
-            const endpoint = activeTab === 'user' ? 'admin/support' : 'admin/support/seller';
-            const res = await api.get(endpoint);
+            const res = await api.get('admin/support');
             if (res.data.success) {
                 setTickets(res.data.data?.tickets || res.data.tickets || []);
             }
@@ -118,34 +116,21 @@ const SupportManagement = () => {
 
     useEffect(() => {
         fetchTickets();
-    }, [activeTab]);
+    }, []);
 
     // Socket listeners for real-time support updates
     useEffect(() => {
         if (!socket) return;
 
         const handleNewTicket = (newTicket) => {
-            if (activeTab === 'user') {
-                setTickets(prev => [newTicket, ...prev]);
-                toast.success(`New customer support ticket created: "${newTicket.subject}"`, {
-                    icon: '🎫',
-                    duration: 5000
-                });
-            }
-        };
-
-        const handleNewSellerTicket = (newTicket) => {
-            if (activeTab === 'seller') {
-                setTickets(prev => [newTicket, ...prev]);
-                toast.success(`New merchant support ticket created: "${newTicket.subject}"`, {
-                    icon: '🎫',
-                    duration: 5000
-                });
-            }
+            setTickets(prev => [newTicket, ...prev]);
+            toast.success(`New customer support ticket created: "${newTicket.subject}"`, {
+                icon: '🎫',
+                duration: 5000
+            });
         };
 
         const handleSupportMessage = (data) => {
-            if (activeTab !== 'user') return;
             const { _id, reply, status } = data;
 
             setTickets(prev => prev.map(t => {
@@ -178,48 +163,7 @@ const SupportManagement = () => {
             });
 
             if (reply.from === 'user') {
-                toast(`User reply on ticket #${data.ticketId}: "${reply.text.substring(0, 30)}..."`, {
-                    icon: '💬',
-                    duration: 5000
-                });
-            }
-        };
-
-        const handleSellerSupportMessage = (data) => {
-            if (activeTab !== 'seller') return;
-            const { _id, reply, status } = data;
-
-            setTickets(prev => prev.map(t => {
-                if (t._id === _id) {
-                    const exists = t.replies.some(r => r.text === reply.text && r.from === reply.from && Math.abs(new Date(r.date) - new Date(reply.date)) < 2000);
-                    if (exists) return t;
-
-                    return {
-                        ...t,
-                        status,
-                        replies: [...t.replies, reply],
-                        updatedAt: new Date().toISOString()
-                    };
-                }
-                return t;
-            }));
-
-            setSelectedTicket(prev => {
-                if (prev && prev._id === _id) {
-                    const exists = prev.replies.some(r => r.text === reply.text && r.from === reply.from && Math.abs(new Date(r.date) - new Date(reply.date)) < 2000);
-                    if (exists) return prev;
-
-                    return {
-                        ...prev,
-                        status,
-                        replies: [...prev.replies, reply]
-                    };
-                }
-                return prev;
-            });
-
-            if (reply.from === 'seller') {
-                toast(`Merchant reply on ticket #${data.ticketId}: "${reply.text.substring(0, 30)}..."`, {
+                toast(`Customer reply on ticket #${data.ticketId}: "${reply.text.substring(0, 30)}..."`, {
                     icon: '💬',
                     duration: 5000
                 });
@@ -227,17 +171,13 @@ const SupportManagement = () => {
         };
 
         socket.on('support_ticket_created', handleNewTicket);
-        socket.on('seller_support_ticket_created', handleNewSellerTicket);
         socket.on('support_message', handleSupportMessage);
-        socket.on('seller_support_message', handleSellerSupportMessage);
 
         return () => {
             socket.off('support_ticket_created', handleNewTicket);
-            socket.off('seller_support_ticket_created', handleNewSellerTicket);
             socket.off('support_message', handleSupportMessage);
-            socket.off('seller_support_message', handleSellerSupportMessage);
         };
-    }, [socket, activeTab]);
+    }, [socket]);
 
     // Scroll to bottom of replies when selected ticket changes or gets replies
     useEffect(() => {
@@ -251,9 +191,7 @@ const SupportManagement = () => {
         if ((!adminReplyText.trim() && stagedAttachments.length === 0) || !selectedTicket) return;
 
         try {
-            const endpoint = activeTab === 'user' 
-                ? `admin/support/${selectedTicket._id}/reply`
-                : `admin/support/seller/${selectedTicket._id}/reply`;
+            const endpoint = `admin/support/${selectedTicket._id}/reply`;
             const res = await api.post(endpoint, {
                 message: adminReplyText,
                 status: ticketStatusUpdate,
@@ -276,9 +214,7 @@ const SupportManagement = () => {
 
     const handleStatusChange = async (id, newStatus) => {
         try {
-            const endpoint = activeTab === 'user'
-                ? `admin/support/${id}/reply`
-                : `admin/support/seller/${id}/reply`;
+            const endpoint = `admin/support/${id}/reply`;
             const res = await api.post(endpoint, {
                 message: `Ticket status changed to ${newStatus} by admin.`,
                 status: newStatus
@@ -295,10 +231,9 @@ const SupportManagement = () => {
     };
 
     const filteredTickets = tickets.filter(t => {
-        const nameToSearch = activeTab === 'seller' ? t.sellerName : t.userName;
         const matchesSearch = 
             t.subject?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            nameToSearch?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            t.userName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
             t.ticketId?.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesStatus = statusFilter === 'All' || t.status === statusFilter;
         return matchesSearch && matchesStatus;
@@ -320,14 +255,14 @@ const SupportManagement = () => {
             )
         },
         {
-            header: activeTab === 'seller' ? 'Seller' : 'User',
+            header: 'Customer',
             render: (item) => (
                 <div>
                     <p className="text-xs font-bold text-gray-900">
-                        {activeTab === 'seller' ? item.sellerName : (item.userName || 'Customer')}
+                        {item.userName || 'Customer'}
                     </p>
                     <p className="text-[10px] text-gray-500">
-                        {activeTab === 'seller' ? item.sellerEmail : item.userEmail}
+                        {item.userEmail || ''}
                     </p>
                 </div>
             )
@@ -363,68 +298,47 @@ const SupportManagement = () => {
             )
         },
         {
+            header: 'Replies',
+            align: 'center',
+            render: (item) => (
+                <span className="text-xs font-bold text-gray-600 bg-gray-100 px-2.5 py-1 rounded-full">
+                    {item.replies?.length || 0}
+                </span>
+            )
+        },
+        {
             header: 'Actions',
             align: 'right',
             render: (item) => (
-                <div className="flex items-center justify-end gap-2">
-                    <button
-                        onClick={() => {
-                            setSelectedTicket(item);
-                            setTicketStatusUpdate(item.status === 'Open' ? 'In Progress' : item.status);
-                        }}
-                        className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-[#3E2723] hover:bg-[#3E2723]/5 rounded-lg transition-all cursor-pointer"
-                        title="View & Reply"
-                    >
-                        <MessageSquare className="w-4 h-4" />
-                    </button>
-                </div>
+                <button
+                    onClick={() => {
+                        setSelectedTicket(item);
+                        setTicketStatusUpdate(item.status === 'Closed' ? 'Closed' : item.status);
+                    }}
+                    className="p-1.5 text-gray-400 hover:text-black hover:bg-gray-50 rounded-lg transition-colors cursor-pointer"
+                    title="View & Reply"
+                >
+                    <Send className="w-4 h-4 text-[#3E2723]" />
+                </button>
             )
         }
     ];
 
     const filters = [
         {
-            options: [
-                { label: 'All', value: 'All' },
-                { label: 'Open', value: 'Open' },
-                { label: 'In Progress', value: 'In Progress' },
-                { label: 'Resolved', value: 'Resolved' },
-                { label: 'Closed', value: 'Closed' }
-            ],
-            onChange: (val) => setStatusFilter(val)
+            name: 'Status',
+            options: ['All', 'Open', 'In Progress', 'Resolved', 'Closed'],
+            value: statusFilter,
+            onChange: (e) => setStatusFilter(e.target.value)
         }
     ];
 
     return (
-        <div className="max-w-[1400px] mx-auto w-full flex flex-col h-[calc(100vh-80px)] md:h-[calc(100vh-100px)] animate-in fade-in duration-500 pb-10">
+        <div className="p-8 max-w-7xl mx-auto flex flex-col min-h-screen">
             <PageHeader
-                title="Support Tickets"
-                subtitle="Track and resolve customer support requests"
+                title="Customer Support"
+                subtitle="Manage customer inquiries and ticket communications"
             />
-
-            {/* Toggle Tabs */}
-            <div className="flex border-b border-gray-200 mt-4 shrink-0">
-                <button
-                    onClick={() => setActiveTab('user')}
-                    className={`py-2.5 px-6 font-bold text-xs uppercase tracking-wider border-b-2 transition-all ${
-                        activeTab === 'user'
-                            ? 'border-[#3E2723] text-[#3E2723]'
-                            : 'border-transparent text-gray-400 hover:text-gray-600'
-                    }`}
-                >
-                    User Tickets
-                </button>
-                <button
-                    onClick={() => setActiveTab('seller')}
-                    className={`py-2.5 px-6 font-bold text-xs uppercase tracking-wider border-b-2 transition-all ${
-                        activeTab === 'seller'
-                            ? 'border-[#3E2723] text-[#3E2723]'
-                            : 'border-transparent text-gray-400 hover:text-gray-600'
-                    }`}
-                >
-                    Seller Tickets
-                </button>
-            </div>
 
             {/* Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6 mb-8 shrink-0">
@@ -489,7 +403,7 @@ const SupportManagement = () => {
                             {/* Metadata bar */}
                             <div className="bg-white border-b border-gray-100 px-6 py-3 flex flex-wrap justify-between items-center gap-4 shrink-0 text-xs text-gray-600">
                                 <div>
-                                    <span className="font-bold text-gray-900">{activeTab === 'seller' ? 'Seller' : 'User'}:</span> {activeTab === 'seller' ? selectedTicket.sellerName : (selectedTicket.userName || 'Customer')} ({activeTab === 'seller' ? selectedTicket.sellerEmail : selectedTicket.userEmail})
+                                    <span className="font-bold text-gray-900">Customer:</span> {selectedTicket.userName || 'Customer'} ({selectedTicket.userEmail})
                                 </div>
                                 {selectedTicket.orderId && (
                                     <div>
@@ -510,7 +424,7 @@ const SupportManagement = () => {
                                     </div>
                                     <div>
                                         <div className="bg-white border border-gray-200/60 p-3.5 rounded-2xl rounded-tl-none text-xs text-gray-800 shadow-sm leading-relaxed">
-                                            <p className="font-bold text-[10px] text-[#9C5B61] mb-1">{activeTab === 'seller' ? 'Seller' : 'Customer'}</p>
+                                            <p className="font-bold text-[10px] text-[#9C5B61] mb-1">Customer</p>
                                             {selectedTicket.message}
                                             {renderAttachments(selectedTicket.attachments)}
                                         </div>
@@ -554,7 +468,7 @@ const SupportManagement = () => {
                                                             isAdmin ? 'text-[#D7CCC8]' : 'text-[#9C5B61]'
                                                         }`}
                                                     >
-                                                        {isAdmin ? 'Admin Support' : (activeTab === 'seller' ? 'Seller' : 'Customer')}
+                                                        {isAdmin ? 'Admin Support' : 'Customer'}
                                                     </p>
                                                     {reply.text}
                                                     {renderAttachments(reply.attachments)}

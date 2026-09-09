@@ -716,42 +716,6 @@ export const adminService = {
     }
   },
 
-  // Seller Management
-  getSellers: async (params = {}) => {
-    try {
-      const res = await api.get('admin/sellers', { params });
-      return res.data.data?.sellers || res.data.sellers || [];
-    } catch (err) {
-      console.error("Admin fetch sellers failed:", err);
-      return [];
-    }
-  },
-  getSellerDetails: async (id) => {
-    try {
-      const res = await api.get(`admin/sellers/${id}`);
-      return res.data.data || { seller: res.data.seller };
-    } catch (err) {
-      console.error("Admin fetch seller details failed:", err);
-      throw err;
-    }
-  },
-  updateSellerStatus: async (id, status, rejectionReason = null) => {
-    try {
-      const res = await api.patch(`admin/sellers/${id}/status`, { status, rejectionReason });
-      return {
-        success: res.data.success,
-        seller: res.data.data?.seller || res.data.seller || null,
-        message: res.data.message || `Seller ${status.toLowerCase()} successfully`
-      };
-    } catch (err) {
-      console.error("Admin update seller status failed:", err);
-      return {
-        success: false,
-        message: err.response?.data?.message || "Failed to update seller"
-      };
-    }
-  },
-
   // User Management
   getUsers: async (params = {}) => {
     try {
@@ -827,48 +791,6 @@ export const adminService = {
         success: false,
         message: err.response?.data?.message || "Failed to delete review"
       };
-    }
-  },
-
-  // Blog Management
-  getAdminBlogs: async () => {
-    try {
-      const res = await api.get('admin/blogs');
-      return res.data.data.blogs || [];
-    } catch (err) {
-      console.error("Admin fetch blogs failed:", err);
-      return [];
-    }
-  },
-  createBlog: async (formData) => {
-    try {
-      const res = await api.post('admin/blogs', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
-      return res.data;
-    } catch (err) {
-      console.error("Admin create blog failed:", err);
-      return { success: false, message: err.response?.data?.message || "Failed to create blog" };
-    }
-  },
-  updateBlog: async (id, formData) => {
-    try {
-      const res = await api.put(`admin/blogs/${id}`, formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      });
-      return res.data;
-    } catch (err) {
-      console.error("Admin update blog failed:", err);
-      return { success: false, message: err.response?.data?.message || "Failed to update blog" };
-    }
-  },
-  deleteBlog: async (id) => {
-    try {
-      const res = await api.delete(`admin/blogs/${id}`);
-      return res.data.success;
-    } catch (err) {
-      console.error("Admin delete blog failed:", err);
-      return false;
     }
   },
 
@@ -992,5 +914,81 @@ export const adminService = {
       console.error("Admin delete FAQ failed:", err);
       return { success: false, message: err.response?.data?.message || "Failed to delete FAQ" };
     }
+  },
+
+  // Store Pickup Locations / Warehouses
+  getPickupLocations: async () => {
+    try {
+      const res = await api.get('admin/pickup-locations');
+      return res.data?.data?.locations || res.data?.locations || [];
+    } catch (err) {
+      console.error("Admin get pickup locations failed:", err);
+      return [];
+    }
+  },
+  createPickupLocation: async (data) => {
+    const res = await api.post('admin/pickup-locations', data);
+    return res.data;
+  },
+  updatePickupLocation: async (id, data) => {
+    const res = await api.put(`admin/pickup-locations/${id}`, data);
+    return res.data;
+  },
+  deletePickupLocation: async (id) => {
+    const res = await api.delete(`admin/pickup-locations/${id}`);
+    return res.data;
+  },
+  setDefaultPickupLocation: async (id) => {
+    const res = await api.patch(`admin/pickup-locations/${id}/default`);
+    return res.data;
+  },
+  syncShiprocketLocation: async (id) => {
+    const res = await api.post(`admin/pickup-locations/${id}/sync-shiprocket`);
+    return res.data;
+  },
+
+  // Admin Shipping Operations & Booking
+  getOrderShipments: async (orderId) => {
+    try {
+      const res = await api.get(`admin/shipping/orders/${orderId}`);
+      return res.data?.data?.shipments || [];
+    } catch (err) {
+      console.error("Admin get order shipments failed:", err);
+      return [];
+    }
+  },
+  checkShippingServiceability: async (payload) => {
+    const res = await api.post('admin/shipping/serviceability', payload);
+    return res.data?.data || res.data;
+  },
+  createOrderShipment: async (orderId, payload) => {
+    const res = await api.post(`admin/shipping/orders/${orderId}/create`, payload);
+    return res.data?.data || res.data;
+  },
+  requestShipmentPickup: async (shipmentId) => {
+    const res = await api.post(`admin/shipping/${shipmentId}/pickup`);
+    return res.data?.data || res.data;
+  },
+  generateShipmentManifest: async (shipmentId) => {
+    const res = await api.post(`admin/shipping/${shipmentId}/manifest`);
+    return res.data?.data || res.data;
+  },
+  regenerateShipmentLabel: async (shipmentId) => {
+    const res = await api.post(`admin/shipping/${shipmentId}/generate-label`);
+    return res.data?.data || res.data;
+  },
+  trackShipment: async (shipmentId) => {
+    const res = await api.post(`admin/shipping/${shipmentId}/track`);
+    return res.data?.data || res.data;
+  },
+  cancelShipment: async (shipmentId) => {
+    const res = await api.post(`admin/shipping/${shipmentId}/cancel`);
+    return res.data?.data || res.data;
+  },
+
+  // Official Tax Invoice
+  getOrderInvoice: async (orderId) => {
+    const res = await api.get(`admin/orders/${orderId}/invoice`);
+    return res.data?.data?.invoice || res.data?.invoice || null;
   }
 };

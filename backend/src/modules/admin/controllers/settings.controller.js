@@ -37,9 +37,7 @@ const buildSellerRateMap = async (products = []) => {
   }));
 };
 
-const countAdminOwnedProducts = async () => Product.countDocuments({
-  $or: [{ sellerId: null }, { sellerId: { $exists: false } }]
-});
+const countAdminOwnedProducts = async () => Product.countDocuments();
 
 exports.getSettings = async (req, res) => {
   try {
@@ -124,11 +122,9 @@ exports.updateMetalPricing = async (req, res) => {
       after:  { metalRates: settings.metalRates || {} }
     });
 
-    const adminProducts = await Product.find({
-      $or: [{ sellerId: null }, { sellerId: { $exists: false } }]
-    });
+    const allProducts = await Product.find({});
 
-    for (const product of adminProducts) {
+    for (const product of allProducts) {
       applyMetalPricingToProduct(product, settings.metalRates || {}, settings.gstRate || 0);
       await product.save();
     }

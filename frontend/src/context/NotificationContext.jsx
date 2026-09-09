@@ -11,7 +11,6 @@ export const NotificationProvider = ({ children }) => {
     const { socket } = useSocket();
     const isUserRole = user?.role === 'user';
     const isAdminRole = user?.role === 'admin';
-    const isSellerRole = user?.role === 'seller';
     const hasAuthToken = () => Boolean(localStorage.getItem('sands_token'));
 
     // Track seen event IDs to prevent duplicate toasts
@@ -38,7 +37,7 @@ export const NotificationProvider = ({ children }) => {
 
     // ── fetchNotifications ───────────────────────────────────────────────────
     const fetchNotifications = useCallback(async () => {
-        if (!user || !hasAuthToken() || user.role === 'seller') return;
+        if (!user || !hasAuthToken()) return;
         try {
             const res = await api.get('user/notifications');
             if (res.data.success) {
@@ -54,14 +53,14 @@ export const NotificationProvider = ({ children }) => {
 
     // Fetch on mount/login
     useEffect(() => {
-        if (user && user.role !== 'seller') {
+        if (user) {
             fetchNotifications();
         }
     }, [user, fetchNotifications]);
 
     // ── deleteUserNotification (hide/delete notification) ──────────────────────
     const deleteUserNotification = useCallback(async (id) => {
-        if (!user || !hasAuthToken() || user.role === 'seller') return;
+        if (!user || !hasAuthToken()) return;
         try {
             await api.delete(`user/notifications/${id}`);
             await fetchNotifications();
@@ -74,7 +73,7 @@ export const NotificationProvider = ({ children }) => {
 
     // ── markNotificationRead ──────────────────────────────────────────────────
     const markNotificationRead = useCallback(async (id) => {
-        if (!user || !hasAuthToken() || user.role === 'seller') return;
+        if (!user || !hasAuthToken()) return;
         try {
             await api.patch(`user/notifications/${id}/read`);
             await fetchNotifications();
@@ -108,9 +107,8 @@ export const NotificationProvider = ({ children }) => {
     useEffect(() => {
         if (!socket || !user) return;
 
-        // ── Handler: New Order (Admin + Seller) ──────────────────────────
+        // ── Handler: New Order (Admin) ───────────────────────────────────
         const handleNewOrder = (data) => {
-            // Deduplicate: avoid showing the same event twice
             const eventKey = `new_order_${data._id || data.orderId}`;
             if (seenEventIds.current.has(eventKey)) return;
             seenEventIds.current.add(eventKey);
@@ -118,11 +116,6 @@ export const NotificationProvider = ({ children }) => {
             if (isAdminRole) {
                 toast.success(
                     `🛒 New Order: #${data.orderId} — ₹${Number(data.total || 0).toLocaleString('en-IN')} from ${data.customerName || 'Customer'}`,
-                    { duration: 6000, id: eventKey }
-                );
-            } else if (isSellerRole) {
-                toast.success(
-                    `🛒 New Order: #${data.orderId} — ${data.itemCount || 1} item(s)`,
                     { duration: 6000, id: eventKey }
                 );
             }
@@ -154,13 +147,13 @@ export const NotificationProvider = ({ children }) => {
             }
         };
 
-        // ── Handler: Low Stock Alert (Seller) ─────────────────────────────
+        // ── Handler: Low Stock Alert (Admin) ─────────────────────────────
         const handleLowStock = (data) => {
             const eventKey = `low_stock_${data.productName}_${data.variantName}`;
             if (seenEventIds.current.has(eventKey)) return;
             seenEventIds.current.add(eventKey);
 
-            if (isSellerRole) {
+            if (isAdminRole) {
                 toast(data.message, {
                     icon: '⚠️',
                     duration: 8000,
@@ -201,7 +194,7 @@ export const NotificationProvider = ({ children }) => {
             socket.off('low_stock_alert', handleLowStock);
             socket.off('broadcast_notification', handleBroadcastNotification);
         };
-    }, [socket, user, isAdminRole, isSellerRole, fetchNotifications]);
+    }, [socket, user, isAdminRole, fetchNotifications]);
 
     // Compute unreadCount based on notifications where isReadByMe is false
     const unreadCount = userNotifications.filter(n => !n.isReadByMe).length;

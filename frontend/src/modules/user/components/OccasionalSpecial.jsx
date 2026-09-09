@@ -1,11 +1,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useHomepageCms } from '../hooks/useHomepageCms';
-import haldiImgDefault from '@assets/home_occasions/home_haldi.png';
-import sangeetImgDefault from '@assets/home_occasions/home_sangeet.png';
-import receptionImgDefault from '@assets/home_occasions/home_reception.png';
-import bridalImgDefault from '@assets/home_occasions/home_gift_for_bride.png';
-import bridesmaidImgDefault from '@assets/home_occasions/home_gift_for_bridesmaid.png';
+import haldiImgDefault from '@assets/home_occasions/home_haldi_editorial.jpg';
+import sangeetImgDefault from '@assets/home_occasions/home_sangeet_editorial.jpg';
+import receptionImgDefault from '@assets/home_occasions/home_reception_editorial.jpg';
+import bridalImgDefault from '@assets/home_occasions/home_gift_for_bride_editorial.jpg';
+import bridesmaidImgDefault from '@assets/home_occasions/home_gift_for_bridesmaid_editorial.jpg';
 import { resolveLegacyCmsAsset } from '../utils/legacyCmsAssets';
 import { ensureSilverHomePath } from '../utils/silverHomePaths';
 
@@ -51,14 +51,15 @@ const OccasionalSpecial = () => {
 
     const displayItems = normalizedConfiguredItems.length > 0 ? normalizedConfiguredItems : defaultCategories;
 
-    // Helper to get item safe
+    // Helper to get item safe with card-specific fallback
     const getItem = (index) => {
         const item = displayItems[index];
         if (!item) return null;
+        const fallback = defaultCategories[index] || defaultCategories[0];
         return {
             name: item?.name || item?.label || 'Curated Pick',
-            image: resolveLegacyCmsAsset(item?.image, defaultCategories[0].image),
-            path: buildPath(item, defaultCategories[0])
+            image: resolveLegacyCmsAsset(item?.image, fallback.image),
+            path: buildPath(item, fallback)
         };
     };
 
@@ -133,7 +134,7 @@ const OccasionalSpecial = () => {
                                 </span>
                             </Link>
                             <Link to={item5.path} className="relative group overflow-hidden rounded-2xl flex-[0.7] cursor-pointer shadow-md hover:shadow-xl transition-all duration-300">
-                                <img src={item5.image} alt={item5.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                                <img src={item5.image} alt={item5.name} className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-110" />
                                 <div className="absolute inset-0 bg-gradient-to-t from-[#2F0A0F]/80 via-transparent to-transparent"></div>
                                 <span className="absolute bottom-6 left-1/2 -translate-x-1/2 text-white font-display text-2xl tracking-wide whitespace-nowrap drop-shadow-sm w-full text-center">
                                     {item5.name}

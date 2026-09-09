@@ -32,7 +32,7 @@ const emitToRoom = (room, event, payload) => {
 // ─── Domain Emitters ──────────────────────────────────────────────────────────
 
 /**
- * Emit a new order event to admin and all relevant sellers.
+ * Emit a new order event to admin.
  * Called after a successful COD order or Razorpay payment verification.
  */
 const emitNewOrder = (order) => {
@@ -50,25 +50,11 @@ const emitNewOrder = (order) => {
 
   // Notify admin room
   emitToRoom("room:admin", "new_order", payload);
-
-  // Notify each seller room with their items
-  const sellerCounts = new Map();
-  for (const item of order.items || []) {
-    const sid = item?.sellerId ? String(item.sellerId) : "";
-    if (!sid) continue;
-    sellerCounts.set(sid, (sellerCounts.get(sid) || 0) + (Number(item.quantity) || 0));
-  }
-  for (const [sellerId, itemCount] of sellerCounts.entries()) {
-    emitToRoom(`room:seller_${sellerId}`, "new_order", {
-      ...payload,
-      itemCount,
-    });
-  }
 };
 
 /**
  * Emit an order status update to the owning user.
- * Called when admin/seller updates an order's status.
+ * Called when admin updates an order's status.
  */
 const emitOrderStatusUpdate = (order) => {
   if (!_io || !order) return;
@@ -88,16 +74,17 @@ const emitOrderStatusUpdate = (order) => {
 };
 
 /**
- * Emit a low-stock warning to a specific seller.
+ * Emit a low-stock warning to admin.
  */
 const emitLowStockAlert = (sellerId, productName, variantName, currentStock) => {
-  if (!_io || !sellerId) return;
-  emitToRoom(`room:seller_${sellerId}`, "low_stock_alert", {
+  if (!_io) return;
+  const alertPayload = {
     productName,
     variantName,
     currentStock,
     message: `Low stock: "${productName} (${variantName})" — only ${currentStock} left.`,
-  });
+  };
+  emitToRoom("room:admin", "low_stock_alert", alertPayload);
 };
 
 /**
@@ -143,37 +130,6 @@ const emitSupportMessage = (ticket, reply) => {
   emitToRoom("room:admin", "support_message", payload);
 };
 
-/**
- * Emit a new seller support ticket notification to admins.
- */
-const emitSellerSupportTicketCreated = (ticket) => {
-  if (!_io || !ticket) return;
-  emitToRoom("room:admin", "seller_support_ticket_created", ticket);
-};
-
-/**
- * Emit a seller support chat message to the seller room and admin room.
- */
-const emitSellerSupportMessage = (ticket, reply) => {
-  if (!_io || !ticket || !reply) return;
-  const payload = {
-    ticketId: ticket.ticketId,
-    _id: String(ticket._id),
-    sellerId: String(ticket.sellerId),
-    reply: {
-      from: reply.from,
-      text: reply.text,
-      date: reply.date || new Date()
-    },
-    status: ticket.status
-  };
-  
-  // Send to specific seller
-  emitToRoom(`room:seller_${ticket.sellerId}`, "seller_support_message", payload);
-  // Send to admins
-  emitToRoom("room:admin", "seller_support_message", payload);
-};
-
 module.exports = {
   setIo,
   getIo,
@@ -183,6 +139,4 @@ module.exports = {
   emitBroadcastNotification,
   emitSupportTicketCreated,
   emitSupportMessage,
-  emitSellerSupportTicketCreated,
-  emitSellerSupportMessage,
 };

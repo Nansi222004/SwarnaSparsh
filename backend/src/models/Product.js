@@ -46,8 +46,8 @@ const productSchema = new mongoose.Schema({
   videoUrl: { type: String, default: "" },
   paymentGatewayChargeBearer: {
     type: String,
-    enum: ["seller", "user"],
-    default: "seller"
+    enum: ["store", "seller", "user"],
+    default: "store"
   },
   variants: [{
     name: { type: String, required: true },

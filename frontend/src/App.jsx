@@ -54,7 +54,6 @@ const GlobalNotificationManager = lazy(() => import('./modules/admin/pages/Globa
 const AddNotification = lazy(() => import('./modules/admin/pages/AddNotification'));
 const FAQManagement = lazy(() => import('./modules/admin/pages/FAQManagement'));
 const ContentManagement = lazy(() => import('./modules/admin/pages/ContentManagement'));
-const BlogManagement = lazy(() => import('./modules/admin/pages/BlogManagement'));
 const CouponListPage = lazy(() => import('./modules/admin/pages/CouponListPage'));
 const CouponFormPage = lazy(() => import('./modules/admin/pages/CouponFormPage'));
 const GlobalSettings = lazy(() => import('./modules/admin/pages/GlobalSettings'));
@@ -62,22 +61,17 @@ const SectionManagement = lazy(() => import('./modules/admin/pages/SectionManage
 const SectionEditor = lazy(() => import('./modules/admin/pages/SectionEditor'));
 const DynamicPageEditor = lazy(() => import('./modules/admin/pages/DynamicPageEditor'));
 const PageManagement = lazy(() => import('./modules/admin/pages/PageManagement'));
-const AdminSellersPage = lazy(() => import('./modules/admin/pages/AdminSellersPage'));
-const AdminSellerDetails = lazy(() => import('./modules/admin/pages/AdminSellerDetails'));
 const AdminNotifications = lazy(() => import('./modules/admin/pages/AdminNotifications'));
-const QrScannerPage = lazy(() => import('./modules/seller/pages/QrScannerPage'));
+const AdminScanner = lazy(() => import('./modules/admin/pages/AdminScanner'));
 const MetalPricing = lazy(() => import('./modules/admin/pages/MetalPricing'));
 const TaxSettings = lazy(() => import('./modules/admin/pages/TaxSettings'));
-const CommissionTiers = lazy(() => import('./modules/admin/pages/CommissionTiers'));
-const CommissionReport = lazy(() => import('./modules/admin/pages/CommissionReport'));
 const AdminShipments = lazy(() => import('./modules/admin/pages/AdminShipments'));
 const AnalyticsDashboard = lazy(() => import('./modules/admin/pages/AnalyticsDashboard'));
 const AuditLogPage = lazy(() => import('./modules/admin/pages/AuditLogPage'));
-const AdminPayouts = lazy(() => import('./modules/admin/pages/AdminPayouts'));
 const AdminDirectSales = lazy(() => import('./modules/admin/pages/AdminDirectSales'));
-
-// Seller Routes — lazy loaded
-const SellerRoutes = lazy(() => import('./modules/seller/routes/sellerRoutes'));
+const AdminPickupLocations = lazy(() => import('./modules/admin/pages/AdminPickupLocations'));
+const AdminOrderInvoice = lazy(() => import('./modules/admin/pages/AdminOrderInvoice'));
+const AdminProductBarcodes = lazy(() => import('./modules/admin/pages/AdminProductBarcodes'));
 
 // Lazy Loaded Pages
 const Home = lazy(() => import('./modules/user/pages/Home'));
@@ -98,8 +92,6 @@ const OrderSuccess = lazy(() => import('./modules/user/pages/OrderSuccess'));
 const OrderTracking = lazy(() => import('./modules/user/pages/OrderTracking'));
 const HelpCenter = lazy(() => import('./modules/user/pages/HelpCenter'));
 const Notifications = lazy(() => import('./modules/user/pages/Notifications'));
-const BlogsPage = lazy(() => import('./modules/user/pages/BlogsPage'));
-const BlogDetailPage = lazy(() => import('./modules/user/pages/BlogDetailPage'));
 const DynamicPage = lazy(() => import('./modules/user/pages/DynamicPage'));
 const GoldJewelleryPage = lazy(() => import('./modules/user/pages/GoldJewelleryPage'));
 const UserReturnsPage = lazy(() => import('./modules/user/pages/ReturnsPage'));
@@ -125,34 +117,7 @@ const AppContent = () => {
   const { user, loading } = useAuth();
   usePageTracking();
 
-  const isSellerPath = location.pathname.startsWith('/seller');
-  const { toasts } = useToasterStore();
 
-  const [isHeaderVisible, setIsHeaderVisible] = React.useState(true);
-  const [lastScrollY, setLastScrollY] = React.useState(0);
-
-  React.useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      if (currentScrollY > lastScrollY && currentScrollY > 150) {
-        setIsHeaderVisible(false);
-      } else if (currentScrollY < lastScrollY) {
-        setIsHeaderVisible(true);
-      }
-      setLastScrollY(currentScrollY);
-    };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [lastScrollY]);
-
-  React.useEffect(() => {
-    if (isSellerPath) {
-      toasts
-        .filter((t) => t.visible)
-        .slice(0, -1)
-        .forEach((t) => toast.dismiss(t.id));
-    }
-  }, [toasts, isSellerPath]);
 
   React.useEffect(() => {
     // Initialize push notification service worker.
@@ -188,14 +153,30 @@ const AppContent = () => {
   }, [loading, user]);
 
 
+  const [isHeaderVisible, setIsHeaderVisible] = React.useState(true);
+  const [lastScrollY, setLastScrollY] = React.useState(0);
+
+  React.useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      if (currentScrollY > lastScrollY && currentScrollY > 150) {
+        setIsHeaderVisible(false);
+      } else if (currentScrollY < lastScrollY) {
+        setIsHeaderVisible(true);
+      }
+      setLastScrollY(currentScrollY);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [lastScrollY]);
+
   const isAdminPath = location.pathname.startsWith('/admin');
-  const isScannerPath = location.pathname === '/scanner';
   const isLoginPath = location.pathname === '/login' || location.pathname === '/signup';
   const showMetalToggle = location.pathname === '/' || location.pathname === '/gold-collection';
 
   return (
     <div className="min-h-screen flex flex-col font-sans text-gray-900 bg-[#FAF8F5]">
-      {!isAdminPath && !isSellerPath && !isScannerPath && !isLoginPath && (
+      {!isAdminPath && !isLoginPath && (
         <>
           <div 
             className={`fixed top-0 left-0 right-0 z-[150] w-full transition-transform duration-300 ${isHeaderVisible ? 'translate-y-0' : '-translate-y-full'}`}
@@ -210,17 +191,17 @@ const AppContent = () => {
           <div className={`${showMetalToggle ? 'h-[160px] md:h-[180px]' : 'h-[126px] md:h-[166px]'} w-full`}></div>
         </>
       )}
-      <main className={`flex-grow ${!isAdminPath && !isSellerPath && !isScannerPath && !isLoginPath ? 'pb-16 md:pb-0' : ''}`}>
+      <main className={`flex-grow ${!isAdminPath && !isLoginPath ? 'pb-16 md:pb-0' : ''}`}>
         <Suspense fallback={<LoadingFallback />}>
           <Routes>
           {/* User Routes */}
           <Route path="/" element={<Home />} />
-          <Route path="/scanner" element={<QrScannerPage />} />
           <Route path="/shop" element={<Shop />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/order-success" element={<OrderSuccess />} />
           <Route path="/order-tracking/:orderId/:view?" element={<OrderTracking />} />
+          <Route path="/order-invoice/:id" element={<AdminOrderInvoice />} />
           <Route path="/product/:id" element={<ProductDetails />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Login />} />
@@ -258,8 +239,6 @@ const AppContent = () => {
           <Route path="/collection/bond/:bondId" element={<BondCollectionPage />} />
           <Route path="/collection/best-styles" element={<BestStylesPage />} />
           <Route path="/collections" element={<JewelleryCollectionsPage />} />
-          <Route path="/blogs" element={<BlogsPage />} />
-          <Route path="/blogs/:slug" element={<BlogDetailPage />} />
           <Route path="/gift-cards" element={<GiftCardsPage />} />
 
           {/* Admin Routes */}
@@ -277,6 +256,7 @@ const AppContent = () => {
                   <Route path="/categories/edit/:id" element={<CategoryEditor />} />
 
                   <Route path="/products" element={<ProductManagement />} />
+                  <Route path="/products/barcodes/:id" element={<AdminProductBarcodes />} />
                   <Route path="/products/view/:id" element={<AdminProductEditor />} />
                   <Route path="/products/new" element={<AdminProductEditor />} />
                   <Route path="/products/edit/:id" element={<AdminProductEditor />} />
@@ -285,6 +265,7 @@ const AppContent = () => {
                   <Route path="/coupons/edit/:id" element={<CouponFormPage />} />
                   <Route path="/orders" element={<OrderListPage />} />
                   <Route path="/orders/:id" element={<OrderDetailPage />} />
+                  <Route path="/orders/:id/invoice" element={<AdminOrderInvoice />} />
                   <Route path="/returns" element={<ReturnsPage />} />
                   <Route path="/returns/:id" element={<ReturnDetailPage />} />
                   <Route path="/replacements" element={<ReplacementsPage />} />
@@ -304,36 +285,29 @@ const AppContent = () => {
                   <Route path="/notifications/add" element={<AddNotification />} />
                   <Route path="/faq" element={<FAQManagement />} />
                   <Route path="/about-us" element={<DynamicPageEditor pageId="about-us" />} />
-                  <Route path="/blogs" element={<BlogManagement />} />
                   <Route path="/sections" element={<SectionManagement />} />
                   <Route path="/sections/:id" element={<SectionEditor />} />
                   <Route path="/pages" element={<PageManagement />} />
                   <Route path="/pages/:pageId" element={<DynamicPageEditor />} />
-                  <Route path="/seller-terms" element={<DynamicPageEditor pageId="seller-terms" />} />
-                  <Route path="/sellers" element={<AdminSellersPage />} />
-                  <Route path="/seller-details/:id" element={<AdminSellerDetails />} />
                   <Route path="/settings" element={<GlobalSettings />} />
                   <Route path="/metal-pricing" element={<MetalPricing />} />
                   <Route path="/tax-settings" element={<TaxSettings />} />
-                  <Route path="/commission/tiers" element={<CommissionTiers />} />
-                  <Route path="/commission/report" element={<CommissionReport />} />
                   <Route path="/shipping" element={<AdminShipments />} />
+                  <Route path="/shipping/locations" element={<AdminPickupLocations />} />
+                  <Route path="/pickup-locations" element={<AdminPickupLocations />} />
                   <Route path="/audit-logs" element={<AuditLogPage />} />
-                  <Route path="/payout" element={<AdminPayouts />} />
                   <Route path="/direct-sales" element={<AdminDirectSales />} />
+                  <Route path="/scanner" element={<AdminScanner />} />
                 </Routes>
               </AdminLayout>
             </AdminProtectedRoute>
           } />
 
-          {/* Seller Routes */}
-          <Route path="/seller/*" element={<SellerRoutes />} />
-
           <Route path="*" element={<Home />} />
         </Routes>
       </Suspense>
       </main>
-      {!isAdminPath && !isSellerPath && !isScannerPath && !isLoginPath && (
+      {!isAdminPath && !isLoginPath && (
         <>
           <Footer />
           <FloatingContactStack />

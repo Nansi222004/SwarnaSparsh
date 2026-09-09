@@ -1,4 +1,3 @@
-const Blog = require("../../../models/Blog");
 const FAQ = require("../../../models/FAQ");
 const Banner = require("../../../models/Banner");
 const HomepageSection = require("../../../models/HomepageSection");
@@ -29,21 +28,6 @@ exports.getBanners = async (req, res) => {
   try {
     const banners = await Banner.find(getActiveBannerQuery()).sort({ sortOrder: 1, createdAt: -1 });
     return success(res, { banners });
-  } catch (err) { return error(res, err.message); }
-};
-
-exports.getBlogs = async (req, res) => {
-  try {
-    const blogs = await Blog.find({ isPublished: true }).sort({ publishedAt: -1, createdAt: -1 });
-    return success(res, { blogs });
-  } catch (err) { return error(res, err.message); }
-};
-
-exports.getBlogDetail = async (req, res) => {
-  try {
-    const blog = await Blog.findOne({ slug: req.params.slug, isPublished: true });
-    if (!blog) return error(res, "Blog not found", 404);
-    return success(res, { blog });
   } catch (err) { return error(res, err.message); }
 };
 

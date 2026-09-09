@@ -65,8 +65,8 @@ const roundCurrency = (value) => Math.round((Number(value) || 0) * 100) / 100;
 const normalizeChargeBearer = (value = "") => {
   const normalized = normalizeString(value);
   if (normalized === "user") return "user";
-  if (normalized === "seller" || normalized === "admin") return "seller";
-  return "seller";
+  if (normalized === "seller" || normalized === "admin" || normalized === "store") return "store";
+  return "store";
 };
 
 const getPaymentGatewayChargePercent = (chargeBearer = "") => (

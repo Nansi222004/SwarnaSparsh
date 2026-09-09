@@ -12,12 +12,8 @@ const { success, error } = require("../../../utils/apiResponse");
 const mongoose = require("mongoose");
 const { enqueueEmail } = require("../../../services/emailService");
 const emailTemplates = require("../../../services/emailTemplates");
-const Seller = require("../../../models/Seller");
 const GiftCard = require("../../../models/GiftCard");
 const { emitNewOrder } = require("../../../services/socketEmitter");
-const {
-  accrueCommissionsForOrder,
-} = require("../../../services/commissionService");
 
 const isPaymentSandboxAllowed = () => {
   return (
@@ -149,15 +145,21 @@ const createAndProcessPrepaidOrder = async (
   // 3. Post-creation logic: stock deduction and coupon usage
   await _deductStockForOrder(order.items, order.orderId, order.userId);
 
-  // Platform commission accrual (per-seller ledger entries, status="pending").
+  // Stage 2 Single-Vendor: NO commission accrual on new prepaid orders.
+
+  // Centralized Admin notification
   try {
-    await accrueCommissionsForOrder(order, {
-      triggeredBy: "payment_verified",
-      safe: true,
+    await Notification.create({
+      role: "admin",
+      isAdmin: true,
+      title: "Payment Confirmed",
+      message: `Payment confirmed for order #${order.orderId} (₹${order.total}) by ${order.customerName}.`,
+      type: "ORDER",
+      priority: "High",
+      link: `/admin/orders/${order._id}`,
+      isRead: false,
     });
-  } catch (e) {
-    console.error("[Commission] Accrual hook error:", e.message);
-  }
+  } catch (_e) {}
 
   if (order.couponCode) {
     await Coupon.updateOne(
@@ -169,36 +171,7 @@ const createAndProcessPrepaidOrder = async (
     );
   }
 
-  // 4. Notify sellers
-  const sellerCounts = new Map();
-  for (const item of order.items || []) {
-    const sid = item?.sellerId ? String(item.sellerId) : "";
-    if (!sid) continue;
-    sellerCounts.set(
-      sid,
-      (sellerCounts.get(sid) || 0) + (Number(item.quantity) || 0),
-    );
-  }
-  if (sellerCounts.size > 0) {
-    const sellerOrderLink = `/seller/order-details/${order._id}`;
-    const docs = Array.from(sellerCounts.entries()).map(([sid, qty]) => ({
-      sellerId: sid,
-      title: "Payment confirmed",
-      message: `Payment received for order ${order.orderId} (${qty} item${qty === 1 ? "" : "s"}).`,
-      type: "ORDER",
-      priority: "High",
-      link: sellerOrderLink,
-      isBroadcast: false,
-      isRead: false,
-    }));
-    try {
-      await Notification.insertMany(docs);
-    } catch (e) {
-      /* ignore */
-    }
-  }
-
-  // Realtime: emit new_order to admin + sellers
+  // Realtime: emit new_order to admin (best-effort)
   try {
     emitNewOrder(order);
   } catch (e) {
@@ -280,33 +253,20 @@ const createAndProcessPrepaidOrder = async (
     });
   }
 
-  // -- Email: seller notification --
-  const paySellerMap = new Map();
-  for (const item of order.items || []) {
-    if (!item.sellerId) continue;
-    const k = String(item.sellerId);
-    if (!paySellerMap.has(k)) paySellerMap.set(k, []);
-    paySellerMap.get(k).push(item);
-  }
-  if (paySellerMap.size > 0) {
-    const paySellerIds = Array.from(paySellerMap.keys());
-    const paySellers = await Seller.find({ _id: { $in: paySellerIds } }).select(
-      "email shopName fullName",
-    );
-    for (const seller of paySellers) {
-      if (!seller.email) continue;
+  // -- Email: Admin order notification --
+  try {
+    const Setting = require("../../../models/Setting");
+    const storeSetting = await Setting.findOne().select("email storeName").lean();
+    const adminEmail = storeSetting?.email || process.env.ADMIN_EMAIL;
+    if (adminEmail) {
       enqueueEmail({
-        to: seller.email,
-        subject: "Payment Confirmed - " + order.orderId + " | Swarna Sparsh",
-        html: emailTemplates.sellerNewOrder({
-          order,
-          sellerName: seller.shopName || seller.fullName,
-          sellerItems: paySellerMap.get(String(seller._id)),
-        }),
-        type: "seller_payment_confirmed",
+        to: adminEmail,
+        subject: `[Swarna Sparsh] Payment Received - Order #${order.orderId}`,
+        html: `<h2>Payment Confirmed</h2><p>Payment of <strong>₹${order.total}</strong> for Order <strong>#${order.orderId}</strong> was confirmed for ${order.customerName} (${order.paymentMethod.toUpperCase()}).</p>`,
+        type: "admin_payment_confirmed",
       });
     }
-  }
+  } catch (_e) {}
 
   return order;
 };
@@ -500,3 +460,6 @@ exports.verifyPayment = async (req, res) => {
     return error(res, errMsg, statusCode);
   }
 };
+
+exports.createAndProcessPrepaidOrder = createAndProcessPrepaidOrder;
+

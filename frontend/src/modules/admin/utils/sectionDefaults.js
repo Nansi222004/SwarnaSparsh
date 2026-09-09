@@ -28,11 +28,11 @@ import pinkAnklets from "@assets/pink_anklets_1767775536388.png";
 
 import proposalBannerImg from "@assets/proposal_banner.png";
 
-import haldiImg from "@assets/haldi.png";
-import sangeetImg from "@assets/sangeet.png";
-import receptionImg from "@assets/reception.png";
-import bridalImg from "@assets/bridal.png";
-import bridesmaidImg from "@assets/hero_slide_3.png";
+import haldiImg from "@assets/home_occasions/home_haldi_editorial.jpg";
+import sangeetImg from "@assets/home_occasions/home_sangeet_editorial.jpg";
+import receptionImg from "@assets/home_occasions/home_reception_editorial.jpg";
+import bridalImg from "@assets/home_occasions/home_gift_for_bride_editorial.jpg";
+import bridesmaidImg from "@assets/home_occasions/home_gift_for_bridesmaid_editorial.jpg";
 
 import bannerDaily from "@assets/banner_daily.png";
 import bannerOffice from "@assets/banner_office.png";
@@ -61,10 +61,8 @@ import bondMother from "@assets/bond_mother.png";
 import bondBrothers from "@assets/bond_brothers.png";
 import bondSister from "@assets/bond_sister.png";
 import bondFriends from "@assets/bond_friends.png";
-// Removing unused premium imports
-// import premiumMenDefault from '@assets/cat_men_nobg.png';
-// import premiumWomenDefault from '@assets/cat_women_premium_nobg.png';
-// import premiumFamilyDefault from '@assets/cat_all_nobg.png';
+import premiumMenDefault from '@assets/cat_men_premium.png';
+import premiumWomenDefault from '@assets/cat_women_portrait_new.jpg';
 import testimonialCustomer1 from "@assets/testimonial_customer_1.png";
 import testimonialCustomer2 from "@assets/testimonial_customer_2.png";
 import testimonialCustomer3 from "@assets/testimonial_customer_3.png";
@@ -113,7 +111,7 @@ import glamDailyWearDefault from "@assets/glam/daily_wear.png";
 import glamOfficeWearDefault from "@assets/glam/office_wear.png";
 
 // Silver Collection & Curated Showcases
-import bannerSilverCollection from "@assets/banner_elegant_silver.png";
+import bannerSilverCollection from "@assets/pure_silver_atelier_hero.jpg";
 import themeInfinity from "@assets/theme_infinity.png";
 import themeKnots from "@assets/theme_knots.png";
 import themeDrops from "@assets/theme_drops.png";
@@ -261,6 +259,39 @@ const homeSections = [
         priceMax: 1999,
         path: "/shop?price_max=1999",
         tag: "",
+      },
+    ],
+  },
+  {
+    pageKey: "home",
+    sectionKey: "premium-category-cards",
+    sectionType: "category-cards",
+    label: "Shop by Recipient",
+    isActive: true,
+    sortOrder: 3.5,
+    settings: {
+      title: "Shop by Recipient",
+      subtitle: "Gift the Excellence",
+      description: "Thoughtfully curated fine jewellery collections, handcrafted to celebrate him & her.",
+    },
+    items: [
+      {
+        id: "him",
+        name: "For Him",
+        label: "For Him",
+        eyebrow: "Bold & Refined",
+        tag: "Handcrafted signet rings, curb chains & statement kadas in pure 925 silver.",
+        image: premiumMenDefault,
+        path: "/category/men",
+      },
+      {
+        id: "her",
+        name: "For Her",
+        label: "For Her",
+        eyebrow: "Graceful & Radiant",
+        tag: "Dazzling solitaires, teardrop pendants & artisanal jewellery made to shine.",
+        image: premiumWomenDefault,
+        path: "/category/women",
       },
     ],
   },

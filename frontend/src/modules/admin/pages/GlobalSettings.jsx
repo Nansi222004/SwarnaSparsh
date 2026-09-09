@@ -84,7 +84,6 @@ const DEFAULT_SETTINGS = {
     { id: 1, name: "Easy Returns", path: "/return-policy" },
     { id: 2, name: "Contact Us", path: "/help" },
     { id: 3, name: "FAQs", path: "/help" },
-    { id: 4, name: "Blogs", path: "/blogs" },
   ],
   footerPoliciesLinks: [
     { id: 1, name: "Shipping Policy", path: "/shipping-policy" },
@@ -661,7 +660,7 @@ const GlobalSettings = () => {
                 Store & Brand Information
               </h3>
               <p className="text-xs text-gray-500 font-medium tracking-wide mt-0.5">
-                Official brand identity, contact details, address, and logo displayed dynamically across customer, admin, seller, and invoice views.
+                Official brand identity, contact details, address, and logo displayed dynamically across customer, admin, and invoice views.
               </p>
             </div>
             <span className="self-start sm:self-auto text-[10px] font-bold tracking-widest uppercase bg-[#3E2723]/5 text-[#3E2723] px-3 py-1 rounded-full">

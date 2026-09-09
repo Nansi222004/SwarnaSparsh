@@ -3,29 +3,23 @@ const Order = require("../../../models/Order");
 const Product = require("../../../models/Product");
 const Coupon = require("../../../models/Coupon");
 const StockLog = require("../../../models/StockLog");
-const Seller = require("../../../models/Seller");
 const GiftCard = require("../../../models/GiftCard");
 const User = require("../../../models/User");
 const { generateOrderId } = require("../../../utils/generateId");
 const { success, error } = require("../../../utils/apiResponse");
 const razorpay = require("../../../config/razorpay");
 const Notification = require("../../../models/Notification");
-const {
-  notifySellerLowStock,
-  DEFAULT_LOW_STOCK_THRESHOLD,
-} = require("../../../services/sellerNotificationService");
 const { enqueueEmail } = require("../../../services/emailService");
 const emailTemplates = require("../../../services/emailTemplates");
-const { emitNewOrder } = require("../../../services/socketEmitter");
-const {
-  accrueCommissionsForOrder,
-  reverseCommissionsForOrder,
-} = require("../../../services/commissionService");
+const socketEmitter = require("../../../services/socketEmitter");
+const { emitNewOrder } = socketEmitter;
 const {
   isSerializedVariant,
   consumeSerializedStock,
   restockSerializedUnits,
 } = require("../../../utils/inventorySync");
+
+const DEFAULT_LOW_STOCK_THRESHOLD = 5;
 
 const toIdSet = (values = []) =>
   new Set((Array.isArray(values) ? values : []).map((value) => String(value)));
@@ -92,15 +86,6 @@ const buildSellerInvoiceAllocations = (items, coupon, discount) => {
 const ensureProductOrderable = async (product) => {
   if (!product || product.status !== "Active" || product.active === false) {
     throw new Error(`Product ${product?._id || ""} is currently unavailable`);
-  }
-
-  if (product.sellerId) {
-    const seller = await Seller.findById(product.sellerId)
-      .select("status")
-      .lean();
-    if (!seller || seller.status !== "APPROVED") {
-      throw new Error(`${product.name} is currently unavailable`);
-    }
   }
 };
 
@@ -231,17 +216,26 @@ const deductStockForOrder = async (orderItems, orderId, userId) => {
     variant.sold = (Number(variant.sold) || 0) + quantity;
     await product.save();
 
-    // Low stock notification (best-effort, de-duped).
-    if (item?.sellerId) {
-      await notifySellerLowStock({
-        sellerId: item.sellerId,
-        productId: product._id,
-        variantId: variant._id,
-        productName: product.name,
-        variantName: variant.name,
-        currentStock: Number(variant.stock) || 0,
-        threshold: DEFAULT_LOW_STOCK_THRESHOLD,
-      });
+    // Centralized low stock notification (Admin room + record)
+    if (Number(variant.stock) <= DEFAULT_LOW_STOCK_THRESHOLD) {
+      try {
+        socketEmitter.emitLowStockAlert(
+          item?.sellerId || null,
+          product.name,
+          variant.name,
+          Number(variant.stock) || 0
+        );
+        await Notification.create({
+          role: "admin",
+          isAdmin: true,
+          title: "Low Stock Alert",
+          message: `Product "${product.name}" (${variant.name}) is low on stock (${variant.stock} remaining).`,
+          type: "STOCK",
+          priority: "High",
+          link: "/admin/inventory",
+          isRead: false,
+        });
+      } catch (_e) {}
     }
 
     await StockLog.create({
@@ -405,11 +399,9 @@ const _calculateOrderData = async (
     0,
     subtotal - discount + giftWrapCharge + shipping - giftCardDiscount,
   );
-  const sellerInvoiceAllocations = buildSellerInvoiceAllocations(
-    orderItems,
-    appliedCoupon,
-    discount,
-  );
+  // Stage 2 Single-Vendor Decoupling: new orders do not calculate or record seller allocations.
+  // Historical field preserved on schema for older orders.
+  const sellerInvoiceAllocations = [];
 
   return {
     orderId: generateOrderId(),
@@ -486,36 +478,35 @@ exports.placeOrder = async (req, res) => {
     // Enrich guest profile
     await enrichUserProfileFromOrder(userId, shippingAddress);
 
-    // Notify sellers
-    const sellerCounts = new Map();
-    for (const item of orderData.items) {
-      const sid = item?.sellerId ? String(item.sellerId) : "";
-      if (!sid) continue;
-      sellerCounts.set(
-        sid,
-        (sellerCounts.get(sid) || 0) + (Number(item.quantity) || 0),
-      );
-    }
-    if (sellerCounts.size > 0) {
-      const sellerOrderLink = `/seller/order-details/${order._id}`;
-      const docs = Array.from(sellerCounts.entries()).map(([sid, qty]) => ({
-        sellerId: sid,
+    // ── Centralized Admin notification (in-app + email) ─────────────────────
+    try {
+      await Notification.create({
+        role: "admin",
+        isAdmin: true,
         title: "New order received",
-        message: `Order ${order.orderId} placed (${qty} item${qty === 1 ? "" : "s"}).`,
+        message: `Order #${order.orderId} placed by ${order.customerName} (${order.items.length} item${order.items.length === 1 ? "" : "s"}) for ₹${order.total}.`,
         type: "ORDER",
-        priority: "Medium",
-        link: sellerOrderLink,
-        isBroadcast: false,
+        priority: "High",
+        link: `/admin/orders/${order._id}`,
         isRead: false,
-      }));
-      try {
-        await Notification.insertMany(docs);
-      } catch (e) {
-        /* ignore */
-      }
-    }
+      });
+    } catch (_e) {}
 
-    // ── Realtime: emit new_order to admin + sellers (best-effort) ─────────────
+    try {
+      const Setting = require("../../../models/Setting");
+      const storeSetting = await Setting.findOne().select("email storeName").lean();
+      const adminEmail = storeSetting?.email || process.env.ADMIN_EMAIL;
+      if (adminEmail) {
+        enqueueEmail({
+          to: adminEmail,
+          subject: `[Swarna Sparsh] New Order Placed: #${order.orderId}`,
+          html: `<h2>New Order Received</h2><p>Order <strong>#${order.orderId}</strong> for <strong>₹${order.total}</strong> placed by ${order.customerName} (${paymentMethod.toUpperCase()}).</p>`,
+          type: "admin_new_order",
+        });
+      }
+    } catch (_e) {}
+
+    // ── Realtime: emit new_order to admin (best-effort) ─────────────
     try {
       emitNewOrder(order);
     } catch (e) {
@@ -526,16 +517,7 @@ exports.placeOrder = async (req, res) => {
     if (paymentMethod === "cod") {
       await deductStockForOrder(orderData.items, order.orderId, userId);
 
-      // Platform commission accrual (per-seller ledger entries, status="pending").
-      // Wrapped in `safe: true` so a ledger failure never blocks the order itself.
-      try {
-        await accrueCommissionsForOrder(order, {
-          triggeredBy: "place_order",
-          safe: true,
-        });
-      } catch (e) {
-        console.error("[Commission] COD accrual hook error:", e.message);
-      }
+      // Stage 2: Single-vendor decoupled — NO commission accrual for new orders.
 
       if (order.couponCode) {
         await Coupon.updateOne(
@@ -607,34 +589,6 @@ exports.placeOrder = async (req, res) => {
           }),
           type: "order_confirmation",
         });
-      }
-
-      // -- Email: seller notification for each seller --
-      const sellerItemMap = new Map();
-      for (const item of order.items || []) {
-        if (!item.sellerId) continue;
-        const key = String(item.sellerId);
-        if (!sellerItemMap.has(key)) sellerItemMap.set(key, []);
-        sellerItemMap.get(key).push(item);
-      }
-      if (sellerItemMap.size > 0) {
-        const sellerIds = Array.from(sellerItemMap.keys());
-        const sellers = await Seller.find({ _id: { $in: sellerIds } }).select(
-          "email shopName fullName",
-        );
-        for (const seller of sellers) {
-          if (!seller.email) continue;
-          enqueueEmail({
-            to: seller.email,
-            subject: "New Order - " + order.orderId + " | Swarna Sparsh",
-            html: emailTemplates.sellerNewOrder({
-              order,
-              sellerName: seller.shopName || seller.fullName,
-              sellerItems: sellerItemMap.get(String(seller._id)),
-            }),
-            type: "seller_new_order",
-          });
-        }
       }
     }
 
@@ -761,17 +715,19 @@ exports.cancelOrder = async (req, res) => {
       }
     }
 
-    // Reverse platform commission ledger entries (decision F: full reversal).
-    // Safe: never let a ledger error block the cancellation itself.
+    // Centralized Admin notification for cancellation
     try {
-      await reverseCommissionsForOrder(order._id, {
-        triggeredBy: "order_cancelled",
-        reasonNote: "Cancelled by user",
-        safe: true,
+      await Notification.create({
+        role: "admin",
+        isAdmin: true,
+        title: "Order Cancelled by Customer",
+        message: `Order #${order.orderId} was cancelled by the customer.`,
+        type: "CANCEL",
+        priority: "Medium",
+        link: `/admin/orders/${order._id}`,
+        isRead: false,
       });
-    } catch (e) {
-      console.error("[Commission] User-cancel reversal error:", e.message);
-    }
+    } catch (_e) {}
 
     // Restock only if stock was already deducted (COD or paid Razorpay orders)
     if (order.paymentStatus === "cod" || order.paymentStatus === "paid") {

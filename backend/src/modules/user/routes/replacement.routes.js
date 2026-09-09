@@ -5,7 +5,7 @@ const requireRole = require("../../../middlewares/requireRole");
 const requireActiveUser = require("../../../middlewares/requireActiveUser");
 const { evidenceUpload } = require("../../../middlewares/uploadMiddleware");
 
-router.use(authenticate, requireRole("user", "seller", "admin"), requireActiveUser);
+router.use(authenticate, requireRole("user", "admin"), requireActiveUser);
 router.get("/", replacementController.getMyReplacements);
 router.post("/", evidenceUpload.array("evidence", 5), replacementController.requestReplacement);
 

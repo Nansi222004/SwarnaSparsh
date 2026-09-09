@@ -5,6 +5,6 @@ const requireRole = require("../../../middlewares/requireRole");
 const requireActiveUser = require("../../../middlewares/requireActiveUser");
 
 router.get("/", couponController.getPublicCoupons);
-router.post("/validate", authenticate, requireRole("user", "seller", "admin"), requireActiveUser, couponController.validateCoupon);
+router.post("/validate", authenticate, requireRole("user", "admin"), requireActiveUser, couponController.validateCoupon);
 
 module.exports = router;

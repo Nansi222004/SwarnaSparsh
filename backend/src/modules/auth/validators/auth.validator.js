@@ -21,50 +21,6 @@ exports.adminLoginSchema = Joi.object({
   password: Joi.string().required(),
 });
 
-exports.sellerRegisterSchema = Joi.object({
-  fullName: Joi.string().min(3).max(100).pattern(/^[A-Za-z\s]+$/).required().messages({
-    "string.pattern.base": "Full name should contain only alphabets",
-  }),
-  mobileNumber: Joi.string().length(10).pattern(/^[0-9]+$/).required(),
-  email: Joi.string().email().required(),
-  password: Joi.string().min(6).required(),
-  shopName: Joi.string().min(3).max(100).required(),
-  shopAddress: Joi.string().required(),
-  city: Joi.string().pattern(/^[A-Za-z\s]+$/).required().messages({
-    "string.pattern.base": "City should contain only alphabets",
-  }),
-  state: Joi.string().pattern(/^[A-Za-z\s]+$/).required().messages({
-    "string.pattern.base": "State should contain only alphabets",
-  }),
-  acceptTerms: Joi.any().required(),
-});
-
-exports.sellerLoginSchema = Joi.object({
-  email: Joi.string().email().optional(),
-  identifier: Joi.string().optional(),
-  password: Joi.string().required(),
-}).or("email", "identifier");
-
-exports.sellerSendResetOtpSchema = Joi.object({
-  email: Joi.string().email().required(),
-});
-
-exports.sellerResetPasswordSchema = Joi.object({
-  email: Joi.string().email().required(),
-  otp: Joi.string().required(),
-  newPassword: Joi.string().min(6).required(),
-});
-
-exports.sellerSendResetMobileOtpSchema = Joi.object({
-  mobileNumber: Joi.string().length(10).pattern(/^[0-9]+$/).required(),
-});
-
-exports.sellerResetPasswordMobileSchema = Joi.object({
-  mobileNumber: Joi.string().length(10).pattern(/^[0-9]+$/).required(),
-  otp: Joi.string().required(),
-  newPassword: Joi.string().min(6).required(),
-});
-
 exports.adminSendResetOtpSchema = Joi.object({
   email: Joi.string().email().required(),
 });

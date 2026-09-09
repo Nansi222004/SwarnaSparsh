@@ -15,6 +15,7 @@ import trendingHeritage from '@assets/trending_heritage.png';
 import trendingModern from '@assets/trending_modern.png';
 import catAllPremium from '@assets/cat_all_premium.png';
 import catMenPremium from '@assets/cat_men_premium.png';
+import catWomenPremium from '@assets/cat_women_premium.png';
 
 // Semantic Category Assets
 import catRings from '@assets/categories/rings.png';
@@ -75,6 +76,8 @@ export const IMAGE_FALLBACKS = {
   category_toering: catToerings,
   category_nosepin: catNosepin,
   category_men: catMensilver,
+  recipient_men: catMenPremium,
+  recipient_women: catWomenPremium,
 
   // Gold Category specific
   gold_ring: goldRingsGreen,
@@ -87,7 +90,6 @@ export const IMAGE_FALLBACKS = {
   gold_nosepin: goldNosepinsGreen,
 
   // Editorial & Content
-  blog: trendingHeritage,
   editorial: trendingModern,
   default: premiumPendant
 };
@@ -221,19 +223,6 @@ export const getCategoryFallback = (category = '') => {
   }
 
   return IMAGE_FALLBACKS.category;
-};
-
-/**
- * Editorial and blog fallback matching
- * @param {string} [titleOrCategory] - Blog title or category
- * @returns {string} Image path / URL
- */
-export const getBlogFallback = (titleOrCategory = '') => {
-  const searchStr = String(titleOrCategory || '').toLowerCase();
-  if (searchStr.includes('modern') || searchStr.includes('trend') || searchStr.includes('style')) {
-    return IMAGE_FALLBACKS.editorial;
-  }
-  return IMAGE_FALLBACKS.blog;
 };
 
 /**

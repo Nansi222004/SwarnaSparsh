@@ -26,7 +26,7 @@ const FAQManagement = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [activeCategory, setActiveCategory] = useState('All');
 
-    const categories = ['Orders', 'Returns', 'Payments', 'Shopping', 'General', 'Seller'];
+    const categories = ['Orders', 'Returns', 'Payments', 'Shopping', 'General'];
 
     const fetchFaqs = async () => {
         setIsLoading(true);

@@ -15,8 +15,8 @@ import { useAuth } from './AuthContext';
 const SocketContext = createContext(null);
 
 // Derive socket server URL from the API URL (strip /api suffix)
-const SOCKET_URL = (import.meta.env.VITE_API_URL || 'http://localhost:5000/api')
-  .replace(/\/api\/?$/, '');
+const rawApiUrl = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '/api' : 'http://localhost:5000/api');
+const SOCKET_URL = rawApiUrl.replace(/\/api\/?$/, '') || (typeof window !== 'undefined' ? window.location.origin : '');
 
 export const SocketProvider = ({ children }) => {
   const { user } = useAuth();
@@ -24,13 +24,7 @@ export const SocketProvider = ({ children }) => {
   const [isConnected, setIsConnected] = useState(false);
 
   const connect = useCallback(() => {
-    // Retrieve token at connection time
-    let tokenKey = 'sands_token';
-    if (user?.role === 'admin') {
-      tokenKey = 'sands_admin_token';
-    } else if (user?.role === 'seller') {
-      tokenKey = 'sands_seller_token';
-    }
+    const tokenKey = user?.role === 'admin' ? 'sands_admin_token' : 'sands_token';
 
     const token = localStorage.getItem(tokenKey);
     if (!token || !user) return;

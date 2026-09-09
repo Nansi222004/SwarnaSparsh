@@ -20,7 +20,6 @@ const EXACT_ALLOWED_ROUTES = new Set([
   '/customization',
   '/new-arrivals',
   '/trending',
-  '/blogs',
   '/gold-collection',
 ]);
 

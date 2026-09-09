@@ -1,24 +1,18 @@
 const { sendPushNotification } = require('../services/firebaseAdmin');
 const User = require('../models/User');
-const Seller = require('../models/Seller');
 
 /**
- * Send push notification to a user or seller
- * @param {string} recipientId - User or Seller ID
- * @param {string} recipientType - 'user' or 'seller'
+ * Send push notification to a user
+ * @param {string} recipientId - User ID
+ * @param {string} recipientType - 'user'
  * @param {object} payload - { title, body, data }
  */
 async function sendNotificationToRecipient(recipientId, recipientType, payload) {
   try {
-    let recipient;
-    if (recipientType === 'user') {
-      recipient = await User.findById(recipientId);
-    } else if (recipientType === 'seller') {
-      recipient = await Seller.findById(recipientId);
-    }
+    const recipient = await User.findById(recipientId);
 
     if (!recipient) {
-      console.log(`${recipientType} not found for ID: ${recipientId}`);
+      console.log(`User not found for ID: ${recipientId}`);
       return;
     }
 
@@ -32,14 +26,14 @@ async function sendNotificationToRecipient(recipientId, recipientType, payload) 
     const uniqueTokens = [...new Set(tokens)].filter(t => t);
     
     if (uniqueTokens.length === 0) {
-      console.log(`No FCM tokens found for ${recipientType}: ${recipientId}`);
+      console.log(`No FCM tokens found for user: ${recipientId}`);
       return;
     }
     
     // Send notification
     await sendPushNotification(uniqueTokens, payload);
   } catch (error) {
-    console.error(`Error sending notification to ${recipientType}:`, error);
+    console.error(`Error sending notification to user:`, error);
   }
 }
 

@@ -112,7 +112,7 @@ const LowStockAlertsPage = () => {
                                                 <div>
                                                     <p className="text-sm font-bold text-black line-clamp-1">{item.productName}</p>
                                                     <p className="text-[10px] text-gray-400 uppercase tracking-widest">{item.variantName || 'Standard'}</p>
-                                                    <p className="text-[10px] text-gray-400 uppercase tracking-widest">{item.sellerName || 'Admin Inventory'}</p>
+                                                    <p className="text-[10px] text-gray-400 uppercase tracking-widest">Store Inventory</p>
                                                 </div>
                                             </div>
                                         </td>

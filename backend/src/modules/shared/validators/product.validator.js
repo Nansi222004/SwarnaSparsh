@@ -75,7 +75,7 @@ const productSchema = Joi.object({
   cardBadge: Joi.string().allow(""),
   videoUrl: Joi.string().trim().allow(""),
   removeVideo: boolField.optional(),
-  paymentGatewayChargeBearer: Joi.string().valid("seller", "user").default("seller"),
+  paymentGatewayChargeBearer: Joi.string().valid("store", "seller", "user").default("store"),
   huid: Joi.string().allow(""),
   sizes: Joi.array().items(Joi.string().trim()).optional(),
   variants: Joi.array().items(variantSchema).min(1).required(),

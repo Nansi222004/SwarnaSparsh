@@ -9,7 +9,7 @@ const BULK_ACTIONS = [
     { id: 'set_hallmarking_charge', label: 'Set Hallmarking', icon: <DollarSign size={14} />, requiresValue: true, valueLabel: 'Amount' },
     { id: 'set_diamond_certificate_charge', label: 'Set Diamond Certificate', icon: <DollarSign size={14} />, requiresValue: true, valueLabel: 'Amount' },
     { id: 'set_pg_charge_to_user', label: 'PG Charge to User', icon: <User size={14} />, requiresValue: false, valueLabel: '' },
-    { id: 'set_pg_charge_to_seller', label: 'PG Charge to Seller/Admin', icon: <Store size={14} />, requiresValue: false, valueLabel: '' },
+    { id: 'set_pg_charge_to_seller', label: 'Store Absorbs PG Charge (0%)', icon: <Store size={14} />, requiresValue: false, valueLabel: '' },
 ];
 
 const BulkUpdateModal = ({ isOpen, onClose, onApply, products = [] }) => {

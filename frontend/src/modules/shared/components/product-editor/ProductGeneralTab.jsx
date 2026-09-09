@@ -20,9 +20,7 @@ const ProductGeneralTab = ({
     categories, 
     isViewMode, 
     handleCategoryChange,
-    createdProductData,
-    sellerProfile,
-    editorMode
+    createdProductData
 }) => {
     const [categorySearchQuery, setCategorySearchQuery] = React.useState('');
     const filteredCategories = React.useMemo(() => {
@@ -31,15 +29,10 @@ const ProductGeneralTab = ({
         );
     }, [categories, categorySearchQuery]);
 
-    const materialOptions = React.useMemo(() => {
-        const options = [];
-        const hasGold = editorMode !== 'seller' || !sellerProfile || !!sellerProfile.bisNumberGold;
-        const hasSilver = editorMode !== 'seller' || !sellerProfile || !!sellerProfile.bisNumberSilver;
-
-        if (hasGold) options.push({ label: 'Gold', value: 'Gold' });
-        if (hasSilver) options.push({ label: 'Silver', value: 'Silver' });
-        return options;
-    }, [sellerProfile, editorMode]);
+    const materialOptions = React.useMemo(() => [
+        { label: 'Gold', value: 'Gold' },
+        { label: 'Silver', value: 'Silver' }
+    ], []);
 
     return (
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -174,11 +167,11 @@ const ProductGeneralTab = ({
 
                         <Select
                             label="PG Fee Bearer"
-                            value={formData.paymentGatewayChargeBearer || 'seller'}
+                            value={formData.paymentGatewayChargeBearer || 'store'}
                             onChange={(e) => setFormData({ ...formData, paymentGatewayChargeBearer: e.target.value })}
                             options={[
-                                { label: 'Seller / Admin', value: 'seller' },
-                                { label: 'User', value: 'user' }
+                                { label: 'Store (Swarna Sparsh Absorbed - 0%)', value: 'store' },
+                                { label: 'Customer / User (2% Surcharge)', value: 'user' }
                             ]}
                             disabled={isViewMode}
                         />

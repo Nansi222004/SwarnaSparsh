@@ -92,7 +92,7 @@ const AdminDirectSales = () => {
             if (res?.success) {
                 setPreview(res.data || res);
             } else {
-                toast.error(res?.message || 'Serial code not found or belongs to a seller');
+                toast.error(res?.message || 'Serial code not found or invalid');
             }
         } catch (err) {
             toast.error(err.message || 'Lookup failed');

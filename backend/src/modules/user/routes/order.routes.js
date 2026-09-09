@@ -6,10 +6,13 @@ const authenticate = require("../../../middlewares/authenticate");
 const requireRole = require("../../../middlewares/requireRole");
 const requireActiveUser = require("../../../middlewares/requireActiveUser");
 
-router.use(authenticate, requireRole("user", "seller", "admin"), requireActiveUser);
+const invoiceController = require("../../admin/controllers/invoice.controller");
+
+router.use(authenticate, requireRole("user", "admin"), requireActiveUser);
 
 router.get("/", orderController.getOrders);
 router.get("/:id", orderController.getOrderDetail);
+router.get("/:id/invoice", invoiceController.getOrderInvoice);
 router.post("/place", validate(placeOrderSchema), orderController.placeOrder);
 router.patch("/:id/cancel", orderController.cancelOrder);
 

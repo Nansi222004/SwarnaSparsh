@@ -35,15 +35,15 @@ import {
 const SharedProductEditor = ({
     productApi,
     metalPricingApi,
-    backPath = '/seller/products',
+    backPath = '/admin/products',
     categoryApi,
-    editorMode = 'seller'
+    editorMode = 'admin'
 }) => {
     const { id } = useParams();
     const navigate = useNavigate();
     const location = useLocation();
-    const isAdminMode = editorMode === 'admin';
-    const storageKey = editorMode === 'admin' ? 'sands_admin_add_product_form' : 'sands_seller_add_product_form';
+    const isAdminMode = true;
+    const storageKey = 'sands_admin_add_product_form';
 
     const isViewMode = location.pathname.includes('/view/');
     const isEditMode = Boolean(id) && !isViewMode;
@@ -69,7 +69,6 @@ const SharedProductEditor = ({
     const [createdProductData, setCreatedProductData] = useState(null);
     const [gstRate, setGstRate] = useState(3);
     const [metalRates, setMetalRates] = useState({ gold: 0, silver: 0, platinum: 0 });
-    const [sellerProfile, setSellerProfile] = useState(null);
     
     const serialBarcodeRefs = useRef({});
     
@@ -139,7 +138,7 @@ const SharedProductEditor = ({
             relatedProducts: [],
             weight: '',
             weightUnit: 'Grams',
-            paymentGatewayChargeBearer: 'seller',
+            paymentGatewayChargeBearer: 'store',
             videoUrl: '',
             status: 'Active',
             active: true,
@@ -434,28 +433,8 @@ const SharedProductEditor = ({
         loadPricing();
     }, []);
 
-    useEffect(() => {
-        if (editorMode === 'seller') {
-            api.get('/seller/profile/me')
-                .then(res => {
-                    const profile = res.data?.data?.seller || res.data?.seller;
-                    if (profile) setSellerProfile(profile);
-                })
-                .catch(err => console.error("Failed to load profile", err));
-        }
-    }, [editorMode]);
 
-    useEffect(() => {
-        if (editorMode === 'seller' && sellerProfile && !isEditMode && !isViewMode) {
-            const hasGold = !!sellerProfile.bisNumberGold;
-            const hasSilver = !!sellerProfile.bisNumberSilver;
-            if (!hasSilver && hasGold && formData.material === 'Silver') {
-                setFormData(prev => ({ ...prev, material: 'Gold' }));
-            } else if (!hasGold && hasSilver && formData.material === 'Gold') {
-                setFormData(prev => ({ ...prev, material: 'Silver' }));
-            }
-        }
-    }, [sellerProfile, editorMode, isEditMode, isViewMode, formData.material]);
+
 
     useEffect(() => {
         if (!expandedVariant && formData.variants?.[0]?.id) {
@@ -529,7 +508,7 @@ const SharedProductEditor = ({
                         audience: Array.isArray(data.audience) && data.audience.length > 0 ? data.audience : ['unisex'],
                         weight: data.weight || '',
                         weightUnit: data.weightUnit || 'Grams',
-                        paymentGatewayChargeBearer: data.paymentGatewayChargeBearer || 'seller',
+                        paymentGatewayChargeBearer: data.paymentGatewayChargeBearer === 'user' ? 'user' : 'store',
                         diamondType: data.diamondType || 'none',
                         categories: normalizedCategories.slice(0, 1),
                         variants: mappedVariants.length > 0 ? mappedVariants : prev.variants,
@@ -958,7 +937,7 @@ const SharedProductEditor = ({
             productForm.append('audience', JSON.stringify(payload.audience || ['unisex']));
             productForm.append('weight', primaryVariant.weight || '');
             productForm.append('weightUnit', primaryVariant.weightUnit || 'Grams');
-            productForm.append('paymentGatewayChargeBearer', payload.paymentGatewayChargeBearer || 'seller');
+            productForm.append('paymentGatewayChargeBearer', payload.paymentGatewayChargeBearer || 'store');
             productForm.append('silverCategory', payload.silverCategory || '');
             productForm.append('goldCategory', payload.goldCategory || '');
             productForm.append('cardLabel', payload.cardLabel || '');
@@ -1050,7 +1029,7 @@ const SharedProductEditor = ({
                                     {isEditMode && <span className="px-2 py-0.5 rounded-lg bg-amber-50 border border-amber-200 text-amber-700 text-xs font-medium tracking-wide">{formData.productCode || 'GEN-001'}</span>}
                                 </h1>
                                 <p className="text-sm font-light text-gray-500 mt-1">
-                                    {isAdminMode ? 'Admin Product Management' : 'Seller Product Management'}
+                                    Manage product details, pricing, and inventory
                                 </p>
                             </div>
                         </div>
@@ -1076,7 +1055,7 @@ const SharedProductEditor = ({
                         {!isViewMode && (
                             <button
                                 onClick={handleSubmit}
-                                disabled={isSaving || (editorMode === 'seller' && sellerProfile && !sellerProfile.bisNumberGold && !sellerProfile.bisNumberSilver && !isEditMode && !isViewMode)}
+                                disabled={isSaving}
                                 className="px-6 py-2.5 bg-gray-900 text-white rounded-lg text-sm font-medium shadow-sm hover:bg-black transition-all flex items-center justify-center gap-2 active:scale-95 disabled:opacity-50"
                             >
                                 {isSaving ? <Loader2 size={16} className="animate-spin" /> : <SuccessIcon size={16} />}
@@ -1089,41 +1068,19 @@ const SharedProductEditor = ({
 
             {/* Main Content Area */}
             <div className="max-w-[1400px] mx-auto px-4 md:px-8 mt-8">
-                {editorMode === 'seller' && sellerProfile && !sellerProfile.bisNumberGold && !sellerProfile.bisNumberSilver && !isEditMode && !isViewMode ? (
-                    <div className="bg-white rounded-[2rem] border border-red-100 p-8 sm:p-12 text-center max-w-xl mx-auto shadow-sm space-y-6">
-                        <div className="w-16 h-16 rounded-2xl bg-rose-50 border border-rose-100 flex items-center justify-center mx-auto text-rose-500">
-                            <Info size={32} />
-                        </div>
-                        <div className="space-y-2">
-                            <h3 className="text-xl font-bold text-gray-900 uppercase tracking-tight">BIS Credentials Required</h3>
-                            <p className="text-sm text-gray-500 leading-relaxed font-normal">
-                                You must update either your <strong>BIS Hallmark License Number for Gold</strong> or <strong>Silver</strong> in your profile settings before you can list products.
-                            </p>
-                        </div>
-                        <button
-                            type="button"
-                            onClick={() => navigate('/seller/profile')}
-                            className="inline-flex items-center gap-2 px-6 py-3 bg-gray-900 hover:bg-black text-white text-xs font-bold uppercase tracking-widest rounded-xl transition-all shadow-sm active:scale-95"
-                        >
-                            Go to Profile Settings <ExternalLink size={14} />
-                        </button>
-                    </div>
-                ) : (
-                    <div className="grid grid-cols-1 gap-8">
-                        {/* Active Tab Component */}
-                        {activeTab === 'general' && (
-                            <ProductGeneralTab 
-                                formData={formData} 
-                                setFormData={setFormData} 
-                                errors={combinedErrors} 
-                                isViewMode={isViewMode} 
-                                categories={categories}
-                                handleCategoryChange={(val) => setFormData(prev => ({ ...prev, categories: [{ category: val }] }))}
-                                createdProductData={createdProductData}
-                                sellerProfile={sellerProfile}
-                                editorMode={editorMode}
-                            />
-                        )}
+                <div className="grid grid-cols-1 gap-8">
+                    {/* Active Tab Component */}
+                    {activeTab === 'general' && (
+                        <ProductGeneralTab 
+                            formData={formData} 
+                            setFormData={setFormData} 
+                            errors={combinedErrors} 
+                            isViewMode={isViewMode} 
+                            categories={categories}
+                            handleCategoryChange={(val) => setFormData(prev => ({ ...prev, categories: [{ category: val }] }))}
+                            createdProductData={createdProductData}
+                        />
+                    )}
 
                         {activeTab === 'variants' && (
                             <ProductVariantsTab 
@@ -1189,7 +1146,6 @@ const SharedProductEditor = ({
                             />
                         )}
                     </div>
-                )}
             </div>
 
             {/* Success Modal */}

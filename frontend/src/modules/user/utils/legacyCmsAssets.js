@@ -26,11 +26,6 @@ import pinkEarrings from '@assets/pink_earrings_1767775466166.png';
 import pinkChains from '@assets/pink_chains_1767775516641.png';
 import pinkAnklets from '@assets/pink_anklets_1767775536388.png';
 import proposalBanner from '@assets/proposal_banner.png';
-import haldi from '@assets/haldi.png';
-import sangeet from '@assets/sangeet.png';
-import reception from '@assets/reception.png';
-import bridal from '@assets/bridal.png';
-import bridesmaid from '@assets/hero_slide_3.png';
 import bannerDaily from '@assets/banner_daily.png';
 import bannerOffice from '@assets/banner_office.png';
 import bannerParty from '@assets/banner_party.png';
@@ -119,8 +114,59 @@ import womenCategoryChains from '@assets/women-categories/Chains.png';
 import womenCategoryBangles from '@assets/women-categories/Bangles.png';
 import womenCategorySets from '@assets/women-categories/Sets.png';
 import womenCategoryPersonalised from '@assets/women-categories/Personalised.png';
+import catMenPremium from '@assets/cat_men_premium.png';
+import catWomenPremium from '@assets/cat_women_premium.png';
+import catWomenPortraitNew from '@assets/cat_women_portrait_new.jpg';
+import pureSilverAtelierHero from '@assets/pure_silver_atelier_hero.jpg';
+import haldiEditorial from '@assets/home_occasions/home_haldi_editorial.jpg';
+import sangeetEditorial from '@assets/home_occasions/home_sangeet_editorial.jpg';
+import receptionEditorial from '@assets/home_occasions/home_reception_editorial.jpg';
+import bridalEditorial from '@assets/home_occasions/home_gift_for_bride_editorial.jpg';
+import bridesmaidEditorial from '@assets/home_occasions/home_gift_for_bridesmaid_editorial.jpg';
+import goldCasualWear from '@assets/gold_lifestyle/gold_casual_wear.jpg';
+import goldPartyWear from '@assets/gold_lifestyle/gold_party_wear.png';
+import goldGiftCard from '@assets/gold_lifestyle/gold_gift_card.png';
+import goldTraditional from '@assets/gold_lifestyle/gold_traditional.png';
+import goldMinimalistic from '@assets/gold_lifestyle/gold_minimalistic.png';
+import goldTwinning from '@assets/gold_lifestyle/gold_twinning.png';
+import goldDateNights from '@assets/gold_lifestyle/gold_date_nights.png';
+import goldBridesmaid from '@assets/gold_lifestyle/gold_bridesmaid.jpg';
 
 const legacyAssetMap = {
+  'gold_casual_wear.jpg': goldCasualWear,
+  'gold_party_wear.png': goldPartyWear,
+  'gold_gift_card.png': goldGiftCard,
+  'gold_traditional.png': goldTraditional,
+  'gold_minimalistic.png': goldMinimalistic,
+  'gold_twinning.png': goldTwinning,
+  'gold_date_nights.png': goldDateNights,
+  'gold_bridesmaid.jpg': goldBridesmaid,
+  'lifestyle_casual.png': goldCasualWear,
+  'lifestyle_party.png': goldPartyWear,
+  'lifestyle_gift_card.png': goldGiftCard,
+  'lifestyle_traditional.png': goldTraditional,
+  'lifestyle_minimalistic.png': goldMinimalistic,
+  'lifestyle_twinning.png': goldTwinning,
+  'lifestyle_date_night.png': goldDateNights,
+  'home_haldi.png': haldiEditorial,
+  'home_haldi_editorial.jpg': haldiEditorial,
+  'home_sangeet.png': sangeetEditorial,
+  'home_sangeet_editorial.jpg': sangeetEditorial,
+  'home_reception.png': receptionEditorial,
+  'home_reception_editorial.jpg': receptionEditorial,
+  'home_gift_for_bride.png': bridalEditorial,
+  'home_gift_for_bride_editorial.jpg': bridalEditorial,
+  'home_gift_for_bridesmaid.png': bridesmaidEditorial,
+  'home_gift_for_bridesmaid_editorial.jpg': bridesmaidEditorial,
+  'haldi.png': haldiEditorial,
+  'sangeet.png': sangeetEditorial,
+  'reception.png': receptionEditorial,
+  'bridal.png': bridalEditorial,
+  'pure_silver_atelier_hero.jpg': pureSilverAtelierHero,
+  'banner_elegant_silver.png': pureSilverAtelierHero,
+  'cat_men_premium.png': catMenPremium,
+  'cat_women_premium.png': catWomenPremium,
+  'cat_women_portrait_new.jpg': catWomenPortraitNew,
   'cat_pendant_wine.png': catPendantWine,
   'cat_ring_wine.png': catRingWine,
   'cat_earrings_wine.png': catEarringsWine,
@@ -149,11 +195,11 @@ const legacyAssetMap = {
   'pink_chains_1767775516641.png': pinkChains,
   'pink_anklets_1767775536388.png': pinkAnklets,
   'proposal_banner.png': proposalBanner,
-  'haldi.png': haldi,
-  'sangeet.png': sangeet,
-  'reception.png': reception,
-  'bridal.png': bridal,
-  'hero_slide_3.png': bridesmaid,
+  'haldi.png': haldiEditorial,
+  'sangeet.png': sangeetEditorial,
+  'reception.png': receptionEditorial,
+  'bridal.png': bridalEditorial,
+  'hero_slide_3.png': bridesmaidEditorial,
   'banner_daily.png': bannerDaily,
   'banner_office.png': bannerOffice,
   'banner_party.png': bannerParty,

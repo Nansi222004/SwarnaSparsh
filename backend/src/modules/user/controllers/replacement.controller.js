@@ -3,7 +3,6 @@ const Return = require("../../../models/Return");
 const Order = require("../../../models/Order");
 const { generateReplacementId } = require("../../../utils/generateId");
 const { success, error } = require("../../../utils/apiResponse");
-const { createSellerNotification } = require("../../../services/sellerNotificationService");
 const { enqueueEmail } = require("../../../services/emailService");
 const emailTemplates = require("../../../services/emailTemplates");
 
@@ -58,33 +57,20 @@ exports.requestReplacement = async (req, res) => {
     });
     await order.save();
 
-    // Notify seller (if this item belongs to a seller listing).
-    if (item?.sellerId) {
-      await createSellerNotification({
-        sellerId: item.sellerId,
-        title: "Replacement requested",
-        message: `Replacement requested for order ${order.orderId || order._id}. Item: ${item.name || "Order item"}.`,
+    // Centralized Admin notification for replacement request
+    try {
+      const Notification = require("../../../models/Notification");
+      await Notification.create({
+        role: "admin",
+        isAdmin: true,
+        title: "Replacement Requested",
+        message: `Replacement requested for order #${order.orderId || order._id}. Item: ${item.name || "Order item"}.`,
         type: "REPLACEMENT",
         priority: "High",
-        link: `/seller/replacement-details/${replacement._id}`
+        link: `/admin/replacements`,
+        isRead: false,
       });
-
-      const Seller = require("../../../models/Seller");
-      const seller = await Seller.findById(item.sellerId);
-      if (seller && seller.email) {
-        enqueueEmail({
-          to: seller.email,
-          subject: `Replacement Request - Order ${order.orderId || order._id} | Swarna Sparsh`,
-          html: emailTemplates.sellerReplacementNotif({
-            order,
-            sellerName: seller.name,
-            item,
-            replacementId: replacement.replacementId
-          }),
-          type: "seller_replacement_notification"
-        });
-      }
-    }
+    } catch (_e) {}
 
     // Email customer
     const reqUser = await require("../../../models/User").findById(userId).select("email name");
