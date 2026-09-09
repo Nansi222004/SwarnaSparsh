@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Edit2, Trash2, Eye, Package, TrendingUp, Check, Plus, Download, RefreshCw } from 'lucide-react';
+import { Edit2, Trash2, Eye, Package, TrendingUp, Check, Plus, Download, RefreshCw, Barcode } from 'lucide-react';
 import PageHeader from '../components/common/PageHeader';
 import DataTable from '../components/common/DataTable';
 import BulkUpdateModal from '../components/BulkUpdateModal';
@@ -15,7 +15,6 @@ const ProductManagement = () => {
     const [searchParams] = useSearchParams();
     const isSelectMode = searchParams.get('selectMode') === 'true';
     const returnUrl = searchParams.get('returnUrl') || '/admin/products';
-    const sellerId = searchParams.get('sellerId') || '';
 
     const [searchTerm, setSearchTerm] = useState('');
     const [isBulkModalOpen, setIsBulkModalOpen] = useState(false);
@@ -64,7 +63,6 @@ const ProductManagement = () => {
                 maxPrice: filtersObj.maxPrice,
                 inStock: filtersObj.inStock === 'all' ? '' : filtersObj.inStock,
                 sortBy: filtersObj.sortBy,
-                sellerId: sellerId || '',
                 page: 1,
                 limit: Math.max(1000, pagination?.total || 1000)
             };
@@ -81,7 +79,7 @@ const ProductManagement = () => {
                 'price',
                 'stock',
                 'categoryName',
-                'sellerName',
+                'brand',
                 'status',
                 'createdAt'
             ];
@@ -91,7 +89,7 @@ const ProductManagement = () => {
                 'Price (INR)',
                 'Stock Units',
                 'Category',
-                'Seller Shop',
+                'Brand',
                 'Status',
                 'Created At'
             ];
@@ -108,7 +106,7 @@ const ProductManagement = () => {
                     price,
                     stock,
                     categoryName: primaryCat?.name || primaryCat?.category || categoriesById[p.category] || 'Uncategorized',
-                    sellerName: p.sellerId?.shopName || p.sellerName || 'Platform',
+                    brand: p.brand || 'Swarna Sparsh',
                     status: p.active === false ? 'INACTIVE' : 'ACTIVE'
                 };
             });
@@ -131,7 +129,6 @@ const ProductManagement = () => {
                 maxPrice: filtersObj.maxPrice,
                 inStock: filtersObj.inStock === 'all' ? '' : filtersObj.inStock,
                 sortBy: filtersObj.sortBy,
-                sellerId: sellerId || '',
                 page: isLoadMore ? filtersObj.page + 1 : 1,
                 limit: filtersObj.limit
             };
@@ -155,7 +152,7 @@ const ProductManagement = () => {
 
     useEffect(() => {
         fetchProducts();
-    }, [selectedCategory, filtersObj.minPrice, filtersObj.maxPrice, filtersObj.inStock, filtersObj.sortBy, sellerId]);
+    }, [selectedCategory, filtersObj.minPrice, filtersObj.maxPrice, filtersObj.inStock, filtersObj.sortBy]);
 
     useEffect(() => {
         const loadCategories = async () => {
@@ -329,6 +326,13 @@ const ProductManagement = () => {
             render: (item) => (
                 <div className="flex items-center justify-end gap-3 min-w-[100px]">
                     <button
+                        onClick={() => navigate(`/admin/products/barcodes/${item._id}`)}
+                        className="p-1 text-gray-700 hover:text-[#8D6E63] transition-colors"
+                        title="Serial Unit Barcodes"
+                    >
+                        <Barcode className="w-4 h-4" />
+                    </button>
+                    <button
                         onClick={() => navigate(`/admin/products/view/${item._id}`)}
                         className="p-1 text-gray-700 hover:text-black transition-colors"
                         title="View Details"
@@ -400,9 +404,7 @@ const ProductManagement = () => {
                 title={isSelectMode ? "Select Products" : "Products"}
                 subtitle={isSelectMode
                     ? `Select products to add to showcase (${selectedIds.length} selected)`
-                    : sellerId
-                        ? "Showing products for selected seller."
-                        : "Manage your inventory, pricing, and product details."}
+                    : "Manage your inventory, pricing, and product details."}
                 actions={!isSelectMode ? [
                     {
                         label: isSyncing ? "Syncing..." : "Sync from SwarnaSparsh.com",
@@ -418,7 +420,6 @@ const ProductManagement = () => {
                         className: "bg-[#3E2723] text-white px-4 md:px-5 py-2 md:py-2.5 rounded-lg text-xs md:text-sm font-medium flex items-center justify-center gap-2 hover:bg-[#2D1B18] transition-all shadow-sm active:scale-95"
                     }
                 ] : undefined}
-                backPath={sellerId ? `/admin/seller-details/${sellerId}` : undefined}
             />
 
             <DataTable

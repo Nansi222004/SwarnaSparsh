@@ -5,6 +5,7 @@ import {
     CreditCard,
     MapPin,
     Package,
+    Printer,
     RefreshCw,
     Tag,
     Truck,
@@ -14,7 +15,7 @@ import {
 import { useNavigate, useParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { adminService } from '../services/adminService';
-import CommissionBreakdownCard from '../components/CommissionBreakdownCard';
+import AdminShipmentPanel from '../components/AdminShipmentPanel';
 
 const STATUS_STYLES = {
     Pending: 'bg-yellow-50 text-yellow-700 border-yellow-100',
@@ -254,12 +255,18 @@ const OrderDetailPage = () => {
 
     return (
         <div className="space-y-6 font-sans text-left pb-20 animate-in fade-in duration-500">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <button
                     onClick={() => navigate('/admin/orders')}
                     className="flex items-center gap-2 text-xs font-bold text-gray-500 hover:text-gray-900 uppercase tracking-widest transition-colors"
                 >
                     <ArrowLeft size={16} /> Back to Orders
+                </button>
+                <button
+                    onClick={() => navigate(`/admin/orders/${id}/invoice`)}
+                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#3E2723] hover:bg-[#2e1d1a] text-white text-xs font-bold shadow-sm transition-all"
+                >
+                    <Printer size={15} /> Print GST Tax Invoice
                 </button>
             </div>
 
@@ -442,10 +449,23 @@ const OrderDetailPage = () => {
                 </div>
 
                 <div className="space-y-6">
-                    <CommissionBreakdownCard
-                        orderId={order._id}
-                        commissionSummary={order.commissionSummary}
-                    />
+                    {Boolean(order.commissionSummary?.totalCommission > 0) && (
+                        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-3">
+                            <h3 className="text-xs font-black text-gray-900 uppercase tracking-widest">Historical Commission Record</h3>
+                            <div className="flex justify-between text-xs text-gray-600">
+                                <span>Gross Subtotal:</span>
+                                <span className="font-semibold text-gray-900">{currency(order.commissionSummary?.grossSubtotal || 0)}</span>
+                            </div>
+                            <div className="flex justify-between text-xs text-gray-600">
+                                <span>Total Commission:</span>
+                                <span className="font-semibold text-amber-600">{currency(order.commissionSummary?.totalCommission || 0)}</span>
+                            </div>
+                            <div className="flex justify-between text-xs text-gray-600">
+                                <span>Historical Seller Payable:</span>
+                                <span className="font-semibold text-emerald-600">{currency(order.commissionSummary?.sellerPayable || 0)}</span>
+                            </div>
+                        </div>
+                    )}
 
                     <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-5">
                         <div className="flex items-center gap-2">
@@ -483,10 +503,13 @@ const OrderDetailPage = () => {
                         </div>
                     </div>
 
+                    {/* Shiprocket Courier Booking & Shipment Management */}
+                    <AdminShipmentPanel order={order} onShipmentCreated={refreshOrder} />
+
                     <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-5">
                         <div className="flex items-center gap-2">
                             <Truck size={16} className="text-gray-400" />
-                            <h3 className="text-xs font-black text-gray-900 uppercase tracking-widest">Shipping Info</h3>
+                            <h3 className="text-xs font-black text-gray-900 uppercase tracking-widest">Manual Shipping Override</h3>
                         </div>
 
                         <div className="space-y-4">

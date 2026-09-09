@@ -34,36 +34,6 @@ const AddNotification = () => {
         }
     };
 
-    const handleSearchSellers = async () => {
-        setSearching(true);
-        try {
-            const res = await adminService.getSellers({ search: searchQuery });
-            setSearchResults(res || []);
-        } catch (err) {
-            console.error(err);
-            toast.error("Failed to search sellers");
-        } finally {
-            setSearching(false);
-        }
-    };
-
-    const handleSearchBlogs = async () => {
-        setSearching(true);
-        try {
-            const res = await adminService.getAdminBlogs();
-            const filtered = (res || []).filter(b => 
-                b.title?.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                b.slug?.toLowerCase().includes(searchQuery.toLowerCase())
-            );
-            setSearchResults(filtered);
-        } catch (err) {
-            console.error(err);
-            toast.error("Failed to search blogs");
-        } finally {
-            setSearching(false);
-        }
-    };
-
     const handleSubmit = async (e) => {
         e.preventDefault();
         setSubmitting(true);
@@ -199,8 +169,6 @@ const AddNotification = () => {
                                         <option value="GENERAL">General Pages</option>
                                         <option value="CATEGORY">Category / Shop Filters</option>
                                         <option value="PRODUCT">Specific Product</option>
-                                        <option value="SELLER">Specific Seller</option>
-                                        <option value="BLOG">Specific Blog Post</option>
                                     </select>
                                 </div>
 
@@ -217,7 +185,6 @@ const AddNotification = () => {
                                             <option value="/cart">Shopping Cart</option>
                                             <option value="/help">Help Center</option>
                                             <option value="/gift-cards">Gift Cards</option>
-                                            <option value="/blogs">Blogs list</option>
                                         </select>
                                     </div>
                                 )}
@@ -240,32 +207,26 @@ const AddNotification = () => {
                                 )}
                             </div>
 
-                            {/* Search-based builders: Product, Seller, Blog */}
-                            {(linkType === 'PRODUCT' || linkType === 'SELLER' || linkType === 'BLOG') && (
+                            {/* Search-based builders: Product */}
+                            {linkType === 'PRODUCT' && (
                                 <div className="space-y-3 pt-2 border-t border-gray-200/50">
                                     <div className="flex gap-2">
                                         <input
                                             type="text"
-                                            placeholder={`Search ${linkType.toLowerCase()}s...`}
+                                            placeholder="Search products..."
                                             className="flex-1 p-2 bg-white border border-gray-200 rounded-lg text-xs font-medium text-gray-900 focus:outline-none focus:border-black placeholder:text-gray-300"
                                             value={searchQuery}
                                             onChange={(e) => setSearchQuery(e.target.value)}
                                             onKeyDown={(e) => {
                                                 if (e.key === 'Enter') {
                                                     e.preventDefault();
-                                                    if (linkType === 'PRODUCT') handleSearchProducts();
-                                                    if (linkType === 'SELLER') handleSearchSellers();
-                                                    if (linkType === 'BLOG') handleSearchBlogs();
+                                                    handleSearchProducts();
                                                 }
                                             }}
                                         />
                                         <button
                                             type="button"
-                                            onClick={() => {
-                                                if (linkType === 'PRODUCT') handleSearchProducts();
-                                                if (linkType === 'SELLER') handleSearchSellers();
-                                                if (linkType === 'BLOG') handleSearchBlogs();
-                                            }}
+                                            onClick={() => handleSearchProducts()}
                                             disabled={searching}
                                             className="px-4 py-2 bg-black text-white text-xs font-bold rounded-lg uppercase tracking-wider hover:bg-gray-800 disabled:bg-gray-400 transition-colors"
                                         >
@@ -277,31 +238,18 @@ const AddNotification = () => {
                                         <div className="space-y-1.5">
                                             <label className="text-[9px] font-bold text-gray-400 uppercase tracking-wider">Select Results</label>
                                             <select
-                                                className="w-full p-2.5 bg-white border-2 border-gray-100 rounded-lg text-xs font-bold text-gray-900 focus:outline-none focus:border-black transition-all"
+                                                 className="w-full p-2.5 bg-white border-2 border-gray-100 rounded-lg text-xs font-bold text-gray-900 focus:outline-none focus:border-black transition-all"
                                                 onChange={(e) => {
                                                     const val = e.target.value;
                                                     if (!val) return;
-                                                    if (linkType === 'PRODUCT') {
-                                                        setFormData(prev => ({ ...prev, link: `/product/${val}` }));
-                                                    } else if (linkType === 'SELLER') {
-                                                        setFormData(prev => ({ ...prev, link: `/admin/seller-details/${val}` }));
-                                                    } else if (linkType === 'BLOG') {
-                                                        setFormData(prev => ({ ...prev, link: `/blogs/${val}` }));
-                                                    }
+                                                    setFormData(prev => ({ ...prev, link: `/product/${val}` }));
                                                 }}
                                                 defaultValue=""
                                             >
                                                 <option value="" disabled>-- Choose one from search results --</option>
-                                                {searchResults.map((item) => {
-                                                    if (linkType === 'PRODUCT') {
-                                                        return <option key={item._id} value={item._id}>{item.name} ({item.category?.name || 'Gold/Silver'})</option>;
-                                                    } else if (linkType === 'SELLER') {
-                                                        return <option key={item._id} value={item._id}>{item.businessName || item.name} - {item.phone}</option>;
-                                                    } else if (linkType === 'BLOG') {
-                                                        return <option key={item.slug} value={item.slug}>{item.title}</option>;
-                                                    }
-                                                    return null;
-                                                })}
+                                                {searchResults.map((item) => (
+                                                    <option key={item._id} value={item._id}>{item.name} ({item.category?.name || 'Gold/Silver'})</option>
+                                                ))}
                                             </select>
                                         </div>
                                     ) : searchQuery && !searching && (

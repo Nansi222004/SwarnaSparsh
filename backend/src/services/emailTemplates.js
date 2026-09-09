@@ -294,54 +294,7 @@ const returnStatusUpdate = ({
   return layout(`Return ${newStatus} — ${returnReq.returnId}`, body);
 };
 
-/**
- * 7. Seller — New Order Notification
- */
-const sellerNewOrder = ({ order, sellerName, sellerItems }) => {
-  const body = `
-    <h2 style="margin:0 0 4px;font-size:22px;color:${BRAND_DARK};">New Order Received! 🛍️</h2>
-    <p style="color:#666;margin:0 0 24px;font-size:15px;">Hi ${sellerName || "there"}, you have a new order waiting to be processed.</p>
 
-    <div style="background:${BRAND_LIGHT};border-radius:8px;padding:20px 24px;margin-bottom:24px;">
-      <p style="margin:0;font-size:12px;color:#888;font-weight:600;text-transform:uppercase;">Order ID</p>
-      <p style="margin:4px 0 0;font-size:20px;font-weight:700;color:${BRAND_DARK};">${order.orderId}</p>
-      <p style="margin:8px 0 0;font-size:13px;color:#555;">Payment: ${badge(order.paymentStatus === "paid" ? "Paid" : "Cash on Delivery", order.paymentStatus === "paid" ? "#4CAF50" : "#FF9800")}</p>
-    </div>
-
-    <p style="font-size:14px;font-weight:600;color:${BRAND_DARK};margin:0 0 12px;">Your Items in this Order:</p>
-    ${itemsTable(sellerItems)}
-
-    ${divider()}
-    <p style="font-size:13px;color:#666;">Please prepare and ship this order at the earliest. Log in to your seller dashboard to create a shipment.</p>
-    <div style="text-align:center;margin-top:20px;">
-      ${btn("Process Order", `${process.env.CLIENT_URL || "https://sandsjewels.com"}/seller/order-details/${order._id}`)}
-    </div>`;
-
-  return layout(`New Order — ${order.orderId}`, body);
-};
-
-/**
- * 8. Seller — Return Notif
- */
-const sellerReturnNotif = ({ order, sellerName, item, returnId }) => {
-  const body = `
-    <h2 style="margin:0 0 4px;font-size:22px;color:${BRAND_DARK};">Return Requested for Your Item</h2>
-    <p style="color:#666;margin:0 0 24px;font-size:15px;">Hi ${sellerName || "there"}, a customer has requested a return for an item from order <strong>${order?.orderId || ""}</strong>.</p>
-
-    <div style="background:#fff8f0;border:1px solid #ffe0b2;border-radius:8px;padding:20px 24px;margin-bottom:24px;">
-      <p style="margin:0;font-size:13px;color:#555;"><strong>Item:</strong> ${item?.name || "N/A"}</p>
-      <p style="margin:6px 0 0;font-size:13px;color:#555;"><strong>Return ID:</strong> ${returnId}</p>
-      <p style="margin:6px 0 0;font-size:13px;color:#555;"><strong>Reason:</strong> ${item?.reason || "Not specified"}</p>
-    </div>
-
-    <p style="font-size:13px;color:#666;">The admin team is reviewing this return. You will be notified of further updates.</p>
-    ${divider()}
-    <div style="text-align:center;">
-      ${btn("View in Dashboard", `${process.env.CLIENT_URL || "https://sandsjewels.com"}/seller/returns`)}
-    </div>`;
-
-  return layout(`Return Request — Order ${order?.orderId}`, body);
-};
 
 /**
  * 9. Welcome Email (new user registration)
@@ -453,14 +406,11 @@ module.exports = {
   orderCancelled,
   returnRequested,
   returnStatusUpdate,
-  sellerNewOrder,
-  sellerReturnNotif,
   welcomeEmail,
   giftCardDelivery,
   giftCardPurchaseConfirmation,
   replacementRequested,
   replacementStatusUpdate,
-  sellerReplacementNotif,
 };
 
 /**
@@ -530,27 +480,4 @@ function replacementStatusUpdate({
     </div>`;
 
   return layout(`Replacement ${newStatus} — ${replacementReq.replacementId}`, body);
-}
-
-/**
- * 14. Seller — Replacement Notif
- */
-function sellerReplacementNotif({ order, sellerName, item, replacementId }) {
-  const body = `
-    <h2 style="margin:0 0 4px;font-size:22px;color:${BRAND_DARK};">Replacement Requested for Your Item</h2>
-    <p style="color:#666;margin:0 0 24px;font-size:15px;">Hi ${sellerName || "there"}, a customer has requested a replacement for an item from order <strong>${order?.orderId || ""}</strong>.</p>
-
-    <div style="background:#fff8f0;border:1px solid #ffe0b2;border-radius:8px;padding:20px 24px;margin-bottom:24px;">
-      <p style="margin:0;font-size:13px;color:#555;"><strong>Item:</strong> ${item?.name || "N/A"}</p>
-      <p style="margin:6px 0 0;font-size:13px;color:#555;"><strong>Replacement ID:</strong> ${replacementId}</p>
-      <p style="margin:6px 0 0;font-size:13px;color:#555;"><strong>Reason:</strong> ${item?.reason || "Not specified"}</p>
-    </div>
-
-    <p style="font-size:13px;color:#666;">The admin team is reviewing this replacement request. You will be notified of further updates.</p>
-    ${divider()}
-    <div style="text-align:center;">
-      ${btn("View in Dashboard", `${process.env.CLIENT_URL || "https://sandsjewels.com"}/seller/replacements`)}
-    </div>`;
-
-  return layout(`Replacement Request — Order ${order?.orderId}`, body);
 }

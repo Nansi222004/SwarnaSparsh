@@ -7,23 +7,18 @@ import { adminService } from '../services/adminService';
 const AdminHeader = () => {
     const { user } = useAuth();
     const navigate = useNavigate();
-    const [counts, setCounts] = React.useState({ sellers: 0, customers: 0, notifications: 0 });
+    const [counts, setCounts] = React.useState({ notifications: 0 });
 
     React.useEffect(() => {
         let isMounted = true;
 
         const updateCounts = async () => {
             try {
-                const sellers = await adminService.getSellers({ status: 'PENDING' });
-                const users = JSON.parse(localStorage.getItem('users_data') || '[]');
                 const notifs = await adminService.getAdminNotifications() || [];
-                
-                const pendingSellers = Array.isArray(sellers) ? sellers.length : 0;
-                const pendingUsers = users.filter(u => u.status === 'Pending' && (u.type === 'retailer' || u.type === 'horeca')).length;
                 const unreadNotifs = Array.isArray(notifs) ? notifs.filter(n => !n.isRead).length : 0;
 
                 if (isMounted) {
-                    setCounts({ sellers: pendingSellers, customers: pendingUsers, notifications: unreadNotifs });
+                    setCounts({ notifications: unreadNotifs });
                 }
             } catch (err) {
                 console.error("Error updating admin header counts:", err);
@@ -37,7 +32,7 @@ const AdminHeader = () => {
         };
     }, []);
 
-    const totalPending = counts.sellers + counts.customers + counts.notifications;
+    const totalPending = counts.notifications;
 
     return (
         <header className="h-20 bg-footerBg border-b border-white/5 flex items-center justify-end text-left w-full">

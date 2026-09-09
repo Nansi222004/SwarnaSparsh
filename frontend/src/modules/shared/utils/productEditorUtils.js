@@ -90,7 +90,7 @@ export const getMetalPrice = (variant, formData, metalRates) => {
 };
 
 export const getPaymentGatewayChargePercent = (formData) => (
-    String(formData.paymentGatewayChargeBearer || 'seller').toLowerCase() === 'user' ? 2 : 0
+    String(formData.paymentGatewayChargeBearer || 'store').toLowerCase() === 'user' ? 2 : 0
 );
 
 export const getPricingForVariant = (variant, formData, metalRates, gstRate) => {

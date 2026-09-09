@@ -85,7 +85,7 @@ app.get("/", (req, res) => {
   });
 });
 
-// Auth (user + admin + seller)
+// Auth (user + admin)
 app.use("/api/auth", require("./modules/auth/routes/auth.routes"));
 
 // Public Tracking (no auth)
@@ -101,18 +101,19 @@ app.post(
     .handleShiprocketWebhook,
 );
 
+// ── Direct Order Invoice Access (Customer ownership verified or Admin) ────────
+app.get(
+  "/api/orders/:id/invoice",
+  authenticate,
+  requireRole("user", "admin"),
+  require("./modules/admin/controllers/invoice.controller").getOrderInvoice,
+);
+
 // Customer routes (must be authenticated)
-// Allow both users and sellers to access user-related routes if they have the token,
-// but requireRole("user") for specific ones inside the module.
-// However, to be safe, I'll just allow "seller" for the notifications specifically.
 app.use(
   "/api/user",
   authenticate,
-  (req, res, next) => {
-    // Allow all authenticated users (User, Seller, Admin) to access personal data endpoints
-    // If they are not an 'admin' or 'seller', they default to requireRole('user')
-    return requireRole("user", "seller", "admin")(req, res, next);
-  },
+  requireRole("user", "admin"),
   require("./modules/user/routes/index"),
 );
 
@@ -122,14 +123,6 @@ app.use(
   authenticate,
   requireRole("admin"),
   require("./modules/admin/routes/index"),
-);
-
-// Seller routes
-app.use(
-  "/api/seller",
-  authenticate,
-  requireRole("seller", { allowUnapproved: true }),
-  require("./modules/seller/routes/index"),
 );
 
 // -- Error Handling -------------------------------------------------------------

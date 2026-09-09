@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { RefreshCw, ChevronRight } from 'lucide-react';
+import { RefreshCw, ChevronRight, FileText } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useShop } from '../../../../context/ShopContext';
 import toast from 'react-hot-toast';
@@ -152,6 +152,9 @@ const OrderCard = ({ order, isExpanded, onToggle }) => {
                             <Link to={`/order-tracking/${order.id}`} className="flex-1 bg-[#141211] text-[#E8D198] border border-[#C59B27]/40 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-widest text-center shadow-md active:scale-95 transition-transform hover:bg-[#1C1917]">
                                 Track
                             </Link>
+                            <Link to={`/order-invoice/${order.id || order._id}`} target="_blank" rel="noopener noreferrer" className="flex-1 bg-white text-[#3E2723] border border-[#E8DFD0] py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-widest text-center shadow-sm active:scale-95 transition-transform flex items-center justify-center gap-1 hover:border-[#C59B27]">
+                                <FileText className="w-3 h-3 text-[#C59B27]" /> Invoice
+                            </Link>
                         </div>
                     </>
                 )}
@@ -252,6 +255,9 @@ const OrderCard = ({ order, isExpanded, onToggle }) => {
                         </button>
                         <Link to={`/order-tracking/${order.id}`} className="bg-[#141211] text-white px-6 md:px-8 py-2 text-[10px] md:text-sm font-bold rounded-lg uppercase tracking-wider hover:bg-[#1C1917] hover:text-[#E8D198] transition-all shadow-sm flex items-center justify-center">
                             Track Order
+                        </Link>
+                        <Link to={`/order-invoice/${order.id || order._id}`} target="_blank" rel="noopener noreferrer" className="px-4 md:px-5 py-2 text-[10px] md:text-sm font-bold border border-[#E8DFD0] text-[#3E2723] rounded-lg uppercase tracking-wider hover:border-[#C59B27] hover:bg-[#FAF8F5] transition-colors inline-flex items-center gap-1.5 shadow-sm">
+                            <FileText className="w-3.5 h-3.5 text-[#C59B27]" /> Invoice
                         </Link>
                     </div>
                 )}

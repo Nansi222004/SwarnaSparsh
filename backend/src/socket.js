@@ -49,10 +49,6 @@ const initSocket = (server) => {
     if (user.role === "admin") {
       socket.join("room:admin");
       console.log(`[Socket] Socket ${socket.id} joined room:admin`);
-    } else if (user.role === "seller") {
-      // For sellers, join the seller specific room
-      socket.join(`room:seller_${user.userId}`);
-      console.log(`[Socket] Socket ${socket.id} joined room:seller_${user.userId}`);
     } else {
       // Normal users
       socket.join(`room:user_${user.userId}`);

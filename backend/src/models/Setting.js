@@ -143,7 +143,6 @@ const settingSchema = new mongoose.Schema(
         { id: 1, name: "Easy Returns", path: "/return-policy" },
         { id: 2, name: "Contact Us", path: "/help" },
         { id: 3, name: "FAQs", path: "/help" },
-        { id: 4, name: "Blogs", path: "/blogs" },
       ],
     },
     footerPoliciesLinks: {
@@ -188,7 +187,15 @@ const settingSchema = new mongoose.Schema(
     maintenanceMode: { type: Boolean, default: false },
     shippingCharges: { type: Number, default: 0 },
     freeShippingThreshold: { type: Number, default: 0 },
-    gstRate: { type: Number, default: 0 },
+    gstRate: { type: Number, default: 3 }, // Configured store GST percentage (e.g. 3% for jewelry)
+    gstin: { type: String, default: "27AABCU9603R1ZM" },
+    pan: { type: String, default: "AABCU9603R" },
+    cin: { type: String, default: "" },
+    stateCode: { type: String, default: "27" },
+    state: { type: String, default: "Maharashtra" },
+    hsnCode: { type: String, default: "7113" },
+    bisHallmarkLicense: { type: String, default: "HM/C-7590214818" },
+    invoicePrefix: { type: String, default: "SS" },
     metalPricingUpdatedAt: { type: Date, default: null },
     taxSettingsUpdatedAt: { type: Date, default: null },
     metalRates: {

@@ -225,31 +225,6 @@ const defaultPages = {
 
       <p>To start your custom design journey, contact our design studio at <strong>support@swarnasparsh.com</strong> or call <strong>+91 99211 28662</strong>.</p>
     `
-  },
-  "seller-terms": {
-    slug: "seller-terms",
-    title: "Seller Terms & Conditions",
-    content: `
-      <h2>Merchant Partnership Agreement</h2>
-      <p>These terms govern the relationship between Swarna Sparsh and authorized sellers, artisans, and merchants listing fine jewellery on the Swarna Sparsh platform.</p>
-
-      <h3>1. Quality Standards & Hallmarking</h3>
-      <p>Merchants must guarantee that all silver jewellery listed conforms to certified 925 Sterling Silver standards, and gold products meet declared BIS hallmarking standards.</p>
-
-      <h3>2. Order Fulfillment & Dispatch</h3>
-      <p>Sellers are obligated to safely pack and dispatch customer orders within 24 to 48 hours of order receipt using certified secure shipping materials.</p>
-
-      <h3>3. Payouts & Commission</h3>
-      <p>Commissions are deducted as per agreed category tier schedules, and seller net proceeds are transferred directly via automated NEFT/IMPS bank transfer following the 7-day customer return window.</p>
-    `
-  },
-  "seller-privacy-policy": {
-    slug: "seller-privacy-policy",
-    title: "Seller Privacy Policy",
-    content: `
-      <h2>Merchant Privacy Policy</h2>
-      <p>Swarna Sparsh is dedicated to safeguarding the privacy, financial records, and proprietary catalog data of all merchant partners. We do not share your confidential business metrics or personal KYC documents with unauthorized third parties.</p>
-    `
   }
 };
 

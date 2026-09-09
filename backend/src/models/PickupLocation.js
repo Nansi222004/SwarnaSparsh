@@ -11,9 +11,13 @@ const pickupLocationSchema = new mongoose.Schema({
   sellerId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Seller",
-    required: true,
+    required: false,
+    default: null,
     index: true,
   },
+
+  // ── Store Default flag ───────────────────────────────────────────────────
+  isStoreDefault: { type: Boolean, default: false, index: true },
 
   // ── Address Details ───────────────────────────────────────────────────────
   warehouseName: { type: String, required: true, trim: true },
@@ -47,8 +51,7 @@ const pickupLocationSchema = new mongoose.Schema({
 
 }, { timestamps: true });
 
-// Compound: each seller's warehouse name must be unique
-pickupLocationSchema.index({ sellerId: 1, warehouseName: 1 }, { unique: true });
+pickupLocationSchema.index({ sellerId: 1, warehouseName: 1 });
 pickupLocationSchema.index({ sellerId: 1, isDefault: 1 });
 
 module.exports = mongoose.model("PickupLocation", pickupLocationSchema);

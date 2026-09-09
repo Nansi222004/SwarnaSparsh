@@ -5,7 +5,7 @@ const requireRole = require("../../../middlewares/requireRole");
 const requireActiveUser = require("../../../middlewares/requireActiveUser");
 const { evidenceUpload } = require("../../../middlewares/uploadMiddleware");
 
-router.use(authenticate, requireRole("user", "seller", "admin"), requireActiveUser);
+router.use(authenticate, requireRole("user", "admin"), requireActiveUser);
 router.get("/", returnController.getMyReturns);
 router.post("/", evidenceUpload.fields([{ name: "evidence", maxCount: 5 }, { name: "voidTagImages", maxCount: 2 }]), returnController.requestReturn);
 

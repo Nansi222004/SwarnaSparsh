@@ -13,8 +13,4 @@ router.get("/inquiries", supportController.getAllInquiries);
 router.put("/inquiries/:id", supportController.updateInquiryStatus);
 router.delete("/inquiries/:id", supportController.deleteInquiry);
 
-// Seller Support Tickets
-router.get("/seller", supportController.getAllSellerTickets);
-router.post("/seller/:id/reply", supportController.addAdminSellerReply);
-
 module.exports = router;

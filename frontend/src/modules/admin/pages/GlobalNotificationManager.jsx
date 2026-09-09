@@ -78,7 +78,6 @@ const GlobalNotificationManager = () => {
         RETURN: <Tag className="w-4 h-4 text-amber-600" />,
         REPLACEMENT: <Tag className="w-4 h-4 text-indigo-600" />,
         COUPON: <Tag className="w-4 h-4 text-emerald-600" />,
-        SELLER_REQUEST: <Tag className="w-4 h-4 text-purple-600" />,
         GENERAL: <Bell className="w-4 h-4 text-gray-600" />
     };
 
@@ -207,7 +206,6 @@ const GlobalNotificationManager = () => {
                                         <option value="RETURN">Return</option>
                                         <option value="REPLACEMENT">Replacement</option>
                                         <option value="COUPON">Coupon</option>
-                                        <option value="SELLER_REQUEST">Seller Request</option>
                                     </select>
                                 </div>
                                 <div className="space-y-1.5">

@@ -4,7 +4,7 @@ const authenticate = require("../../../middlewares/authenticate");
 const requireRole = require("../../../middlewares/requireRole");
 const requireActiveUser = require("../../../middlewares/requireActiveUser");
 
-router.use(authenticate, requireRole("user", "seller", "admin"), requireActiveUser);
+router.use(authenticate, requireRole("user", "admin"), requireActiveUser);
 router.get("/", notificationController.getMyNotifications);
 router.patch("/:id/read", notificationController.markAsRead);
 router.delete("/:id", notificationController.hideNotification);

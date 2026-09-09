@@ -5,8 +5,14 @@ const socketEmitter = require("../../../services/socketEmitter");
 
 exports.getNotifications = async (req, res) => {
   try {
-    const { page = 1, limit = 100, search, type, isRead } = req.query;
-    const query = { isBroadcast: true };
+    const { page = 1, limit = 100, search, type, isRead } = req.query || {};
+    const query = {
+      $or: [
+        { isBroadcast: true },
+        { isAdmin: true },
+        { role: "admin" }
+      ]
+    };
 
     if (type && typeof type === "string") {
       query.type = String(type).trim().toUpperCase();
@@ -65,7 +71,10 @@ exports.markNotificationRead = async (req, res) => {
 
 exports.markAllRead = async (req, res) => {
   try {
-    await Notification.updateMany({ isBroadcast: true, isRead: false }, { isRead: true });
+    await Notification.updateMany(
+      { $or: [{ isBroadcast: true }, { isAdmin: true }, { role: "admin" }], isRead: false },
+      { isRead: true }
+    );
     return success(res, {}, "All notifications marked as read");
   } catch (err) { return error(res, err.message); }
 };

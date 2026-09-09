@@ -1,7 +1,7 @@
 import React from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useShop } from '../../../context/ShopContext';
-import { Package, ArrowLeft, RefreshCw, Check, Clock } from 'lucide-react';
+import { Package, ArrowLeft, RefreshCw, Check, Clock, FileText } from 'lucide-react';
 import FAQSection from '../components/FAQSection';
 
 const formatCurrency = (value) => `₹${Number(value || 0).toLocaleString('en-IN')}`;
@@ -259,6 +259,15 @@ const OrderTracking = () => {
                                 <span className="text-[9px] md:text-[10px] font-bold text-stone-400 uppercase tracking-widest block">Original Delivery</span>
                                 <h3 className="text-xs md:text-sm font-bold text-[#141211] mt-0.5">{currentDeliveryStatus.status}</h3>
                             </div>
+                            <Link
+                                to={`/order-invoice/${order.id || order._id}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#E8DFD0] bg-white text-[#3E2723] hover:border-[#C59B27] hover:bg-[#FAF8F5] text-[10px] md:text-xs font-bold uppercase tracking-wider transition-all shadow-sm"
+                            >
+                                <FileText className="w-3.5 h-3.5 text-[#C59B27]" />
+                                Tax Invoice
+                            </Link>
                         </div>
                         <div className="p-3 md:p-5 space-y-6">
                             <div className="flex gap-4 overflow-x-auto pb-1 scrollbar-hide">

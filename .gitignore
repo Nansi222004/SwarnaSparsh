@@ -9,4 +9,15 @@ temp_interactive_push.bat
 serviceAccountKey.json
 *serviceAccount*.json
 *.pem
-*.key
+# Tests & Verification
+tests/
+test/
+**/tests/
+**/test/
+*.test.*
+*test*modal*
+
+# Archives & Local Snapshots
+archive/
+backend/archive/
+**/archive/

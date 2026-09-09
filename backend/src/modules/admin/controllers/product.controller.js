@@ -564,7 +564,8 @@ exports.bulkPriceUpdate = async (req, res) => {
             prod.paymentGatewayChargeBearer = "user";
             break;
           case "set_pg_charge_to_seller":
-            prod.paymentGatewayChargeBearer = "seller";
+          case "set_pg_charge_to_store":
+            prod.paymentGatewayChargeBearer = "store";
             break;
           default:
             break;

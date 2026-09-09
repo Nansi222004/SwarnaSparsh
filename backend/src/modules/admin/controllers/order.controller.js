@@ -2,10 +2,6 @@ const Order = require("../../../models/Order");
 const { success, error } = require("../../../utils/apiResponse");
 const mongoose = require("mongoose");
 const { emitOrderStatusUpdate } = require("../../../services/socketEmitter");
-const {
-  confirmCommissionsForOrder,
-  reverseCommissionsForOrder
-} = require("../../../services/commissionService");
 const { processRefund: razorpayProcessRefund } = require("../../../services/razorpayService");
 const auditLogger = require("../../../utils/auditLogger");
 const { createNotification } = require("../../../services/notificationService");
@@ -269,20 +265,23 @@ exports.updateOrderStatus = async (req, res) => {
     // ── Platform commission lifecycle ─────────────────────────────────────────
     if (!isSameStatusUpdate) {
       try {
-        if (nextStatus === "Delivered") {
-          await confirmCommissionsForOrder(order._id, { safe: true });
-        } else if (nextStatus === "Cancelled") {
-          await reverseCommissionsForOrder(order._id, {
-            triggeredBy: "order_cancelled",
-            reasonNote:  "Cancelled by admin",
-            safe:        true,
-          });
-        } else if (nextStatus === "Returned") {
-          await reverseCommissionsForOrder(order._id, {
-            triggeredBy: "return_refunded",
-            reasonNote:  "Marked Returned by admin",
-            safe:        true,
-          });
+        const hasCommissions = await Commission.exists({ orderId: order._id });
+        if (hasCommissions) {
+          if (nextStatus === "Delivered") {
+            await confirmCommissionsForOrder(order._id, { safe: true });
+          } else if (nextStatus === "Cancelled") {
+            await reverseCommissionsForOrder(order._id, {
+              triggeredBy: "order_cancelled",
+              reasonNote:  "Cancelled by admin",
+              safe:        true,
+            });
+          } else if (nextStatus === "Returned") {
+            await reverseCommissionsForOrder(order._id, {
+              triggeredBy: "return_refunded",
+              reasonNote:  "Marked Returned by admin",
+              safe:        true,
+            });
+          }
         }
       } catch (e) {
         console.error("[Commission] Admin status-transition hook error:", e.message);

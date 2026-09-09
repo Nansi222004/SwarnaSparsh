@@ -33,7 +33,7 @@ const InventoryReportsPage = () => {
 
                 (inventory || []).forEach(p => {
                     const categoryName = p.categories?.[0]?.name || 'Uncategorized';
-                    const ownerName = p.sellerId?.shopName || p.sellerId?.fullName || 'Admin Inventory';
+                    const ownerName = p.sellerId?.shopName || p.sellerId?.fullName || 'Store Inventory';
                     const variants = p.variants || [];
                     const totalQty = variants.reduce((acc, v) => acc + (v.stock || 0), 0);
                     const avgPrice = variants.length > 0
@@ -79,7 +79,7 @@ const InventoryReportsPage = () => {
                         id: productKey,
                         name: log.productId?.name || 'Unknown',
                         category: productCategoryMap.get(productKey) || 'Uncategorized',
-                        owner: log.productId?.sellerId?.shopName || log.productId?.sellerId?.fullName || 'Admin Inventory',
+                        owner: log.productId?.sellerId?.shopName || log.productId?.sellerId?.fullName || 'Store Inventory',
                         sold: 0,
                         avgPrice: Math.round(productPriceMap.get(productKey) || 0),
                         revenue: 0

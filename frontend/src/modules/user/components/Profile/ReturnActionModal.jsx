@@ -147,9 +147,9 @@ const ReturnActionModal = ({ isOpen, onClose, type, order, onSuccess }) => {
                                     Original Payment
                                     <div className="text-[9px] font-normal opacity-70 mt-0.5">5-7 Business Days</div>
                                 </button>
-                                <button type="button" onClick={() => setResolution('wallet')} className={`p-3 rounded-lg border text-left text-xs font-bold transition-all ${resolution === 'wallet' ? 'border-[#141211] bg-[#141211] text-white' : 'border-gray-200 text-gray-700'}`}>
-                                    Swarna Sparsh Wallet
-                                    <div className="text-[9px] font-normal opacity-70 mt-0.5">Instant Refund</div>
+                                <button type="button" onClick={() => setResolution('credit')} className={`p-3 rounded-lg border text-left text-xs font-bold transition-all ${resolution === 'credit' ? 'border-[#141211] bg-[#141211] text-white' : 'border-gray-200 text-gray-700'}`}>
+                                    Swarna Sparsh Store Credit
+                                    <div className="text-[9px] font-normal opacity-70 mt-0.5">Instant Credit</div>
                                 </button>
                             </div>
                         </div>

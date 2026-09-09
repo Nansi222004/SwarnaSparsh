@@ -409,7 +409,7 @@ class ShiprocketProvider extends ShippingProvider {
       return {
         success: true,
         shiprocketPickupName: locationData.warehouseName,
-        shiprocketPickupId: data?.data?.pickup_id || null,
+        shiprocketPickupId: data?.pickup_id || data?.address?.id || data?.data?.pickup_id || null,
         courierResponse: data,
       };
     } catch (err) {

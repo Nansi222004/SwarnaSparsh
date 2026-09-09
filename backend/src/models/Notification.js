@@ -4,6 +4,8 @@ const notificationSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", index: true },
   // Optional seller recipient support (seller panel notifications)
   sellerId: { type: mongoose.Schema.Types.ObjectId, ref: "Seller", index: true },
+  isAdmin: { type: Boolean, default: false, index: true },
+  role: { type: String, default: "", index: true },
   title: { type: String, required: true },
   message: { type: String, required: true },
   // NOTE: keep this list broad enough for both user + seller panels.

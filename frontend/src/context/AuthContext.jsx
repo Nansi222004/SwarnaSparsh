@@ -20,9 +20,6 @@ export const AuthProvider = ({ children }) => {
         if (path.startsWith('/admin')) {
             tokenKey = 'sands_admin_token';
             userKey = 'sands_admin_user';
-        } else if (path.startsWith('/seller')) {
-            tokenKey = 'sands_seller_token';
-            userKey = 'sands_seller_user';
         }
 
         const token = localStorage.getItem(tokenKey);
@@ -113,47 +110,12 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    // --- SELLER AUTH ---
-    const sellerRegister = async (sellerData) => {
-        try {
-            const config = sellerData instanceof FormData
-                ? { headers: { 'Content-Type': 'multipart/form-data' } }
-                : undefined;
-            const res = await api.post('auth/seller/register', sellerData, config);
-            return res.data;
-        } catch (err) {
-            return { success: false, message: err.response?.data?.message || "Seller registration failed" };
-        }
-    };
-
-    const sellerLogin = async (identifier, password) => {
-        try {
-            const res = await api.post('auth/seller/login', { identifier, password });
-            if (res.data.success) {
-                const { user: userData, token } = res.data.data;
-                const normalizedUser = userData?.role ? userData : { ...userData, role: 'seller' };
-                setUser(normalizedUser);
-                localStorage.setItem('sands_seller_token', token);
-                localStorage.setItem('sands_seller_user', JSON.stringify(normalizedUser));
-                toast.success("Seller login successful!");
-                // Register FCM token
-                registerFCMToken(true).catch(err => console.error("FCM registration error:", err));
-            }
-            return res.data;
-        } catch (err) {
-            return { success: false, message: err.response?.data?.message || "Invalid seller credentials" };
-        }
-    };
-
     const logout = (options = {}) => {
         setUser(null);
         const path = window.location.pathname;
         if (path.startsWith('/admin')) {
             localStorage.removeItem('sands_admin_token');
             localStorage.removeItem('sands_admin_user');
-        } else if (path.startsWith('/seller')) {
-            localStorage.removeItem('sands_seller_token');
-            localStorage.removeItem('sands_seller_user');
         } else {
             localStorage.removeItem('sands_token');
             localStorage.removeItem('sands_current_user');
@@ -182,8 +144,6 @@ export const AuthProvider = ({ children }) => {
         let userKey = 'sands_current_user';
         if (path.startsWith('/admin')) {
             userKey = 'sands_admin_user';
-        } else if (path.startsWith('/seller')) {
-            userKey = 'sands_seller_user';
         }
         try {
             const res = await api.get('auth/me');
@@ -235,8 +195,6 @@ export const AuthProvider = ({ children }) => {
             sendOtp, 
             verifyOtp, 
             adminLogin, 
-            sellerRegister, 
-            sellerLogin, 
             logout,
             deleteAccount,
             updateProfile,

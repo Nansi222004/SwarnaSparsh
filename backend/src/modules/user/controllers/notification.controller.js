@@ -1,6 +1,5 @@
 const Notification = require("../../../models/Notification");
 const User = require("../../../models/User");
-const Seller = require("../../../models/Seller");
 const mongoose = require("mongoose");
 const { success, error } = require("../../../utils/apiResponse");
 
@@ -80,14 +79,8 @@ exports.saveFCMToken = async (req, res) => {
     const { token, platform = "web" } = req.body;
     if (!token) return error(res, "Token is required", 400);
 
-    const { userId, role } = req.user;
-    let user;
-
-    if (role === "seller") {
-      user = await Seller.findById(userId);
-    } else {
-      user = await User.findById(userId);
-    }
+    const { userId } = req.user;
+    const user = await User.findById(userId);
 
     if (!user) return error(res, "User not found", 404);
 
@@ -114,14 +107,8 @@ exports.removeFCMToken = async (req, res) => {
     const { token, platform = "web" } = req.body;
     if (!token) return error(res, "Token is required", 400);
 
-    const { userId, role } = req.user;
-    let user;
-
-    if (role === "seller") {
-      user = await Seller.findById(userId);
-    } else {
-      user = await User.findById(userId);
-    }
+    const { userId } = req.user;
+    const user = await User.findById(userId);
 
     if (!user) return error(res, "User not found", 404);
 

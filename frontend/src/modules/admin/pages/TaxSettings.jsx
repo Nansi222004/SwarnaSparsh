@@ -33,7 +33,7 @@ const TaxSettings = () => {
     {
       title: 'Products Impacted',
       value: totalProductCount,
-      note: 'Every admin and seller product is repriced when GST changes.',
+      note: 'Every store product across the catalog is repriced when GST changes.',
       icon: Package
     },
     {

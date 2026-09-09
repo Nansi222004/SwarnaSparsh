@@ -6,7 +6,6 @@
 const Shipment = require("../../../models/Shipment");
 const Order = require("../../../models/Order");
 const { mapStatus } = require("../../../services/shipping/shippingStatusMapper");
-const { confirmCommissionsForOrder } = require("../../../services/commissionService");
 
 // ── Helper ────────────────────────────────────────────────────────────────────
 
@@ -42,15 +41,6 @@ const updateOrderShippingStatus = async (orderId) => {
   }));
 
   await order.save();
-
-  // ── Platform commission: confirm pending accruals on the Delivered transition ──
-  if (previousStatus !== "Delivered" && order.status === "Delivered") {
-    try {
-      await confirmCommissionsForOrder(order._id, { safe: true });
-    } catch (e) {
-      console.error("[Commission] Webhook delivery-confirm error:", e.message);
-    }
-  }
 };
 
 // ── Webhook Handlers ──────────────────────────────────────────────────────────

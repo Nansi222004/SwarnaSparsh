@@ -3,9 +3,9 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import {
     LayoutDashboard, Package, ShoppingCart, Users, Image as ImageIcon,
     Bell, ChevronRight, ChevronDown, Star, HelpCircle, LogOut, Menu, X, ListTree,
-    FileText, MessageSquare, Ticket, Settings, Plus, List, BookOpen,
+    FileText, MessageSquare, Ticket, Settings, Plus, List,
     Clock, RefreshCw, RefreshCcw, RotateCcw, Boxes, ClipboardList, MapPin, Truck, CheckCircle2, XCircle, Percent,
-    AlertTriangle, FileBarChart, Store, ShieldCheck, User, Wallet, CreditCard
+    AlertTriangle, FileBarChart, Store, ShieldCheck, User, Wallet, CreditCard, ScanLine
 } from 'lucide-react';
 import { adminService } from '../services/adminService';
 import logo from '@assets/logo.webp';
@@ -62,18 +62,9 @@ const AdminLayout = ({ children }) => {
                 { name: 'Reports', path: '/admin/inventory/reports', icon: FileBarChart }
             ]
         },
-        { name: 'Sellers', icon: Store, path: '/admin/sellers' },
         { name: 'Users', icon: Users, path: '/admin/users' },
-        {
-            name: 'Commission',
-            icon: Wallet,
-            path: '/admin/commission',
-            subItems: [
-                { name: 'Report', path: '/admin/commission/report', icon: FileBarChart },
-                { name: 'Tier Settings', path: '/admin/commission/tiers', icon: Settings },
-                { name: 'Seller Payouts', path: '/admin/payout', icon: CreditCard }
-            ]
-        },
+        { name: 'Camera Scanner', icon: ScanLine, path: '/admin/scanner' },
+        { name: 'Pickup Locations', icon: MapPin, path: '/admin/pickup-locations' },
         { name: 'Reviews', icon: Star, path: '/admin/reviews' },
         {
             name: 'Notifications',
@@ -111,11 +102,9 @@ const AdminLayout = ({ children }) => {
                 { name: 'Our Craftsmanship', path: '/admin/pages/our-craftsmanship', icon: FileText },
                 { name: 'Customization', path: '/admin/pages/customization', icon: FileText },
                 { name: 'About Us', path: '/admin/pages/about-us', icon: FileText },
-                { name: 'Seller Terms', path: '/admin/seller-terms', icon: FileText },
             ]
         },
         { name: 'FAQ Management', icon: HelpCircle, path: '/admin/faq' },
-        { name: 'Blogs', icon: BookOpen, path: '/admin/blogs' },
         { name: 'Homepage Sections', icon: LayoutDashboard, path: '/admin/sections' },
         { name: 'Metal Pricing', icon: RefreshCcw, path: '/admin/metal-pricing' },
         { name: 'Tax Settings', icon: Percent, path: '/admin/tax-settings' },

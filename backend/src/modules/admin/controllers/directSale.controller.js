@@ -17,7 +17,6 @@ const escapeRegex = (value = "") => String(value).replace(/[.*+?^${}()|[\]\\]/g,
 
 const findAdminProductBySerialCode = async ({ serialCode, session }) => {
   const query = {
-    sellerId: null, // Admin-owned
     "variants.serialCodes.code": serialCode
   };
   return Product.findOne(query).session(session || null);
@@ -40,7 +39,7 @@ exports.preview = async (req, res) => {
     if (!serialCode) return error(res, "Serial code is required", 400);
 
     const product = await findAdminProductBySerialCode({ serialCode });
-    if (!product) return error(res, "Product not found (or belongs to a seller)", 404);
+    if (!product) return error(res, "Product not found with this serial code", 404);
 
     const { variant, codeEntry } = findVariantAndCode(product, serialCode);
     if (!variant || !codeEntry) return error(res, "Variant not found", 404);
@@ -97,7 +96,7 @@ exports.confirm = async (req, res) => {
     const product = await findAdminProductBySerialCode({ serialCode, session });
     if (!product) {
       await session.abortTransaction();
-      return error(res, "Product not found (or belongs to a seller)", 404);
+      return error(res, "Product not found with this serial code", 404);
     }
 
     const { variant, codeEntry, variantIndex } = findVariantAndCode(product, serialCode);

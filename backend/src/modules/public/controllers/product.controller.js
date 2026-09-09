@@ -1,26 +1,12 @@
 const Product = require("../../../models/Product");
 const Category = require("../../../models/Category");
-const Seller = require("../../../models/Seller");
 const mongoose = require("mongoose");
 const { success, error } = require("../../../utils/apiResponse");
 const { normalizeProductForResponse } = require("../../../utils/productCompatibility");
 
-const getApprovedSellerScope = async () => {
-  const approvedSellers = await Seller.find({ status: "APPROVED" }).select("_id").lean();
-  const approvedSellerIds = approvedSellers.map((seller) => seller._id);
-
-  return approvedSellerIds.length
-    ? {
-        $or: [
-          { sellerId: null },
-          { sellerId: { $exists: false } },
-          { sellerId: { $in: approvedSellerIds } }
-        ]
-      }
-    : {
-        $or: [{ sellerId: null }, { sellerId: { $exists: false } }]
-      };
-};
+const getApprovedSellerScope = async () => ({
+  $or: [{ sellerId: null }, { sellerId: { $exists: false } }]
+});
 
 const clampInt = (value, fallback, { min, max } = {}) => {
   const parsed = Number.parseInt(String(value ?? ""), 10);
@@ -252,17 +238,9 @@ exports.getProductDetail = async (req, res) => {
 
     const product = await Product.findOne(lookup)
       .populate("categories", "name slug")
-      .populate("sellerId", "shopName")
       .lean();
 
     if (!product) return error(res, "Product not found", 404);
-
-    if (product.sellerId) {
-      const seller = await Seller.findById(product.sellerId).select("status").lean();
-      if (!seller || seller.status !== "APPROVED") {
-        return error(res, "Product not found", 404);
-      }
-    }
 
     if (inStockOnly) {
       const hasStock = (product.variants || []).some((variant) => Number(variant?.stock || 0) > 0);

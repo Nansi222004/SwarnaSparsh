@@ -45,7 +45,6 @@ const Footer = () => {
       { name: "Easy Returns", path: "/returns" },
       { name: "Contact Us", path: "/contact" },
       { name: "FAQs", path: "/help" },
-      { name: "Blogs", path: "/blogs" },
       { name: "Swarna Sparsh Gift Cards", path: "/gift-cards" },
     ],
     footerPoliciesLinks: [

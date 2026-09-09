@@ -16,7 +16,6 @@ export const PAGE_CONFIG = {
   'warranty-info': { title: 'Warranty Information', subtitle: 'Details about product warranty and coverage', route: '/warranty-info' },
   'our-craftsmanship': { title: 'Our Craftsmanship', subtitle: 'Share the story of your artisans', route: '/craft' },
   'customization': { title: 'Customization Services', subtitle: 'Details about custom jewelry options', route: '/customization' },
-  'seller-terms': { title: 'Seller Terms & Conditions', subtitle: 'Terms shown during seller registration', route: '/seller/register' },
 };
 
 const PageManagement = () => {

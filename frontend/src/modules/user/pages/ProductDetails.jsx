@@ -750,8 +750,7 @@ const ProductDetails = () => {
           (Number(pricingBreakdown.gst || 0) / pricingSubtotal) * 10000,
         ) / 100
       : 0;
-  const supplierName =
-    product?.sellerId?.shopName || product?.brand || "Swarna Sparsh";
+  const supplierName = product?.brand || "Swarna Sparsh";
 
   // Local currencyText removed
   // Using imported formatCurrency

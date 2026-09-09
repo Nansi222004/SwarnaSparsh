@@ -18,39 +18,6 @@ const verifyOtpLimiter = rateLimit({
   legacyHeaders: false,
 });
 
-// Seller auth hardening (basic transport-layer throttling; brute force is also enforced in controller)
-const sellerLoginLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 20,
-  message: { success: false, message: "Too many login attempts. Please try again later." },
-  standardHeaders: true,
-  legacyHeaders: false,
-});
-
-const sellerRegisterLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000, // 1 hour
-  max: 20,
-  message: { success: false, message: "Too many registration attempts. Please try again later." },
-  standardHeaders: true,
-  legacyHeaders: false,
-});
-
-const sellerResetOtpLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000, // 1 hour
-  max: 5,
-  message: { success: false, message: "Too many reset OTP requests. Please try again later." },
-  standardHeaders: true,
-  legacyHeaders: false,
-});
-
-const sellerResetVerifyLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 10,
-  message: { success: false, message: "Too many reset attempts. Please try again later." },
-  standardHeaders: true,
-  legacyHeaders: false,
-});
-
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 200,
@@ -61,8 +28,4 @@ module.exports = {
   otpLimiter,
   apiLimiter,
   verifyOtpLimiter,
-  sellerLoginLimiter,
-  sellerRegisterLimiter,
-  sellerResetOtpLimiter,
-  sellerResetVerifyLimiter,
 };

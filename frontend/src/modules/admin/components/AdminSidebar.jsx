@@ -34,11 +34,11 @@ import {
   FileBarChart,
   FileText,
   Activity,
-  Wallet,
   FileBarChart2,
   SlidersHorizontal,
   ShieldCheck,
   HelpCircle,
+  ScanLine,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
@@ -53,7 +53,6 @@ const AdminSidebar = () => {
   const { logout } = useAuth();
   const { socket } = useSocket();
   const [userOpenCount, setUserOpenCount] = useState(0);
-  const [sellerOpenCount, setSellerOpenCount] = useState(0);
 
   const fetchSupportCounts = async () => {
     try {
@@ -65,16 +64,6 @@ const AdminSidebar = () => {
       }
     } catch (err) {
       console.error("Admin fetch support tickets failed:", err);
-    }
-    try {
-      const sellerRes = await api.get('admin/support/seller');
-      if (sellerRes.data.success) {
-        const t = sellerRes.data.data?.tickets || sellerRes.data.tickets || [];
-        const open = t.filter(x => x.status === 'Open' || x.status === 'In Progress').length;
-        setSellerOpenCount(open);
-      }
-    } catch (err) {
-      console.error("Admin fetch seller support tickets failed:", err);
     }
   };
 
@@ -90,15 +79,11 @@ const AdminSidebar = () => {
     };
 
     socket.on('support_ticket_created', handleUpdate);
-    socket.on('seller_support_ticket_created', handleUpdate);
     socket.on('support_message', handleUpdate);
-    socket.on('seller_support_message', handleUpdate);
 
     return () => {
       socket.off('support_ticket_created', handleUpdate);
-      socket.off('seller_support_ticket_created', handleUpdate);
       socket.off('support_message', handleUpdate);
-      socket.off('seller_support_message', handleUpdate);
     };
   }, [socket]);
   const [combosExpanded, setCombosExpanded] = useState(
@@ -123,8 +108,8 @@ const AdminSidebar = () => {
   const [sectionsExpanded, setSectionsExpanded] = useState(
     location.pathname.startsWith("/admin/sections"),
   );
-  const [commissionExpanded, setCommissionExpanded] = useState(
-    location.pathname.startsWith("/admin/commission"),
+  const [shippingExpanded, setShippingExpanded] = useState(
+    location.pathname.startsWith("/admin/shipping"),
   );
 
   const handleLogout = () => {
@@ -155,7 +140,6 @@ const AdminSidebar = () => {
     { icon: LayoutDashboard, label: "Dashboard", path: "/admin/dashboard" },
     { icon: Activity, label: "Analytics", path: "/admin/analytics" },
     { icon: Users, label: "Users", path: "/admin/users" },
-    { icon: Store, label: "Sellers", path: "/admin/sellers" },
     { icon: Layers, label: "Categories", path: "/admin/categories" },
     { icon: ShieldCheck, label: "Audit Trail", path: "/admin/audit-logs" },
   ];
@@ -163,11 +147,9 @@ const AdminSidebar = () => {
   const secondaryMenuItems = [
     { icon: Ticket, label: "Coupons", path: "/admin/coupons" },
     { icon: Monitor, label: "Banners", path: "/admin/banners" },
-    { icon: FileText, label: "Blogs", path: "/admin/blogs" },
     { icon: HelpCircle, label: "FAQ Management", path: "/admin/faq" },
     { icon: FileText, label: "Page Management", path: "/admin/pages" },
     { icon: Share2, label: "Referrals", path: "/admin/referrals" },
-    { icon: FileText, label: "Seller Terms", path: "/admin/seller-terms" },
   ];
 
   const isActive = (path) => location.pathname.startsWith(path);
@@ -182,7 +164,6 @@ const AdminSidebar = () => {
     location.pathname.startsWith("/admin/contact");
   const isInventoryActive = location.pathname.startsWith("/admin/inventory");
   const isSectionsActive = location.pathname.startsWith("/admin/sections");
-  const isCommissionActive = location.pathname.startsWith("/admin/commission");
 
   return (
     <div className="w-64 h-screen bg-footerBg text-white flex flex-col fixed left-0 top-0 z-50">
@@ -409,9 +390,9 @@ const AdminSidebar = () => {
           >
             <Headphones size={20} strokeWidth={isSupportActive ? 2.5 : 2} />
             <span className="font-bold text-sm flex-1 text-left">Support</span>
-            {(userOpenCount + sellerOpenCount) > 0 && (
+            {userOpenCount > 0 && (
               <span className="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full mr-2">
-                {userOpenCount + sellerOpenCount}
+                {userOpenCount}
               </span>
             )}
             <div
@@ -435,9 +416,9 @@ const AdminSidebar = () => {
                   <Ticket size={16} />
                   <span className="font-semibold">Support Tickets</span>
                 </div>
-                {(userOpenCount + sellerOpenCount) > 0 && (
+                {userOpenCount > 0 && (
                   <span className="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
-                    {userOpenCount + sellerOpenCount}
+                    {userOpenCount}
                   </span>
                 )}
               </Link>
@@ -667,22 +648,83 @@ const AdminSidebar = () => {
           <span className="font-bold text-sm">Replacements</span>
         </Link>
 
-        {/* Shipping */}
+        {/* Shipping & Logistics - Expandable */}
+        <div className="mt-1">
+          <button
+            onClick={() => setShippingExpanded(!shippingExpanded)}
+            className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all ${
+              location.pathname.startsWith("/admin/shipping")
+                ? "bg-primary text-white shadow-lg shadow-primary/20"
+                : "text-gray-400 hover:bg-white/5 hover:text-white"
+            }`}
+          >
+            <div className="flex items-center gap-3">
+              <Truck size={20} strokeWidth={location.pathname.startsWith("/admin/shipping") ? 2.5 : 2} />
+              <span className="font-bold text-sm">Shipping</span>
+            </div>
+            <div className={`transition-transform duration-200 ${shippingExpanded ? "rotate-180" : ""}`}>
+              <ChevronDown size={16} />
+            </div>
+          </button>
+
+          {shippingExpanded && (
+            <div className="mt-1 ml-4 pl-4 border-l border-white/10 space-y-1 animate-in slide-in-from-top-1 duration-200">
+              <Link
+                to="/admin/shipping"
+                className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all text-sm ${
+                  location.pathname === "/admin/shipping"
+                    ? "bg-primary/20 text-white shadow-sm"
+                    : "text-gray-400 hover:bg-white/5 hover:text-white"
+                }`}
+              >
+                <Package size={14} />
+                <span className="font-semibold">All Shipments</span>
+              </Link>
+              <Link
+                to="/admin/shipping/locations"
+                className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all text-sm ${
+                  location.pathname === "/admin/shipping/locations"
+                    ? "bg-primary/20 text-white shadow-sm"
+                    : "text-gray-400 hover:bg-white/5 hover:text-white"
+                }`}
+              >
+                <MapPin size={14} />
+                <span className="font-semibold">Dispatch Warehouses</span>
+              </Link>
+            </div>
+          )}
+        </div>
+
+        {/* POS / Direct Sales */}
         <Link
-          to="/admin/shipping"
+          to="/admin/direct-sales"
           className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all group ${
-            location.pathname.startsWith("/admin/shipping")
+            location.pathname === "/admin/direct-sales"
               ? "bg-primary text-white shadow-lg shadow-primary/20"
               : "text-gray-400 hover:bg-white/5 hover:text-white"
           }`}
         >
-          <Truck
+          <ShoppingBag
             size={20}
-            strokeWidth={
-              location.pathname.startsWith("/admin/shipping") ? 2.5 : 2
-            }
+            strokeWidth={location.pathname === "/admin/direct-sales" ? 2.5 : 2}
           />
-          <span className="font-bold text-sm">Shipping</span>
+          <span className="font-bold text-sm">POS / Direct Sales</span>
+        </Link>
+
+        {/* Camera Barcode / QR Scanner */}
+        <Link
+          to="/admin/scanner"
+          className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all group ${
+            location.pathname === "/admin/scanner"
+              ? "bg-primary text-white shadow-lg shadow-primary/20"
+              : "text-gray-400 hover:bg-white/5 hover:text-white"
+          }`}
+        >
+          <ScanLine
+            size={20}
+            strokeWidth={location.pathname === "/admin/scanner" ? 2.5 : 2}
+          />
+          <span className="font-bold text-sm">Camera Scanner</span>
         </Link>
 
         {/* Inventory Management */}
@@ -768,54 +810,7 @@ const AdminSidebar = () => {
           )}
         </div>
 
-        {/* Commission Section - Expandable */}
-        <div className="mt-1">
-          <button
-            onClick={() => setCommissionExpanded(!commissionExpanded)}
-            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
-              isCommissionActive
-                ? "bg-primary text-white shadow-lg shadow-primary/20"
-                : "text-gray-400 hover:bg-white/5 hover:text-white"
-            }`}
-          >
-            <Wallet size={20} strokeWidth={isCommissionActive ? 2.5 : 2} />
-            <span className="font-bold text-sm flex-1 text-left">
-              Commission
-            </span>
-            <div
-              className={`transition-transform duration-200 ${commissionExpanded ? "rotate-180" : ""}`}
-            >
-              <ChevronDown size={16} />
-            </div>
-          </button>
 
-          {commissionExpanded && (
-            <div className="mt-1 ml-4 pl-4 border-l border-white/10 space-y-1 animate-in slide-in-from-top-1 duration-200">
-              <Link
-                to="/admin/commission/report"
-                className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all text-sm ${
-                  location.pathname === "/admin/commission/report"
-                    ? "bg-primary/20 text-white shadow-sm"
-                    : "text-gray-400 hover:bg-white/5 hover:text-white"
-                }`}
-              >
-                <FileBarChart2 size={16} />
-                <span className="font-semibold">Report</span>
-              </Link>
-              <Link
-                to="/admin/commission/tiers"
-                className={`flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all text-sm ${
-                  location.pathname === "/admin/commission/tiers"
-                    ? "bg-primary/20 text-white shadow-sm"
-                    : "text-gray-400 hover:bg-white/5 hover:text-white"
-                }`}
-              >
-                <SlidersHorizontal size={16} />
-                <span className="font-semibold">Tier Settings</span>
-              </Link>
-            </div>
-          )}
-        </div>
 
         {/* Secondary Items */}
         {secondaryMenuItems.map((item) => (

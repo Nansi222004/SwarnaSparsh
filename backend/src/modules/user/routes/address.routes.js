@@ -6,7 +6,7 @@ const authenticate = require("../../../middlewares/authenticate");
 const requireRole = require("../../../middlewares/requireRole");
 const requireActiveUser = require("../../../middlewares/requireActiveUser");
 
-router.use(authenticate, requireRole("user", "seller", "admin"), requireActiveUser);
+router.use(authenticate, requireRole("user", "admin"), requireActiveUser);
 
 router.get("/", addressController.getAddresses);
 router.post("/", validate(addressSchema), addressController.addAddress);

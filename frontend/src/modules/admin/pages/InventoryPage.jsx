@@ -53,7 +53,7 @@ const InventoryPage = () => {
                 image: product.images?.[0] || '',
                 variantName: variant.name || 'Standard',
                 categoryName: product.categories?.[0]?.name || 'Uncategorized',
-                ownerName: product.sellerId?.shopName || product.sellerId?.fullName || 'Admin Inventory',
+                ownerName: product.sellerId?.shopName || product.sellerId?.fullName || 'Store Inventory',
                 stock: Number(variant.stock) || 0,
                 sold: Number(variant.sold) || 0
             }))
@@ -195,7 +195,7 @@ const InventoryPage = () => {
                     <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
                         <div>
                             <h2 className="text-xs font-black uppercase tracking-widest text-gray-500">Live Inventory Snapshot</h2>
-                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">Admin and seller stock in one view</p>
+                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">Live store stock across all variants</p>
                         </div>
                         <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">
                             {snapshotRows.length} Variants
