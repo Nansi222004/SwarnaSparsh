@@ -45,6 +45,7 @@ const Footer = () => {
       { name: "Easy Returns", path: "/returns" },
       { name: "Contact Us", path: "/contact" },
       { name: "FAQs", path: "/help" },
+      { name: "Gift Cards", path: "/gift-cards" },
     ],
     footerPoliciesLinks: [
       { name: "Shipping Policy", path: "/shipping-policy" },
