@@ -46,7 +46,7 @@ const AdminScanner = () => {
             ],
           },
           onScanSuccess,
-          () => {} // silent error during scanning loop
+          () => { } // silent error during scanning loop
         );
         setScannerReady(true);
       } catch (err) {
@@ -82,7 +82,7 @@ const AdminScanner = () => {
       const audio = new Audio(
         "https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3"
       );
-      audio.play().catch(() => {});
+      audio.play().catch(() => { });
       if (window.navigator?.vibrate) {
         window.navigator.vibrate(200);
       }
@@ -175,16 +175,15 @@ const AdminScanner = () => {
             Admin POS Camera Terminal
           </span>
           <h1 className="text-white text-xs font-black uppercase tracking-widest mt-1">
-            Swarna Sparsh Store
+            Alankar Jewellers Store
           </h1>
         </div>
         <button
           onClick={toggleFlash}
-          className={`p-3 backdrop-blur-xl border rounded-2xl transition-all ${
-            isFlashOn
+          className={`p-3 backdrop-blur-xl border rounded-2xl transition-all ${isFlashOn
               ? "bg-amber-500 border-amber-400 text-white shadow-lg shadow-amber-500/40"
               : "bg-white/10 border-white/20 text-white"
-          }`}
+            }`}
           title="Toggle Torch / Flashlight"
         >
           {isFlashOn ? <Zap size={20} /> : <ZapOff size={20} />}
@@ -224,11 +223,10 @@ const AdminScanner = () => {
         <div className="absolute bottom-10 left-6 right-6 p-1 bg-white/5 backdrop-blur-2xl rounded-[2.5rem] border border-white/10 shadow-2xl animate-in slide-in-from-bottom-10 duration-500 max-w-lg mx-auto">
           <div className="bg-white rounded-[2.3rem] p-8 flex flex-col items-center gap-6">
             <div
-              className={`w-20 h-20 rounded-full flex items-center justify-center border shadow-inner ${
-                scannedProduct.available
+              className={`w-20 h-20 rounded-full flex items-center justify-center border shadow-inner ${scannedProduct.available
                   ? "bg-emerald-50 border-emerald-100 text-emerald-500"
                   : "bg-rose-50 border-rose-100 text-rose-500"
-              }`}
+                }`}
             >
               {scannedProduct.available ? (
                 <SuccessIcon className="w-10 h-10" />
@@ -246,9 +244,8 @@ const AdminScanner = () => {
                   Status:
                 </span>
                 <span
-                  className={`text-xs font-black uppercase ${
-                    scannedProduct.available ? "text-emerald-600" : "text-rose-600"
-                  }`}
+                  className={`text-xs font-black uppercase ${scannedProduct.available ? "text-emerald-600" : "text-rose-600"
+                    }`}
                 >
                   {scannedProduct.available ? "AVAILABLE FOR SALE" : scannedProduct.status || "UNAVAILABLE"}
                 </span>
@@ -282,8 +279,8 @@ const AdminScanner = () => {
               {confirming
                 ? "Processing Sale..."
                 : !scannedProduct.available
-                ? "Unit Not Available"
-                : "Confirm POS Direct Sale (Cash)"}
+                  ? "Unit Not Available"
+                  : "Confirm POS Direct Sale (Cash)"}
             </button>
 
             <button

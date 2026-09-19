@@ -42,16 +42,16 @@ import toast from "react-hot-toast";
 
 const DEFAULT_SETTINGS = {
   // Brand & Store Identity
-  storeName: "Swarna Sparsh",
-  tagline: "Swarna Sparsh – Where Luxury Meets Identity",
+  storeName: "Alankar Jewellers",
+  tagline: "Alankar Jewellers – Where Luxury Meets Identity",
   logo: "/logo.webp",
   address:
-    "Swarna Sparsh, Sarafa Lane Gandhi Chowk Wani, 445304, Dist - Yavatmal, Maharashtra",
+    "Alankar Jewellers, Sarafa Lane Gandhi Chowk Wani, 445304, Dist - Yavatmal, Maharashtra",
   phone: "+919921128662",
   contactPhone: "+919921128662",
   email: "support@swarnasparsh.com",
   contactEmail: "support@swarnasparsh.com",
-  website: "www.sandsjewels.com",
+  website: "www.swarnasparsh.com",
 
   productHeader: "ESTIMATED DELIVERY DATE",
   returnPolicy: "2 Days Return",
@@ -68,13 +68,13 @@ const DEFAULT_SETTINGS = {
     { id: 4, icon: "Headset", text: "Dedicated Support Team" },
   ],
   fraudWarning:
-    "BEWARE OF FRAUD: Swarna Sparsh never asks for confidential banking details over phone or email.",
+    "BEWARE OF FRAUD: Alankar Jewellers never asks for confidential banking details over phone or email.",
 
   // Footer Settings
   footerTagline: "Timeless Elegance,",
   footerSubTagline: "Handcrafted for You.",
   footerDescription:
-    "Every piece at Swarna Sparsh tells a story of heritage and modern grace. Join our community of silver lovers and celebrate life's most precious moments.",
+    "Every piece at Alankar Jewellers tells a story of heritage and modern grace. Join our community of jewellery lovers and celebrate life's most precious moments.",
 
   footerColumn1Title: "Experience",
   footerColumn2Title: "Policies",
@@ -145,7 +145,7 @@ const DEFAULT_SETTINGS = {
   },
 
   footerDeliveryText: "Safe & Insured Express Worldwide Delivery",
-  footerCopyrightText: "Swarna Sparsh. All Rights Reserved.",
+  footerCopyrightText: "Alankar Jewellers. All Rights Reserved.",
 };
 
 const GlobalSettings = () => {
@@ -164,12 +164,15 @@ const GlobalSettings = () => {
           setSettings((prev) => ({
             ...DEFAULT_SETTINGS,
             ...fetched,
-            storeName: fetched.storeName || DEFAULT_SETTINGS.storeName,
-            tagline: fetched.tagline || DEFAULT_SETTINGS.tagline,
-            logo: fetched.logo || DEFAULT_SETTINGS.logo,
+            storeName: (!fetched.storeName || /swarna\s*sparsh/i.test(fetched.storeName)) ? DEFAULT_SETTINGS.storeName : fetched.storeName,
+            tagline: (!fetched.tagline || /swarna\s*sparsh/i.test(fetched.tagline)) ? DEFAULT_SETTINGS.tagline : fetched.tagline,
+            logo: (!fetched.logo || /swarna|sands-logo/i.test(fetched.logo)) ? DEFAULT_SETTINGS.logo : fetched.logo,
             phone: fetched.phone || fetched.contactPhone || DEFAULT_SETTINGS.phone,
             email: fetched.email || fetched.contactEmail || DEFAULT_SETTINGS.email,
-            address: fetched.address || DEFAULT_SETTINGS.address,
+            address: (fetched.address && /swarna\s*sparsh/i.test(fetched.address)) ? fetched.address.replace(/swarna\s*sparsh/gi, 'Alankar Jewellers') : (fetched.address || DEFAULT_SETTINGS.address),
+            fraudWarning: (fetched.fraudWarning && /swarna\s*sparsh/i.test(fetched.fraudWarning)) ? fetched.fraudWarning.replace(/swarna\s*sparsh/gi, 'Alankar Jewellers') : (fetched.fraudWarning || DEFAULT_SETTINGS.fraudWarning),
+            footerDescription: (fetched.footerDescription && /swarna\s*sparsh/i.test(fetched.footerDescription)) ? fetched.footerDescription.replace(/swarna\s*sparsh/gi, 'Alankar Jewellers') : (fetched.footerDescription || DEFAULT_SETTINGS.footerDescription),
+            footerCopyrightText: (fetched.footerCopyrightText && /swarna\s*sparsh/i.test(fetched.footerCopyrightText)) ? fetched.footerCopyrightText.replace(/swarna\s*sparsh/gi, 'Alankar Jewellers') : (fetched.footerCopyrightText || DEFAULT_SETTINGS.footerCopyrightText),
             socialLinks: {
               ...DEFAULT_SETTINGS.socialLinks,
               ...(fetched.socialLinks || {}),
@@ -680,7 +683,7 @@ const GlobalSettings = () => {
                 value={settings.storeName || ""}
                 onChange={(e) => handleChange("storeName", e.target.value)}
                 disabled={!isEditing}
-                placeholder="e.g. Swarna Sparsh"
+                placeholder="e.g. Alankar Jewellers"
               />
             </div>
 
@@ -695,7 +698,7 @@ const GlobalSettings = () => {
                 value={settings.tagline || ""}
                 onChange={(e) => handleChange("tagline", e.target.value)}
                 disabled={!isEditing}
-                placeholder="e.g. Swarna Sparsh – Where Luxury Meets Identity"
+                placeholder="e.g. Alankar Jewellers – Where Luxury Meets Identity"
               />
             </div>
 
@@ -746,7 +749,7 @@ const GlobalSettings = () => {
                 value={settings.address || ""}
                 onChange={(e) => handleChange("address", e.target.value)}
                 disabled={!isEditing}
-                placeholder="Swarna Sparsh, Sarafa Lane Gandhi Chowk Wani, 445304, Dist - Yavatmal, Maharashtra"
+                placeholder="Alankar Jewellers, Sarafa Lane Gandhi Chowk Wani, 445304, Dist - Yavatmal, Maharashtra"
               />
             </div>
 
@@ -775,11 +778,10 @@ const GlobalSettings = () => {
                   <div className="flex flex-wrap items-center gap-2">
                     <label
                       htmlFor="store-logo-file-input"
-                      className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold cursor-pointer transition-all shadow-sm ${
-                        isEditing && !isUploadingLogo
+                      className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold cursor-pointer transition-all shadow-sm ${isEditing && !isUploadingLogo
                           ? "bg-[#3E2723] text-white hover:bg-[#5D4037] active:scale-95"
                           : "bg-gray-100 text-gray-400 cursor-not-allowed"
-                      }`}
+                        }`}
                     >
                       {isUploadingLogo ? (
                         <>
@@ -834,16 +836,16 @@ const GlobalSettings = () => {
               Product USP & Care Guide Configuration
             </h3>
             <p className="text-xs text-gray-500 font-medium tracking-wide mt-1">
-              Customize "The Swarna Sparsh Promise" and "Care Guide" blocks shown on product detail pages.
+              Customize "The Alankar Jewellers Promise" and "Care Guide" blocks shown on product detail pages.
             </p>
           </div>
 
           <div className="space-y-8">
-            {/* The Swarna Sparsh Promise Section */}
+            {/* The Alankar Jewellers Promise Section */}
             <div className="space-y-4">
               <h4 className="text-sm font-medium text-gray-900 tracking-wide border-b border-gray-100 pb-2 flex items-center gap-2">
                 <Sparkles className="w-4 h-4 text-[#9C5B61]" />
-                The Swarna Sparsh Promise (USPs)
+                The Alankar Jewellers Promise (USPs)
               </h4>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {[0, 1, 2].map((idx) => {

@@ -55,7 +55,7 @@ const GoldJewelleryPage = () => {
   } = usePublicCmsPage("gold-collection");
 
   useEffect(() => {
-    document.title = "Shop Gold Jewellery | Swarna Sparsh";
+    document.title = "Shop Gold Jewellery | Alankar Jewellers";
   }, []);
 
   const sectionMap = useMemo(

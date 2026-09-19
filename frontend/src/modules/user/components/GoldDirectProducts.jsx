@@ -3,6 +3,8 @@ import { motion } from 'framer-motion';
 import { useShop } from '../../../context/ShopContext';
 import ProductCard from './ProductCard';
 
+import { matchesRequestedMetal } from '../utils/productMetal';
+
 const parsePositiveNumber = (value, fallback = 4) => {
     const parsed = Number(value);
     return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
@@ -48,12 +50,7 @@ const parseCategoryFromPath = (path = '') => {
 };
 
 const isGoldProduct = (product = {}) => {
-    const metalBlob = [
-        product?.metal,
-        product?.material,
-        product?.goldCategory
-    ].map((value) => String(value || '').trim().toLowerCase()).join(' ');
-    return metalBlob.includes('gold');
+    return matchesRequestedMetal(product, 'gold');
 };
 
 const matchesCategory = (product = {}, categoryId = '') => {

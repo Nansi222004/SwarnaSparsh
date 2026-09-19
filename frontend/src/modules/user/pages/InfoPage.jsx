@@ -9,12 +9,12 @@ const InfoPage = ({ type }) => {
   // Dynamic Content Config
   const contentMap = {
     about: {
-      title: "About Swarna Sparsh",
+      title: "About Alankar Jewellers",
       subtitle: "Delivering elegance to your doorstep",
       content: (
         <div className="space-y-6 text-gray-600 leading-relaxed text-lg">
           <p>
-            At Swarna Sparsh, we believe in the power of pure, exquisite
+            At Alankar Jewellers, we believe in the power of pure, exquisite
             jewellery. Our journey began with a simple mission: to bring timeless
             craftsmanship and contemporary designs to mindful consumers.
           </p>
@@ -182,7 +182,7 @@ const InfoPage = ({ type }) => {
                       Visit Us
                     </h4>
                     <p className="text-gray-500 text-sm mt-1 leading-relaxed">
-                      {settings?.address || "Swarna Sparsh, Sarafa Lane Gandhi Chowk Wani, 445304, Dist - Yavatmal, Maharashtra"}
+                      {settings?.address || "Alankar Jewellers, Sarafa Lane Gandhi Chowk Wani, 445304, Dist - Yavatmal, Maharashtra"}
                     </p>
                   </div>
                 </div>

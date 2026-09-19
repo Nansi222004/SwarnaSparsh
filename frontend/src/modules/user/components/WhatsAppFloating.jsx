@@ -7,8 +7,9 @@ const WhatsAppFloating = ({ inline = false }) => {
   const { settings } = useSettings();
   const rawPhone = settings?.phone || settings?.contactPhone || "+919921128662";
   const phoneNumber = rawPhone.replace(/\D/g, "") || "919921128662";
+  const brand = settings?.storeName || "Alankar Jewellers";
   const message =
-    "Hi Swarna Sparsh, I'm interested in your silver jewellery collection.";
+    `Hi ${brand}, I'm interested in your jewellery collection.`;
 
   const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
 

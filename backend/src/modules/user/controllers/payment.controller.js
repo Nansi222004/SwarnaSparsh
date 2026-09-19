@@ -159,7 +159,7 @@ const createAndProcessPrepaidOrder = async (
       link: `/admin/orders/${order._id}`,
       isRead: false,
     });
-  } catch (_e) {}
+  } catch (_e) { }
 
   if (order.couponCode) {
     await Coupon.updateOne(
@@ -243,7 +243,7 @@ const createAndProcessPrepaidOrder = async (
   if (paymentRecipient) {
     enqueueEmail({
       to: paymentRecipient,
-      subject: "Payment Successful - " + order.orderId + " | Swarna Sparsh",
+      subject: "Payment Successful - " + order.orderId + " | Alankar Jewellers",
       html: emailTemplates.paymentSuccess({
         order,
         userName: order.customerName,
@@ -261,12 +261,12 @@ const createAndProcessPrepaidOrder = async (
     if (adminEmail) {
       enqueueEmail({
         to: adminEmail,
-        subject: `[Swarna Sparsh] Payment Received - Order #${order.orderId}`,
+        subject: `[Alankar Jewellers] Payment Received - Order #${order.orderId}`,
         html: `<h2>Payment Confirmed</h2><p>Payment of <strong>₹${order.total}</strong> for Order <strong>#${order.orderId}</strong> was confirmed for ${order.customerName} (${order.paymentMethod.toUpperCase()}).</p>`,
         type: "admin_payment_confirmed",
       });
     }
-  } catch (_e) {}
+  } catch (_e) { }
 
   return order;
 };

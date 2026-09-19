@@ -2,7 +2,7 @@ import React from "react";
 import { Truck, ThumbsUp, Lock } from "lucide-react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import logoIcon from "@assets/logo.webp";
+import logoIcon from "@/assets/Alankar jewllers.png";
 import aboutHero1 from "@assets/cat_wedding_choker.png";
 import aboutHero2 from "@assets/cat_wedding_bangles.png";
 import aboutHero3 from "@assets/cat_wedding_diamond.png";
@@ -33,7 +33,7 @@ const AboutUs = () => {
               About Us
             </h1>
             <p className="text-black text-xl leading-relaxed max-w-xl font-serif">
-              Welcome to <strong>Swarna Sparsh</strong>, where elegance meets
+              Welcome to <strong>Alankar Jewellers</strong>, where elegance meets
               timeless tradition. We are more than just a jewellery brand; we
               are curators of silver artistry designed to adorn your soul.
             </p>
@@ -46,7 +46,7 @@ const AboutUs = () => {
               occasions.
             </p>
             <p className="text-black text-xl leading-relaxed max-w-xl font-serif">
-              At Swarna Sparsh, we are committed to sustainability and ethical
+              At Alankar Jewellers, we are committed to sustainability and ethical
               sourcing, ensuring that beauty does not come at a cost to our
               planet. Join us in celebrating your unique style with ornaments
               that shine as bright as you do.

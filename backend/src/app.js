@@ -21,8 +21,8 @@ const defaultAllowedOrigins = [
 
 const configuredAllowedOrigins = process.env.CLIENT_URL
   ? process.env.CLIENT_URL.split(",")
-      .map((origin) => origin.trim())
-      .filter(Boolean)
+    .map((origin) => origin.trim())
+    .filter(Boolean)
   : [];
 
 const allowedOrigins = [
@@ -80,7 +80,7 @@ app.use("/api/", limiter);
 app.get("/", (req, res) => {
   res.status(200).json({
     success: true,
-    message: "Swarna Sparsh API is running smoothly",
+    message: "Alankar Jewellers API is running smoothly",
     timestamp: new Date().toISOString(),
   });
 });

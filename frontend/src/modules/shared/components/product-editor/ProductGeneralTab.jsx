@@ -1,9 +1,9 @@
 import React from 'react';
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
-import { 
-    Tag, Sparkles, Scale, Zap, IndianRupee, CheckCircle2, 
-    Layers, Copy, Barcode as BarcodeIcon, QrCode, Download, 
+import {
+    Tag, Sparkles, Scale, Zap, IndianRupee, CheckCircle2,
+    Layers, Copy, Barcode as BarcodeIcon, QrCode, Download,
     Loader2, Upload, Plus, Trash2, ImagePlus, FileText, Info,
     Search, X
 } from 'lucide-react';
@@ -13,25 +13,26 @@ import { quillModules, quillFormats } from '../../utils/productEditorUtils';
 import toast from 'react-hot-toast';
 import { downloadImage } from '../../../../utils/downloadUtils';
 
-const ProductGeneralTab = ({ 
-    formData, 
-    setFormData, 
-    errors, 
-    categories, 
-    isViewMode, 
+const ProductGeneralTab = ({
+    formData,
+    setFormData,
+    errors,
+    categories,
+    isViewMode,
     handleCategoryChange,
     createdProductData
 }) => {
     const [categorySearchQuery, setCategorySearchQuery] = React.useState('');
     const filteredCategories = React.useMemo(() => {
-        return (categories || []).filter(cat => 
+        return (categories || []).filter(cat =>
             cat && String(cat.name || '').toLowerCase().includes(categorySearchQuery.toLowerCase())
         );
     }, [categories, categorySearchQuery]);
 
     const materialOptions = React.useMemo(() => [
         { label: 'Gold', value: 'Gold' },
-        { label: 'Silver', value: 'Silver' }
+        { label: 'Silver', value: 'Silver' },
+        { label: 'Diamond', value: 'Diamond' }
     ], []);
 
     return (
@@ -57,12 +58,12 @@ const ProductGeneralTab = ({
                             error={errors.huid}
                             className="font-mono tracking-widest"
                         />
-                        
+
                         <div className="space-y-2">
                             <label className="block text-sm font-medium text-gray-700 mb-1">
                                 Category <span className="text-red-500">*</span>
                             </label>
-                            
+
                             {!isViewMode && (
                                 <div className="relative group">
                                     <input
@@ -164,13 +165,69 @@ const ProductGeneralTab = ({
                                 disabled={isViewMode}
                             />
                         )}
+                        {formData.material === 'Diamond' && (
+                            <>
+                                <Select
+                                    label="Diamond Origin / Type"
+                                    value={formData.diamondType || 'none'}
+                                    onChange={(e) => setFormData({ ...formData, diamondType: e.target.value })}
+                                    options={[
+                                        { label: 'Select Diamond Type', value: 'none' },
+                                        { label: 'Natural Diamond', value: 'natural' },
+                                        { label: 'Lab-Grown Diamond', value: 'lab_grown' }
+                                    ]}
+                                    disabled={isViewMode}
+                                />
+
+                                <Select
+                                    label="Setting Metal"
+                                    value={formData.settingMetal || ''}
+                                    onChange={(e) => setFormData({ ...formData, settingMetal: e.target.value })}
+                                    options={[
+                                        { label: 'Select Setting Metal', value: '' },
+                                        { label: 'Gold (Yellow Gold)', value: 'Gold' },
+                                        { label: 'White Gold', value: 'White Gold' },
+                                        { label: 'Rose Gold', value: 'Rose Gold' },
+                                        { label: 'Platinum', value: 'Platinum' },
+                                        { label: 'Silver', value: 'Silver' }
+                                    ]}
+                                    disabled={isViewMode}
+                                />
+
+                                <Select
+                                    label="Setting Purity / Karat"
+                                    value={formData.settingPurity || ''}
+                                    onChange={(e) => setFormData({ ...formData, settingPurity: e.target.value, goldCategory: e.target.value.includes('14') ? '14' : e.target.value.includes('18') ? '18' : e.target.value.includes('22') ? '22' : e.target.value.includes('24') ? '24' : '' })}
+                                    options={[
+                                        { label: 'Select Setting Purity', value: '' },
+                                        { label: '14 Karat (14K)', value: '14K' },
+                                        { label: '18 Karat (18K)', value: '18K' },
+                                        { label: '22 Karat (22K)', value: '22K' },
+                                        { label: '950 Platinum', value: 'Platinum 950' },
+                                        { label: '925 Sterling Silver', value: '925 sterling silver' }
+                                    ]}
+                                    disabled={isViewMode}
+                                />
+
+                                <Input
+                                    label="Verified Certificate URL (Optional)"
+                                    value={formData.logistics?.certificateUrl || ''}
+                                    onChange={(e) => setFormData({
+                                        ...formData,
+                                        logistics: { ...(formData.logistics || {}), certificateUrl: e.target.value }
+                                    })}
+                                    placeholder="e.g. https://.../certificate.pdf"
+                                    disabled={isViewMode}
+                                />
+                            </>
+                        )}
 
                         <Select
                             label="PG Fee Bearer"
                             value={formData.paymentGatewayChargeBearer || 'store'}
                             onChange={(e) => setFormData({ ...formData, paymentGatewayChargeBearer: e.target.value })}
                             options={[
-                                { label: 'Store (Swarna Sparsh Absorbed - 0%)', value: 'store' },
+                                { label: 'Store (Alankar Jewellers Absorbed - 0%)', value: 'store' },
                                 { label: 'Customer / User (2% Surcharge)', value: 'user' }
                             ]}
                             disabled={isViewMode}
@@ -231,7 +288,7 @@ const ProductGeneralTab = ({
                             <div className="flex items-center justify-between px-1 mb-1">
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Caring Protocol</label>
                                 {!isViewMode && (
-                                    <button 
+                                    <button
                                         type="button"
                                         onClick={() => setFormData(prev => ({ ...prev, careTips: "<p><strong>Jewelry Care Guide:</strong></p><ul><li>Avoid direct contact with perfumes, lotions, and hairsprays.</li><li>Remove jewelry before swimming, bathing, or exercising.</li><li>Store in a cool, dry place, ideally in an airtight bag or box.</li><li>Clean occasionally with a soft, lint-free cloth to restore shine.</li></ul>" }))}
                                         className="text-xs font-medium text-amber-700 hover:text-amber-800 transition-colors flex items-center gap-1.5"
@@ -261,25 +318,25 @@ const ProductGeneralTab = ({
                 <FormSection title="Registry Identity">
                     <div className="max-w-md mx-auto">
                         <div className="p-4 sm:p-8 bg-[#FDFBF7] rounded-[2rem] border border-amber-100/50 flex flex-col items-center justify-center text-center shadow-inner">
-                             <p className="text-sm font-medium text-amber-700 mb-4">Master Identity</p>
-                             <div className="flex items-center gap-4">
-                                 <span className="text-2xl font-mono text-gray-900 tracking-wide">
-                                     {formData.productCode || createdProductData?.productCode || 'LOCKING...'}
-                                 </span>
-                                 <button 
+                            <p className="text-sm font-medium text-amber-700 mb-4">Master Identity</p>
+                            <div className="flex items-center gap-4">
+                                <span className="text-2xl font-mono text-gray-900 tracking-wide">
+                                    {formData.productCode || createdProductData?.productCode || 'LOCKING...'}
+                                </span>
+                                <button
                                     onClick={() => {
                                         navigator.clipboard.writeText(formData.productCode || createdProductData?.productCode);
                                         toast.success("Identity copied to clipboard");
                                     }}
                                     className="p-2.5 bg-white rounded-xl border border-amber-200 text-amber-600 hover:bg-[#3E2723] hover:text-white transition-all shadow-sm"
-                                 >
-                                     <Copy size={16} />
-                                 </button>
-                             </div>
-                             <div className="mt-6 flex items-center gap-2 px-3 py-1 bg-white rounded-full border border-amber-100 shadow-sm">
+                                >
+                                    <Copy size={16} />
+                                </button>
+                            </div>
+                            <div className="mt-6 flex items-center gap-2 px-3 py-1 bg-white rounded-full border border-amber-100 shadow-sm">
                                 <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                                 <span className="text-xs font-medium text-amber-700">Registry Synchronized</span>
-                             </div>
+                            </div>
                         </div>
                     </div>
                 </FormSection>

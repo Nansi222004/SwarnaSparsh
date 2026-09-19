@@ -5,7 +5,7 @@ import { Mail, Lock, ArrowRight, AlertCircle, Eye, EyeOff, Info } from "lucide-r
 import api from "../../../services/api";
 import toast from "react-hot-toast";
 import loginBg from "@assets/admin-login-bg.png";
-import logo from "@assets/logo.webp";
+import logo from "@/assets/Alankar jewllers.png";
 
 const AdminLogin = () => {
   const [email, setEmail] = useState("");
@@ -167,11 +167,11 @@ const AdminLogin = () => {
           <div className="flex flex-col items-center gap-3">
             <img
               src={logo}
-              alt="Swarna Sparsh"
+              alt="Alankar Jewellers"
               className="h-20 md:h-24 w-auto object-contain drop-shadow-[0_10px_15px_rgba(0,0,0,0.6)]"
             />
             <h1 className="text-2xl md:text-3xl font-serif font-bold text-white tracking-wider">
-              Swarna Sparsh
+              Alankar Jewellers
             </h1>
           </div>
           <div className="mt-4 flex items-center gap-4 w-full px-6">
@@ -210,18 +210,16 @@ const AdminLogin = () => {
                     <button
                       type="button"
                       onClick={() => setResetType("email")}
-                      className={`flex-1 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${
-                        resetType === "email" ? "bg-white text-gray-900 shadow-sm" : "text-gray-400 hover:text-gray-600"
-                      }`}
+                      className={`flex-1 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${resetType === "email" ? "bg-white text-gray-900 shadow-sm" : "text-gray-400 hover:text-gray-600"
+                        }`}
                     >
                       Email
                     </button>
                     <button
                       type="button"
                       onClick={() => setResetType("mobile")}
-                      className={`flex-1 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${
-                        resetType === "mobile" ? "bg-white text-gray-900 shadow-sm" : "text-gray-400 hover:text-gray-600"
-                      }`}
+                      className={`flex-1 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${resetType === "mobile" ? "bg-white text-gray-900 shadow-sm" : "text-gray-400 hover:text-gray-600"
+                        }`}
                     >
                       Mobile
                     </button>
@@ -414,7 +412,7 @@ const AdminLogin = () => {
 
         {/* Footer Info */}
         <p className="text-center mt-10 text-[10px] text-white/40 font-bold tracking-[0.3em] uppercase">
-          &copy; 2026 Swarna Sparsh &middot; Highly Secure Access
+          &copy; 2026 Alankar Jewellers &middot; Highly Secure Access
         </p>
       </div>
 

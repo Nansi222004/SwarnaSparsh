@@ -8,7 +8,7 @@ import {
     AlertTriangle, FileBarChart, Store, ShieldCheck, User, Wallet, CreditCard, ScanLine
 } from 'lucide-react';
 import { adminService } from '../services/adminService';
-import logo from '@assets/logo.webp';
+import logo from '@/assets/Alankar jewllers.png';
 
 const AdminLayout = ({ children }) => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth > 1024);
@@ -239,14 +239,14 @@ const AdminLayout = ({ children }) => {
                 <div className="h-16 flex items-center justify-center px-4 border-b border-white/10 shrink-0 relative bg-[#3E2723]">
                     {isSidebarOpen ? (
                         <div className="flex items-center gap-3">
-                            <img src={logo} alt="Swarna Sparsh" className="h-10 w-10 object-contain" />
+                            <img src={logo} alt="Alankar Jewellers" className="h-10 w-10 object-contain" />
                             <div className="flex flex-col text-left">
-                                <span className="text-sm font-bold tracking-wider text-amber-300 font-serif leading-tight">SWARNA SPARSH</span>
+                                <span className="text-sm font-bold tracking-wider text-amber-300 font-serif leading-tight">Alankar JEWELLERS</span>
                                 <span className="text-[9px] font-medium tracking-widest text-amber-100/70 uppercase">Admin Portal</span>
                             </div>
                         </div>
                     ) : (
-                        <img src={logo} alt="Swarna Sparsh" className="h-10 w-10 mx-auto object-contain" />
+                        <img src={logo} alt="Alankar Jewellers" className="h-10 w-10 mx-auto object-contain" />
                     )}
                     {/* Mobile Close Button */}
                     <button
@@ -363,7 +363,7 @@ const AdminLayout = ({ children }) => {
                         <div className="h-8 w-px bg-gray-100 mx-1 hidden sm:block" />
 
                         <div className="relative profile-dropdown-container">
-                            <button 
+                            <button
                                 onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
                                 className="flex items-center gap-2 lg:gap-3 focus:outline-none group"
                             >
@@ -383,7 +383,7 @@ const AdminLayout = ({ children }) => {
                                         <p className="text-sm text-gray-900 font-bold">Admin User</p>
                                         <p className="text-[10px] text-gray-500 font-black uppercase tracking-widest mt-0.5">Super Admin</p>
                                     </div>
-                                    <button 
+                                    <button
                                         onClick={() => {
                                             setIsProfileDropdownOpen(false);
                                             navigate('/admin/settings');
@@ -396,7 +396,7 @@ const AdminLayout = ({ children }) => {
                                         Global Settings
                                     </button>
                                     <div className="h-px bg-gray-100 my-1 mx-2" />
-                                    <button 
+                                    <button
                                         onClick={() => {
                                             setIsProfileDropdownOpen(false);
                                             handleLogout();

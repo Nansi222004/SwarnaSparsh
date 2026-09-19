@@ -76,7 +76,7 @@ exports.getHomepageData = async (req, res) => {
 exports.getPageData = async (req, res) => {
   try {
     const requestedPageKey = String(req.params.pageKey || "").trim();
-    const allowedPageKeys = new Set(["home", "shop-men", "shop-women", "shop-family", "gold-collection"]);
+    const allowedPageKeys = new Set(["home", "shop-men", "shop-women", "shop-family", "gold-collection", "diamond-collection"]);
 
     if (!allowedPageKeys.has(requestedPageKey)) {
       return error(res, "Invalid page key", 400);

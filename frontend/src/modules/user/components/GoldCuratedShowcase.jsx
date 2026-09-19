@@ -27,7 +27,7 @@ const fallbackCollections = [
   },
   {
     id: 4,
-    title: "Swarna Sparsh",
+    title: "Alankar Jewellers",
     image: ringGreen,
     path: "/shop?category=Rings&search=vanki",
   },
@@ -82,7 +82,7 @@ const GoldCuratedShowcase = ({ sectionData = null }) => {
       ),
       path: ensureGoldCategoryPath(
         item?.path ||
-          fallbackCollections[idx % fallbackCollections.length].path,
+        fallbackCollections[idx % fallbackCollections.length].path,
         item?.categoryId,
       ),
     }));
@@ -94,34 +94,34 @@ const GoldCuratedShowcase = ({ sectionData = null }) => {
   const title =
     String(
       sectionData?.settings?.title ||
-        sectionData?.label ||
-        "Premium Gold Collections",
+      sectionData?.label ||
+      "Premium Gold Collections",
     ).trim() || "Premium Gold Collections";
 
   const handleScroll = () => {
     if (scrollRef.current) {
-        const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
-        const maxScroll = scrollWidth - clientWidth;
-        if (maxScroll <= 0) {
-            setActiveIndex(0);
-            return;
-        }
-        const percentage = scrollLeft / maxScroll;
-        const index = Math.round(percentage * (collections.length - 1));
-        setActiveIndex(Math.min(index, collections.length - 1));
+      const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
+      const maxScroll = scrollWidth - clientWidth;
+      if (maxScroll <= 0) {
+        setActiveIndex(0);
+        return;
+      }
+      const percentage = scrollLeft / maxScroll;
+      const index = Math.round(percentage * (collections.length - 1));
+      setActiveIndex(Math.min(index, collections.length - 1));
     }
   };
 
   const scrollToDot = (index) => {
     if (scrollRef.current) {
-        const container = scrollRef.current;
-        const maxScroll = container.scrollWidth - container.clientWidth;
-        const percentage = index / (collections.length - 1 || 1);
-        container.scrollTo({
-            left: percentage * maxScroll,
-            behavior: 'smooth'
-        });
-        setActiveIndex(index);
+      const container = scrollRef.current;
+      const maxScroll = container.scrollWidth - container.clientWidth;
+      const percentage = index / (collections.length - 1 || 1);
+      container.scrollTo({
+        left: percentage * maxScroll,
+        behavior: 'smooth'
+      });
+      setActiveIndex(index);
     }
   };
 
@@ -138,9 +138,9 @@ const GoldCuratedShowcase = ({ sectionData = null }) => {
         </div>
 
         <div className="relative group/main max-w-[1550px] mx-auto">
-          
 
-          
+
+
 
           <div
             ref={scrollRef}
@@ -184,11 +184,10 @@ const GoldCuratedShowcase = ({ sectionData = null }) => {
                 <button
                   key={idx}
                   onClick={() => scrollToDot(idx)}
-                  className={`transition-all duration-300 rounded-full ${
-                    activeIndex === idx 
-                      ? "w-6 h-1.5 bg-[#2A4D35]" 
+                  className={`transition-all duration-300 rounded-full ${activeIndex === idx
+                      ? "w-6 h-1.5 bg-[#2A4D35]"
                       : "w-1.5 h-1.5 bg-gray-300 hover:bg-gray-400"
-                  }`}
+                    }`}
                   aria-label={`Go to item ${idx + 1}`}
                 />
               ))}

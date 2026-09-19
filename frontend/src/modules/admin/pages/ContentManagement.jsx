@@ -18,11 +18,11 @@ const ContentManagement = () => {
   const [aboutContent, setAboutContent] = useState({
     heroTitle: "About Us",
     heroSubtitle:
-      "Welcome to Swarna Sparsh, where elegance meets timeless tradition. We are more than just a jewellery brand; we are curators of silver artistry designed to adorn your soul.",
+      "Welcome to Alankar Jewellers, where elegance meets timeless tradition. We are more than just a jewellery brand; we are curators of silver artistry designed to adorn your soul.",
     mainStory:
       "Our journey began with a passion for bringing high-quality, handcrafted 925 Sterling Silver pieces to the modern woman. Every necklace, ring, and bracelet in our collection tells a story of skilled craftsmanship and attention to detail.",
     missionStatement:
-      "At Swarna Sparsh, we are committed to sustainability and ethical sourcing, ensuring that beauty does not come at a cost to our planet.",
+      "At Alankar Jewellers, we are committed to sustainability and ethical sourcing, ensuring that beauty does not come at a cost to our planet.",
     images: [
       {
         id: 1,

@@ -6,7 +6,7 @@ const productSchema = new mongoose.Schema({
   productCode: { type: String, unique: true, sparse: true },
   sku: { type: String, unique: true, sparse: true },
   huid: { type: String, trim: true, sparse: true },
-  brand: { type: String, default: "Swarna Sparsh" },
+  brand: { type: String, default: "Alankar Jewellers" },
   categories: [{ type: mongoose.Schema.Types.ObjectId, ref: "Category" }],
   category: { type: String },
   categorySlug: { type: String },
@@ -20,14 +20,20 @@ const productSchema = new mongoose.Schema({
     default: "unisex"
   }],
   silverCategory: {
-      type: String,
-      enum: ['800', '835', '925', '925 sterling silver', '958', '970', '990', '999', '']
+    type: String,
+    enum: ['800', '835', '925', '925 sterling silver', '958', '970', '990', '999', '']
   },
   goldCategory: {
-      type: String,
-      enum: ['14', '18', '22', '24', '']
+    type: String,
+    enum: ['14', '18', '22', '24', '']
   },
   careTips: { type: String, default: '' },
+  settingMetal: {
+    type: String,
+    enum: ["Gold", "White Gold", "Rose Gold", "Platinum", "Silver", ""],
+    default: ""
+  },
+  settingPurity: { type: String, default: "" },
   weight: { type: Number },
   weightUnit: { type: String, enum: ["Grams", "Milligrams"], default: "Grams" },
   specifications: { type: String },

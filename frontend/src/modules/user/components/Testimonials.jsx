@@ -29,7 +29,7 @@ const TESTIMONIALS = [
     id: 3,
     name: "Priya Patel",
     image: customer3,
-    text: "Gifted these earrings to my sister on her wedding and she loved them! I am obsessed with buying gifts from Swarna Sparsh.",
+    text: "Gifted these earrings to my sister on her wedding and she loved them! I am obsessed with buying gifts from Alankar Jewellers.",
     location: "Bangalore",
   },
 ];
@@ -44,13 +44,13 @@ const Testimonials = () => {
   const displayItems =
     configuredItems.length > 0
       ? configuredItems.map((item, index) => ({
-          id: item.itemId || item._id || item.id || `testimonial-${index + 1}`,
-          name: item.name || TESTIMONIALS[index]?.name || "Patron Story",
-          image: item.image ? resolveLegacyCmsAsset(item.image, item.image) : (TESTIMONIALS[index]?.image || null),
-          text: item.description || TESTIMONIALS[index]?.text || "",
-          location: item.location || TESTIMONIALS[index]?.location || "",
-          rating: Number(item.rating || 5)
-        }))
+        id: item.itemId || item._id || item.id || `testimonial-${index + 1}`,
+        name: item.name || TESTIMONIALS[index]?.name || "Patron Story",
+        image: item.image ? resolveLegacyCmsAsset(item.image, item.image) : (TESTIMONIALS[index]?.image || null),
+        text: item.description || TESTIMONIALS[index]?.text || "",
+        location: item.location || TESTIMONIALS[index]?.location || "",
+        rating: Number(item.rating || 5)
+      }))
       : TESTIMONIALS.map(t => ({ ...t, rating: 5 }));
 
   if (displayItems.length === 0) return null;

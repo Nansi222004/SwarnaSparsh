@@ -63,7 +63,7 @@ const DynamicPromoBanner = () => {
                         <div className="space-y-4">
                             <div className="inline-flex items-center gap-2.5 px-3 py-1 rounded-full bg-[#C59B27]/10 border border-[#C59B27]/30 text-[#E8D198] text-[10px] uppercase font-bold tracking-[0.25em]">
                                 <Sparkles className="w-3 h-3 text-[#C59B27]" />
-                                <span>{banner.tag || 'Swarna Sparsh Atelier'}</span>
+                                <span>{banner.tag || 'Alankar Jewellers Atelier'}</span>
                             </div>
 
                             {/* Headline */}
@@ -120,7 +120,7 @@ const DynamicPromoBanner = () => {
                             className="w-full h-full object-cover"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-[#141211] via-black/20 to-transparent" />
-                        
+
                         {banner.tag && (
                             <div className="absolute top-3 left-3 bg-[#141211]/85 backdrop-blur-sm border border-[#C59B27]/40 px-2.5 py-0.5 rounded-full text-[#E8D198] text-[9px] font-bold uppercase tracking-wider">
                                 {banner.tag}
@@ -178,11 +178,10 @@ const DynamicPromoBanner = () => {
                                 <button
                                     key={i}
                                     onClick={() => setCurrentIndex(i)}
-                                    className={`h-1.5 transition-all duration-400 rounded-full ${
-                                        i === currentIndex
+                                    className={`h-1.5 transition-all duration-400 rounded-full ${i === currentIndex
                                             ? 'w-8 bg-[#C59B27]'
                                             : 'w-2 bg-white/40 hover:bg-white/70'
-                                    }`}
+                                        }`}
                                     aria-label={`Slide ${i + 1}`}
                                 />
                             ))}

@@ -7,7 +7,12 @@ import LazySection from '../../../components/LazySection';
 
 // ─── ABOVE-FOLD: eagerly imported — these are visible immediately on page load ───
 import PromoSlider from '../components/PromoSlider';
-import CategoryGrid from '../components/CategoryGrid';
+import NewLaunchSection from '../components/NewLaunchSection';
+import CategoryGrid, {
+    GoldCollectionGrid,
+    SilverCollectionGrid,
+    DiamondCollectionGrid
+} from '../components/CategoryGrid';
 import DynamicPromoBanner from '../components/DynamicPromoBanner';
 import TrustMarkers from '../components/TrustMarkers';
 
@@ -17,11 +22,7 @@ import ShopByPrice from '../components/ShopByPrice';
 import PremiumCategoryCards from '../components/PremiumCategoryCards';
 import BestStylesSection from '../components/BestStylesSection';
 import AutoBannerSection from '../components/AutoBannerSection';
-import SilverNewLaunchGrid from '../components/SilverNewLaunchGrid';
-import ShopByColour from '../components/ShopByColour';
-import PriceRangeShowcase from '../components/PriceRangeShowcase';
 import PerfectGift from '../components/PerfectGift';
-import NewLaunchSection from '../components/NewLaunchSection';
 import StyleItYourWay from '../components/StyleItYourWay';
 import OccasionalSpecial from '../components/OccasionalSpecial';
 import AllJewellery from '../components/AllJewellery';
@@ -50,7 +51,7 @@ const Home = () => {
     useResetScroll();
 
     useEffect(() => {
-        document.title = "Swarna Sparsh | Crafted for Moments That Last";
+        document.title = "Alankar Jewellers | Crafted for Moments That Last";
     }, []);
 
     // ONLY block on shop data (products/categories) — CMS is enhancement-only.
@@ -63,7 +64,7 @@ const Home = () => {
     }
 
     return (
-        <div className="bg-white font-body text-stone-900 relative selection:bg-[#C59B27] selection:text-[#141211]">
+        <div className="bg-white font-body text-stone-900 relative selection:bg-[#C6A04A] selection:text-[#171717]">
             {isHomepageCmsError && (
                 <div className="mx-auto max-w-[1450px] px-4 pt-4">
                     <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-[13px] text-amber-900 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
@@ -87,6 +88,10 @@ const Home = () => {
             {/* ── ABOVE FOLD: loaded eagerly (visible immediately) ── */}
             <PromoSlider />
             <CategoryGrid />
+            <NewLaunchSection />
+            <GoldCollectionGrid />
+            <SilverCollectionGrid />
+            <DiamondCollectionGrid />
             <DynamicPromoBanner />
             <TrustMarkers />
 
@@ -95,11 +100,7 @@ const Home = () => {
             <PremiumCategoryCards />
             <BestStylesSection />
             <AutoBannerSection />
-            <SilverNewLaunchGrid />
-            <ShopByColour />
-            <PriceRangeShowcase />
             <PerfectGift />
-            <NewLaunchSection />
             <StyleItYourWay />
             <OccasionalSpecial />
             <AllJewellery />

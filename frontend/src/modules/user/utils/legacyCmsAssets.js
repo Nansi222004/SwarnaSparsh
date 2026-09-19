@@ -30,7 +30,7 @@ import bannerDaily from '@assets/banner_daily.png';
 import bannerOffice from '@assets/banner_office.png';
 import bannerParty from '@assets/banner_party.png';
 import trendingHeritage from '@assets/trending_heritage.png';
-import sandsLogo from '@assets/logo.webp';
+import AlankarLogo from '@/assets/Alankar jewllers.png';
 import catPendant from '@assets/cat_pendant.png';
 import silverEarringsProduct from '@assets/silver_earrings_product.png';
 import silverBraceletProduct from '@assets/silver_bracelet_product.png';
@@ -65,6 +65,19 @@ import categoryMensilver from '@assets/categories/mensilver.png';
 import categorySets from '@assets/categories/sets.png';
 import categoryAnklets from '@assets/categories/anklets.png';
 import categorySilverchains from '@assets/categories/silverchains.png';
+import goldRingsGreen from '@assets/categories/gold_rings_green.png';
+import goldEarringsGreen from '@assets/categories/gold_earrings_green.png';
+import goldPendantsGreen from '@assets/categories/gold_pendants_green.png';
+import goldBraceletsGreen from '@assets/categories/gold_bracelets_green.png';
+import goldBanglesGreen from '@assets/categories/gold_bangles_green.png';
+import goldMangalsutraGreen from '@assets/categories/gold_mangalsutra_green.png';
+import goldSetsGreen from '@assets/categories/gold_sets_green.png';
+import goldNewArrivalsGreen from '@assets/categories/gold_new_arrivals_green.png';
+import diamondRingImg from '@assets/diamond_ring.png';
+import catWeddingDiamondImg from '@assets/cat_wedding_diamond.png';
+import eternalDiamondBrillianceImg from '@assets/hero/eternal_diamond_brilliance.png';
+import diamondEleganceCampaignImg from '@assets/hero/diamond_elegance_campaign.png';
+import diamondLuxuryImg from '@assets/hero/diamond_luxury.png';
 import heroMasterpiece from '@assets/hero/hero_masterpiece.png';
 import bridalRoyal from '@assets/hero/bridal_royal.png';
 import menLuxuryRing from '@assets/luxury_ring_men.png';
@@ -131,6 +144,9 @@ import goldMinimalistic from '@assets/gold_lifestyle/gold_minimalistic.png';
 import goldTwinning from '@assets/gold_lifestyle/gold_twinning.png';
 import goldDateNights from '@assets/gold_lifestyle/gold_date_nights.png';
 import goldBridesmaid from '@assets/gold_lifestyle/gold_bridesmaid.jpg';
+import goldColorWhite from '@assets/gold_color_white.png';
+import goldColorRose from '@assets/gold_color_rose.png';
+import goldColorYellow from '@assets/gold_color_yellow.png';
 
 const legacyAssetMap = {
   'gold_casual_wear.jpg': goldCasualWear,
@@ -204,8 +220,9 @@ const legacyAssetMap = {
   'banner_office.png': bannerOffice,
   'banner_party.png': bannerParty,
   'trending_heritage.png': trendingHeritage,
-  'sands-logo.png': sandsLogo,
-  'logo.webp': sandsLogo,
+  'sands-logo.png': AlankarLogo,
+  'logo.webp': AlankarLogo,
+  'Alankar jewllers.png': AlankarLogo,
   'cat_pendant.png': catPendant,
   'silver_earrings_product.png': silverEarringsProduct,
   'silver_bracelet_product.png': silverBraceletProduct,
@@ -288,7 +305,23 @@ const legacyAssetMap = {
   'Chains.png': womenCategoryChains,
   'Bangles.png': womenCategoryBangles,
   'Sets.png': womenCategorySets,
-  'Personalised.png': womenCategoryPersonalised
+  'Personalised.png': womenCategoryPersonalised,
+  'gold_rings_green.png': goldRingsGreen,
+  'gold_earrings_green.png': goldEarringsGreen,
+  'gold_pendants_green.png': goldPendantsGreen,
+  'gold_bracelets_green.png': goldBraceletsGreen,
+  'gold_bangles_green.png': goldBanglesGreen,
+  'gold_mangalsutra_green.png': goldMangalsutraGreen,
+  'gold_sets_green.png': goldSetsGreen,
+  'gold_new_arrivals_green.png': goldNewArrivalsGreen,
+  'diamond_ring.png': diamondRingImg,
+  'cat_wedding_diamond.png': catWeddingDiamondImg,
+  'eternal_diamond_brilliance.png': eternalDiamondBrillianceImg,
+  'diamond_elegance_campaign.png': diamondEleganceCampaignImg,
+  'diamond_luxury.png': diamondLuxuryImg,
+  'gold_color_white.png': goldColorWhite,
+  'gold_color_rose.png': goldColorRose,
+  'gold_color_yellow.png': goldColorYellow
 };
 
 export const resolveLegacyCmsAsset = (value, fallback = '') => {

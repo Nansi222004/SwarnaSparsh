@@ -635,15 +635,30 @@ const ProductVariantsTab = ({
                                     </div>
 
                                     {/* Diamond Specs (Conditional) */}
-                                    {(v.diamondType || formData.diamondType) !== 'none' && (
+                                    {(formData.material === 'Diamond' || (v.diamondType || formData.diamondType) !== 'none') && (
                                         <div className="bg-pink-50/30 rounded-[2.5rem] p-4 sm:p-8 border border-pink-100/50 space-y-6">
-                                            <div className="flex items-center gap-3 mb-2">
-                                                <div className="p-2 bg-pink-100 rounded-xl text-pink-600">
-                                                    <Sparkles size={18} />
+                                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-2">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="p-2 bg-pink-100 rounded-xl text-pink-600">
+                                                        <Sparkles size={18} />
+                                                    </div>
+                                                    <div>
+                                                        <h4 className="text-[10px] font-black text-pink-800 uppercase tracking-[0.2em]">Diamond Intelligence</h4>
+                                                        <p className="text-[8px] font-bold text-pink-400 uppercase mt-0.5">High-precision optical specifications</p>
+                                                    </div>
                                                 </div>
-                                                <div>
-                                                    <h4 className="text-[10px] font-black text-pink-800 uppercase tracking-[0.2em]">Diamond Intelligence</h4>
-                                                    <p className="text-[8px] font-bold text-pink-400 uppercase mt-0.5">High-precision optical specifications</p>
+                                                <div className="flex items-center gap-2">
+                                                    <label className="text-[9px] font-black text-pink-700/70 uppercase tracking-widest">Origin:</label>
+                                                    <select
+                                                        value={v.diamondType || formData.diamondType || 'none'}
+                                                        onChange={(e) => handleVariantChange(v.id, 'diamondType', e.target.value)}
+                                                        disabled={isViewMode}
+                                                        className="bg-white border border-pink-200 rounded-xl px-3 py-1.5 text-xs font-bold text-gray-800 outline-none focus:border-pink-500 transition-all shadow-xs"
+                                                    >
+                                                        <option value="none">Inherit / None</option>
+                                                        <option value="natural">Natural Diamond</option>
+                                                        <option value="lab_grown">Lab-Grown Diamond</option>
+                                                    </select>
                                                 </div>
                                             </div>
                                             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">

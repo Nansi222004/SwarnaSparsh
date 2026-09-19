@@ -13,8 +13,8 @@ import {
   Star,
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
-import defaultLogo from "@assets/logo.webp";
-import { useSettings } from "../../../context/SettingsContext";
+import defaultLogo from "@/assets/Alankar jewllers.png";
+import { useSettings, sanitizeSettings } from "../../../context/SettingsContext";
 import {
   normalizeExternalLink,
   normalizeFooterLink,
@@ -27,15 +27,15 @@ const Footer = () => {
   const { settings: globalSettings } = useSettings();
 
   const [settings, setSettings] = useState({
-    storeName: "Swarna Sparsh",
-    tagline: "Swarna Sparsh – Where Luxury Meets Identity",
+    storeName: "Alankar Jewellers",
+    tagline: "Alankar Jewellers – Where Luxury Meets Identity",
     logo: "/logo.webp",
     footerTagline: "Timeless Elegance,",
     footerSubTagline: "Handcrafted for You.",
     footerDescription:
-      "Every piece at Swarna Sparsh tells a story of heritage and modern grace. Join our community of silver lovers and celebrate life's most precious moments.",
+      "Every piece at Alankar Jewellers tells a story of heritage and modern grace. Join our community of jewellery lovers and celebrate life's most precious moments.",
     address:
-      "Swarna Sparsh, Sarafa Lane Gandhi Chowk Wani, 445304, Dist - Yavatmal, Maharashtra",
+      "Alankar Jewellers, Sarafa Lane Gandhi Chowk Wani, 445304, Dist - Yavatmal, Maharashtra",
     phone: "+919921128662",
     email: "support@swarnasparsh.com",
     footerColumn1Title: "Experience",
@@ -45,7 +45,6 @@ const Footer = () => {
       { name: "Easy Returns", path: "/returns" },
       { name: "Contact Us", path: "/contact" },
       { name: "FAQs", path: "/help" },
-      { name: "Swarna Sparsh Gift Cards", path: "/gift-cards" },
     ],
     footerPoliciesLinks: [
       { name: "Shipping Policy", path: "/shipping-policy" },
@@ -65,7 +64,7 @@ const Footer = () => {
       youtube: "#",
     },
     footerDeliveryText: "Safe & Insured Express Worldwide Delivery",
-    footerCopyrightText: "Swarna Sparsh. All Rights Reserved.",
+    footerCopyrightText: "Alankar Jewellers. All Rights Reserved.",
   });
 
   useEffect(() => {
@@ -73,7 +72,7 @@ const Footer = () => {
       try {
         const res = await api.get("public/settings");
         if (res.data.success && res.data.data?.settings) {
-          const fetched = res.data.data.settings;
+          const fetched = sanitizeSettings(res.data.data.settings);
           setSettings((prev) => ({
             ...prev,
             ...fetched,
@@ -94,12 +93,13 @@ const Footer = () => {
       const saved = localStorage.getItem("siteSettings");
       if (saved) {
         const parsed = JSON.parse(saved);
+        const cleaned = sanitizeSettings(parsed);
         setSettings((prev) => ({
           ...prev,
-          ...parsed,
+          ...cleaned,
           socialLinks: {
             ...prev.socialLinks,
-            ...(parsed.socialLinks || {}),
+            ...(cleaned.socialLinks || {}),
           },
         }));
       }
@@ -110,8 +110,12 @@ const Footer = () => {
     return () => window.removeEventListener("storage", loadSettings);
   }, []);
 
-  const activeLogo = globalSettings?.logo || settings.logo || defaultLogo;
-  const activeStoreName = globalSettings?.storeName || settings.storeName || "Swarna Sparsh";
+  const activeLogo = (globalSettings?.logo && !globalSettings.logo.includes('logo.webp') && !/swarna|sands/i.test(globalSettings.logo))
+    ? globalSettings.logo
+    : defaultLogo;
+  const activeStoreName = (!globalSettings?.storeName || /swarna\s*sparsh/i.test(globalSettings.storeName))
+    ? "Alankar Jewellers"
+    : globalSettings.storeName;
   const activeTagline = globalSettings?.footerTagline || settings.footerTagline;
   const activeSubTagline = globalSettings?.footerSubTagline || settings.footerSubTagline;
   const activeDescription = globalSettings?.footerDescription || settings.footerDescription;
@@ -139,6 +143,7 @@ const Footer = () => {
                   alt={activeStoreName}
                   className="h-16 w-auto object-contain"
                   onError={(e) => {
+                    e.currentTarget.onerror = null;
                     e.currentTarget.src = defaultLogo;
                   }}
                 />
@@ -296,8 +301,9 @@ const Footer = () => {
               <span className="font-bold text-[#E8D198] mr-2 uppercase tracking-wide">
                 SECURITY ADVISORY:
               </span>
-              {settings.fraudWarning ||
-                "Swarna Sparsh will NEVER ask for OTPs, passwords, or sensitive financial information via unsolicited calls, WhatsApp, or emails."}
+              {globalSettings?.fraudWarning ||
+                settings.fraudWarning ||
+                "Alankar Jewellers will NEVER ask for OTPs, passwords, or sensitive financial information via unsolicited calls, WhatsApp, or emails."}
             </p>
           </div>
         </div>
@@ -306,13 +312,16 @@ const Footer = () => {
           <div className="flex items-center gap-3 bg-[#1C1917] px-4 py-2 rounded-full border border-[#C59B27]/30 shadow-xs">
             <Truck className="w-4 h-4 text-[#C59B27]" />
             <span className="text-[9px] uppercase tracking-[0.25em] font-bold text-[#E8D198]">
-              {settings.footerDeliveryText}
+              {globalSettings?.footerDeliveryText || settings.footerDeliveryText}
             </span>
           </div>
 
           <div className="flex flex-col items-center md:items-end gap-1.5">
             <p className="text-[10px] text-stone-500 uppercase tracking-[0.25em] font-semibold">
-              &copy; {new Date().getFullYear()} {settings.footerCopyrightText}
+              &copy; {new Date().getFullYear()}{" "}
+              {globalSettings?.footerCopyrightText ||
+                settings.footerCopyrightText ||
+                "Alankar Jewellers. All Rights Reserved."}
             </p>
           </div>
         </div>

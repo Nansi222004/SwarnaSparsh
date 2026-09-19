@@ -7,7 +7,12 @@ export const useCatalogue = () => {
         queryKey: ['categories'],
         queryFn: async () => {
             const res = await api.get('public/categories');
-            const data = res.data.data.categories || [];
+            const rawCategories = res.data.data.categories || [];
+            const data = rawCategories.filter(cat => {
+                const slug = String(cat.slug || '').toLowerCase();
+                const name = String(cat.name || '').toLowerCase();
+                return !/hand-bags|clutches|potli-bag|sling-bag/.test(slug) && !/\b(bag|clutch|potli|sling)\b/i.test(name);
+            });
             return data.map(cat => ({
                 id: cat._id,
                 _id: cat._id,
@@ -40,11 +45,21 @@ export const useCatalogue = () => {
             const res = await api.get('public/products', {
                 params: {
                     inStockOnly: true,
-                    limit: 48  // Load 48 initially — enough for home/shop above-fold display
-                               // Shop page has its own server-side pagination
+                    limit: 60  // Load up to 60 storefront jewellery products
                 }
             });
-            const data = res.data.data.products || [];
+            const rawProducts = res.data.data.products || [];
+            const data = rawProducts.filter(prod => {
+                const rawCategory = Array.isArray(prod.categories) ? prod.categories[0] : null;
+                const rawCategorySlug = String(rawCategory?.slug || prod.categorySlug || '').toLowerCase();
+                const rawCategoryName = String(typeof rawCategory === 'string' ? rawCategory : (rawCategory?.name || prod.category || '')).toLowerCase();
+                const name = String(prod.name || '').toLowerCase();
+                return (
+                    !/hand-bags|clutches|potli-bag|sling-bag/.test(rawCategorySlug) &&
+                    !/\b(bag|clutch|potli|sling)\b/i.test(rawCategoryName) &&
+                    !/\b(bag|clutch|potli|sling)\b/i.test(name)
+                );
+            });
             return data.map(prod => {
                 const rawCategory = Array.isArray(prod.categories) ? prod.categories[0] : null;
                 const rawCategoryId = rawCategory?._id || (typeof rawCategory === 'string' ? rawCategory : '');

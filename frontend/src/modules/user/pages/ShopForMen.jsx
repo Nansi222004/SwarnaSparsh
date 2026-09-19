@@ -28,7 +28,7 @@ const ShopForMen = () => {
   } = usePublicCmsPage("shop-men");
 
   useEffect(() => {
-    document.title = "Shop Men's Jewellery | Swarna Sparsh";
+    document.title = "Shop Men's Jewellery | Alankar Jewellers";
   }, []);
 
   const sectionMap = useMemo(
@@ -73,36 +73,36 @@ const ShopForMen = () => {
     <div className="mens-section bg-[#FAF8F5] min-h-screen text-[#111827] overflow-x-hidden">
       <MenHeroCarousel sectionData={sectionMap["hero-banners"]} />
       <MenCategoriesGrid sectionData={sectionMap["categories-grid"]} />
-      
+
       <MenLuxurySection sectionData={sectionMap["luxury-section"]} />
-        
-          <CelebrateMen sectionData={sectionMap["celebrate-men"]} />
-        
-        
-          <MenCuratedCollections sectionData={sectionMap["curated-collections"]} />
-        
-        
-          <MenExploreCollections sectionData={sectionMap["explore-collections"]} />
-        
-        
-          <MenPersonalizedBanner sectionData={sectionMap["personalized-banner"]} />
-        
-        
-          <MenPickYourGlam sectionData={sectionMap["pick-your-glam"]} />
-        
-        
-          <MenInteractiveLook />
-        
-        
-          <MenStyleGuide sectionData={sectionMap["style-guide"]} />
-        
-        
-          <MenStyleTrends sectionData={sectionMap["style-trends"]} />
-        
-        
-          <MenFeaturedProducts sectionData={sectionMap["products-listing"]} />
-        
-      
+
+      <CelebrateMen sectionData={sectionMap["celebrate-men"]} />
+
+
+      <MenCuratedCollections sectionData={sectionMap["curated-collections"]} />
+
+
+      <MenExploreCollections sectionData={sectionMap["explore-collections"]} />
+
+
+      <MenPersonalizedBanner sectionData={sectionMap["personalized-banner"]} />
+
+
+      <MenPickYourGlam sectionData={sectionMap["pick-your-glam"]} />
+
+
+      <MenInteractiveLook />
+
+
+      <MenStyleGuide sectionData={sectionMap["style-guide"]} />
+
+
+      <MenStyleTrends sectionData={sectionMap["style-trends"]} />
+
+
+      <MenFeaturedProducts sectionData={sectionMap["products-listing"]} />
+
+
     </div>
   );
 };

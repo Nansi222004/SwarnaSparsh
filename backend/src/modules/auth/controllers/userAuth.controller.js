@@ -161,7 +161,7 @@ exports.verifyOtp = async (req, res) => {
     if (isNewUser && user.email) {
       enqueueEmail({
         to: user.email,
-        subject: "Welcome to Swarna Sparsh! ✨",
+        subject: "Welcome to Alankar Jewellers! ✨",
         html: emailTemplates.welcomeEmail({ userName: user.name }),
         type: "welcome",
       });

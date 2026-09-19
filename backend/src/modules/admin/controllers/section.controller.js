@@ -1,7 +1,7 @@
 const HomepageSection = require("../../../models/HomepageSection");
 const { success, error } = require("../../../utils/apiResponse");
 
-const ALLOWED_PAGE_KEYS = new Set(["home", "shop-men", "shop-women", "shop-family", "gold-collection"]);
+const ALLOWED_PAGE_KEYS = new Set(["home", "shop-men", "shop-women", "shop-family", "gold-collection", "diamond-collection"]);
 const ALLOWED_SECTION_TYPES = new Set([
   "banner",
   "category-grid",
@@ -295,6 +295,7 @@ const sanitizeSectionPayload = (identity, payload = {}) => {
       celebrateKey: item.celebrateKey,
       path: item.path,
       tag: item.tag,
+      badge: item.badge || item.tag || undefined,
       location: item.location,
       rating: item.rating ?? undefined,
       price: item.price,
@@ -1133,26 +1134,16 @@ const sanitizeSectionPayload = (identity, payload = {}) => {
         const categoryId = item.categoryId || null;
         const label = item.name || item.label || "";
 
-        if (!categoryId) {
-          return {
-            ...item,
-            name: label,
-            label,
-            sortOrder: item.sortOrder ?? idx
-          };
-        }
-
         return {
           ...item,
           categoryId,
-          productIds: undefined,
           name: label,
           label: item.label || label,
-          path: buildCategoryPath(categoryId, item.path),
+          path: categoryId ? buildCategoryPath(categoryId, item.path) : (item.path || "/shop"),
           sortOrder: item.sortOrder ?? idx
         };
       })
-      .filter((item) => Boolean(item.categoryId));
+      .filter((item) => Boolean(item.name || item.label || item.image || item.categoryId));
   }
 
   if (sectionKey === "curated-collections" && pageKey === "shop-men") {

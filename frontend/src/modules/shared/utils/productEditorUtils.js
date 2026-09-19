@@ -45,24 +45,26 @@ export const normalizeString = (value = '') => String(value || '').trim().toLowe
 
 export const getTenGramRate = (formData, metalRates) => {
     const material = normalizeString(formData.material);
-    if (material === 'gold') {
-        const goldCategory = normalizeString(formData.goldCategory);
+    const settingMetal = normalizeString(formData.settingMetal);
+
+    if (material === 'gold' || (material === 'diamond' && (settingMetal === 'gold' || settingMetal === 'white gold' || settingMetal === 'rose gold'))) {
+        const goldCategory = normalizeString(formData.goldCategory || formData.settingPurity);
         const gold10g = metalRates.gold10g || {};
         const fallback = Number(metalRates.goldPerGram || 0) * 10;
 
-        if (goldCategory === '14') return Number(gold10g.k14) || fallback;
-        if (goldCategory === '18') return Number(gold10g.k18) || fallback;
-        if (goldCategory === '22') return Number(gold10g.k22) || fallback;
-        if (goldCategory === '24') return Number(gold10g.k24) || fallback;
+        if (goldCategory.includes('14')) return Number(gold10g.k14) || fallback;
+        if (goldCategory.includes('18')) return Number(gold10g.k18) || fallback;
+        if (goldCategory.includes('22')) return Number(gold10g.k22) || fallback;
+        if (goldCategory.includes('24')) return Number(gold10g.k24) || fallback;
 
         return Number(gold10g.k18) || Number(gold10g.k22) || Number(gold10g.k14) || Number(gold10g.k24) || fallback;
     }
 
-    if (material === 'silver') {
-        const silverCategory = normalizeString(formData.silverCategory);
+    if (material === 'silver' || (material === 'diamond' && settingMetal === 'silver')) {
+        const silverCategory = normalizeString(formData.silverCategory || formData.settingPurity);
         const silver10g = metalRates.silver10g || {};
         const fallback = Number(metalRates.silverPerGram || 0) * 10;
-        const isSterling = silverCategory === '925 sterling silver';
+        const isSterling = silverCategory.includes('sterling') || silverCategory.includes('925');
 
         if (isSterling) return Number(silver10g.sterling925) || fallback;
         return Number(silver10g.silverOther) || fallback;

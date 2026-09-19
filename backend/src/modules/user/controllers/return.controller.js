@@ -110,7 +110,7 @@ exports.requestReturn = async (req, res) => {
         link: `/admin/returns`,
         isRead: false,
       });
-    } catch (_e) {}
+    } catch (_e) { }
 
     // -- Email: return request confirmation to customer --
     const reqUser = await require("../../../models/User")
@@ -122,7 +122,7 @@ exports.requestReturn = async (req, res) => {
         subject:
           "Return Request Received - " +
           returnRequest.returnId +
-          " | Swarna Sparsh",
+          " | Alankar Jewellers",
         html: emailTemplates.returnRequested({
           returnReq: returnRequest,
           userName: reqUser.name,

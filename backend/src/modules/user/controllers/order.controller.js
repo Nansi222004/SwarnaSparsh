@@ -50,8 +50,8 @@ const buildSellerInvoiceAllocations = (items, coupon, discount) => {
   const sellerRows = new Map();
   const applicableTotal = coupon
     ? items
-        .filter((item) => isCouponItem(coupon, item))
-        .reduce((sum, item) => sum + Number(item.price || 0) * Number(item.quantity || 0), 0)
+      .filter((item) => isCouponItem(coupon, item))
+      .reduce((sum, item) => sum + Number(item.price || 0) * Number(item.quantity || 0), 0)
     : 0;
 
   for (const item of items) {
@@ -235,7 +235,7 @@ const deductStockForOrder = async (orderItems, orderId, userId) => {
           link: "/admin/inventory",
           isRead: false,
         });
-      } catch (_e) {}
+      } catch (_e) { }
     }
 
     await StockLog.create({
@@ -290,7 +290,7 @@ const _calculateOrderData = async (
       orderItems.push({
         productId: item.productId,
         variantId: "GIFT_CARD_VAR",
-        name: item.name || `Swarna Sparsh E-Gift Card (₹${cardValue})`,
+        name: item.name || `Alankar Jewellers E-Gift Card (₹${cardValue})`,
         sku: `GIFT-CARD-${cardValue}`,
         image: "",
         price: cardValue,
@@ -490,7 +490,7 @@ exports.placeOrder = async (req, res) => {
         link: `/admin/orders/${order._id}`,
         isRead: false,
       });
-    } catch (_e) {}
+    } catch (_e) { }
 
     try {
       const Setting = require("../../../models/Setting");
@@ -499,12 +499,12 @@ exports.placeOrder = async (req, res) => {
       if (adminEmail) {
         enqueueEmail({
           to: adminEmail,
-          subject: `[Swarna Sparsh] New Order Placed: #${order.orderId}`,
+          subject: `[Alankar Jewellers] New Order Placed: #${order.orderId}`,
           html: `<h2>New Order Received</h2><p>Order <strong>#${order.orderId}</strong> for <strong>₹${order.total}</strong> placed by ${order.customerName} (${paymentMethod.toUpperCase()}).</p>`,
           type: "admin_new_order",
         });
       }
-    } catch (_e) {}
+    } catch (_e) { }
 
     // ── Realtime: emit new_order to admin (best-effort) ─────────────
     try {
@@ -582,7 +582,7 @@ exports.placeOrder = async (req, res) => {
       if (recipientEmail) {
         enqueueEmail({
           to: recipientEmail,
-          subject: "Order Confirmed - " + order.orderId + " | Swarna Sparsh",
+          subject: "Order Confirmed - " + order.orderId + " | Alankar Jewellers",
           html: emailTemplates.orderConfirmation({
             order,
             userName: order.customerName,
@@ -727,7 +727,7 @@ exports.cancelOrder = async (req, res) => {
         link: `/admin/orders/${order._id}`,
         isRead: false,
       });
-    } catch (_e) {}
+    } catch (_e) { }
 
     // Restock only if stock was already deducted (COD or paid Razorpay orders)
     if (order.paymentStatus === "cod" || order.paymentStatus === "paid") {

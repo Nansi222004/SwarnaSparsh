@@ -209,7 +209,7 @@ const FamilyCollectionProductsPage = () => {
   } = usePublicCmsPage("shop-family");
 
   useEffect(() => {
-    document.title = `${meta.title} | Swarna Sparsh`;
+    document.title = `${meta.title} | Alankar Jewellers`;
   }, [meta.title]);
 
   const sectionMap = useMemo(

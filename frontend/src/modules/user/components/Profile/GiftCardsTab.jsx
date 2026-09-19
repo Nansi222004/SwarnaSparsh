@@ -83,7 +83,7 @@ const GiftCardsTab = () => {
         }
     };
 
-    const filteredCards = cards.filter(card => 
+    const filteredCards = cards.filter(card =>
         card.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
         card.recipientName.toLowerCase().includes(searchTerm.toLowerCase()) ||
         card.recipientEmail.toLowerCase().includes(searchTerm.toLowerCase())
@@ -128,7 +128,7 @@ const GiftCardsTab = () => {
                     </div>
                     <div className="space-y-2">
                         <h3 className="text-base font-bold text-[#141211] font-serif">No Gift Cards Purchased Yet</h3>
-                        <p className="text-xs text-stone-500 leading-relaxed">Spread love and sparkles by gifting your loved ones a Swarna Sparsh E-Gift Card. Let them pick their favorite silver jewelry.</p>
+                        <p className="text-xs text-stone-500 leading-relaxed">Spread love and sparkles by gifting your loved ones an Alankar Jewellers E-Gift Card. Let them pick their favorite jewelry.</p>
                     </div>
                     <a
                         href="/gift-cards"
@@ -144,7 +144,7 @@ const GiftCardsTab = () => {
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {filteredCards.map((card) => (
-                        <div 
+                        <div
                             key={card._id}
                             className="relative overflow-hidden rounded-2xl border border-stone-200 bg-white hover:border-[#C59B27]/50 hover:shadow-md transition-all duration-300 flex flex-col justify-between"
                         >
@@ -153,7 +153,7 @@ const GiftCardsTab = () => {
                                 <div className="flex justify-between items-start">
                                     <div className="flex items-center gap-2">
                                         <Gift className="w-5 h-5 text-[#E8D198]" />
-                                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#E8D198]">Swarna Sparsh Gift Voucher</span>
+                                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#E8D198]">Alankar Jewellers Gift Voucher</span>
                                     </div>
                                     <span className={`text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full border ${getStatusColor(card.status)}`}>
                                         {getStatusLabel(card.status)}
@@ -172,7 +172,7 @@ const GiftCardsTab = () => {
 
                                 <div className="flex items-center justify-between bg-white/10 rounded-xl p-3 border border-white/10">
                                     <span className="font-mono text-sm tracking-wider font-bold">{card.code}</span>
-                                    <button 
+                                    <button
                                         onClick={() => handleCopy(card.code)}
                                         className="p-1.5 hover:bg-white/10 rounded-lg text-white transition-colors"
                                         title="Copy Code"

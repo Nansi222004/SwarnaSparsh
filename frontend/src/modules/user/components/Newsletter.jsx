@@ -8,7 +8,7 @@ const Newsletter = () => {
     const [email, setEmail] = useState('');
 
     const storeEmail = settings?.email || 'support@swarnasparsh.com';
-    const storeName = settings?.storeName || 'Swarna Sparsh';
+    const storeName = settings?.storeName || 'Alankar Jewellers';
 
     const handleSubmit = (e) => {
         e.preventDefault();

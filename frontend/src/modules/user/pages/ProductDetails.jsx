@@ -13,6 +13,7 @@ import {
   getProductThumbUrl,
 } from "../../../utils/imageUtils";
 import { useResetScroll } from "../../../hooks/useResetScroll";
+import { isDiamondProduct, isGoldProduct, isSilverProduct } from "../utils/productMetal";
 
 import {
   Heart,
@@ -23,6 +24,7 @@ import {
   Minus,
   Truck,
   ShieldCheck,
+  Gem,
   Smile,
   Gift,
   ChevronDown,
@@ -410,6 +412,9 @@ const ProductDetails = () => {
 
   const metalType = useMemo(() => {
     if (!product) return null;
+    if (isDiamondProduct(product)) return "diamond";
+    if (isGoldProduct(product)) return "gold";
+    if (isSilverProduct(product)) return "silver";
     const material = String(product?.material || product?.metal || "").trim().toLowerCase();
     if (material.includes("gold")) return "gold";
     if (material.includes("silver") || String(product?.name || "").toLowerCase().includes("silver")) return "silver";
@@ -457,18 +462,17 @@ const ProductDetails = () => {
         productId: product._id || product.id,
         name: product.name,
       });
-      const materialLower = String(product?.material || product?.metal || "")
-        .trim()
-        .toLowerCase();
       const suffix =
-        materialLower === "gold"
-          ? "Gold Jewellery"
-          : materialLower === "silver"
-            ? "Silver Jewellery"
-            : "Jewellery";
-      document.title = `${product.name} | Swarna Sparsh - ${suffix}`;
+        metalType === "diamond"
+          ? "Diamond Jewellery"
+          : metalType === "gold"
+            ? "Gold Jewellery"
+            : metalType === "silver"
+              ? "Silver Jewellery"
+              : "Jewellery";
+      document.title = `${product.name} | Alankar Jewellers - ${suffix}`;
     }
-  }, [product, track]);
+  }, [product, metalType, track]);
 
   useEffect(() => {
     const loadReviews = async () => {
@@ -516,7 +520,7 @@ const ProductDetails = () => {
   }, [product?.relatedProducts]);
 
   // State for Animations
-  
+
   const [isAtBottom, setIsAtBottom] = useState(false);
 
   useEffect(() => {
@@ -720,9 +724,9 @@ const ProductDetails = () => {
 
   const resolvedHiddenCharge = Number(
     selectedVariant?.hiddenCharge ??
-      Number(selectedVariant?.hallmarkingCharge || 0) +
-        Number(selectedVariant?.diamondCertificateCharge || 0) +
-        Number(selectedVariant?.additionalCharge || 0),
+    Number(selectedVariant?.hallmarkingCharge || 0) +
+    Number(selectedVariant?.diamondCertificateCharge || 0) +
+    Number(selectedVariant?.additionalCharge || 0),
   );
   const resolvedPgCharge = Number(selectedVariant?.pgChargeAmount || 0);
   const pricingBreakdown = {
@@ -741,16 +745,16 @@ const ProductDetails = () => {
   const pricingSubtotal =
     Number(selectedVariant?.subtotalBeforeTax || 0) ||
     Number(pricingBreakdown.metalPrice || 0) +
-      Number(pricingBreakdown.makingCharge || 0) +
-      Number(pricingBreakdown.diamondPrice || 0) -
-      resolvedPgCharge;
+    Number(pricingBreakdown.makingCharge || 0) +
+    Number(pricingBreakdown.diamondPrice || 0) -
+    resolvedPgCharge;
   const gstPercent =
     pricingSubtotal > 0
       ? Math.round(
-          (Number(pricingBreakdown.gst || 0) / pricingSubtotal) * 10000,
-        ) / 100
+        (Number(pricingBreakdown.gst || 0) / pricingSubtotal) * 10000,
+      ) / 100
       : 0;
-  const supplierName = product?.brand || "Swarna Sparsh";
+  const supplierName = product?.brand || "Alankar Jewellers";
 
   // Local currencyText removed
   // Using imported formatCurrency
@@ -862,20 +866,23 @@ const ProductDetails = () => {
   const isWishlisted = safeWishlist.some((item) => item.id === product?.id);
 
   const currentVariant = selectedVariant || product?.variants?.[0] || {};
-  const dSpecs = currentVariant?.diamondSpecs || {};
+  const dSpecs = currentVariant?.diamondSpecs || product?.diamondSpecs || {};
   const hasDiamonds = !!(
     product?.diamondWeight ||
     product?.diamondCount ||
+    product?.diamondSpecs?.carat ||
+    product?.diamondSpecs?.diamondCount ||
     currentVariant?.diamondWeight ||
     currentVariant?.diamondCount ||
     dSpecs?.carat ||
     dSpecs?.diamondCount ||
-    Number(currentVariant?.diamondPrice || 0) > 0
+    Number(currentVariant?.diamondPrice || 0) > 0 ||
+    isDiamondProduct(product)
   );
   const diamondType =
-    product?.diamondType ||
-    currentVariant?.diamondType ||
-    (hasDiamonds ? "Natural" : "None");
+    (currentVariant?.diamondType && currentVariant?.diamondType !== "none" ? currentVariant.diamondType : null) ||
+    (product?.diamondType && product?.diamondType !== "none" ? product.diamondType : null) ||
+    (hasDiamonds ? "natural" : "none");
   const isLabGrown = String(diamondType).toLowerCase().includes("lab_grown");
 
   const toggleSection = (section) => {
@@ -906,19 +913,19 @@ const ProductDetails = () => {
   return (
     <div className="bg-white min-h-screen py-8 pb-24 md:pb-8 animate-in fade-in slide-in-from-bottom-8 duration-700 ease-out fill-mode-both selection:bg-[#C59B27] selection:text-white">
       <Helmet>
-        <title>{product.seo?.title || `${product.name} | Swarna Sparsh`}</title>
+        <title>{product.seo?.title || `${product.name} | Alankar Jewellers`}</title>
         <meta
           name="description"
           content={
             product.seo?.description ||
             product.description?.replace(/<[^>]*>?/gm, "").slice(0, 160) ||
-            `Buy ${product.name} at Swarna Sparsh.`
+            `Buy ${product.name} at Alankar Jewellers.`
           }
         />
         {product.seo?.keywords && (
           <meta name="keywords" content={product.seo.keywords} />
         )}
-        <meta property="og:title" content={product.seo?.title || `${product.name} | Swarna Sparsh`} />
+        <meta property="og:title" content={product.seo?.title || `${product.name} | Alankar Jewellers`} />
         <meta
           property="og:description"
           content={
@@ -1047,7 +1054,7 @@ const ProductDetails = () => {
                         />
                         <text className="text-[9px] font-bold tracking-[0.2em] uppercase fill-white/80">
                           <textPath xlinkHref="#circlePathSmall">
-                            The Lookbook • Swarna Sparsh Royal •{" "}
+                            The Lookbook • Alankar Jewellers Royal •{" "}
                           </textPath>
                         </text>
                       </svg>
@@ -1114,7 +1121,7 @@ const ProductDetails = () => {
                         try {
                           await navigator.share({
                             title: product?.name || "Check out this product",
-                            text: `I found this beautiful ${product?.name} on Swarna Sparsh!`,
+                            text: `I found this beautiful ${product?.name} on Alankar Jewellers!`,
                             url: url,
                           });
                         } catch (err) {
@@ -1256,6 +1263,7 @@ const ProductDetails = () => {
                             </span>
                             <span className="text-[11px] md:text-[13px] font-bold text-stone-900 block">
                               {currentVariant?.diamondSpecs?.carat ||
+                                product?.diamondSpecs?.carat ||
                                 product.diamondWeight ||
                                 currentVariant?.diamondWeight ||
                                 "---"}
@@ -1273,6 +1281,7 @@ const ProductDetails = () => {
                             </span>
                             <span className="text-[11px] md:text-[13px] font-bold text-stone-900 block">
                               {currentVariant?.diamondSpecs?.clarity ||
+                                product?.diamondSpecs?.clarity ||
                                 product.diamondClarity ||
                                 currentVariant?.diamondClarity ||
                                 "---"}
@@ -1286,7 +1295,9 @@ const ProductDetails = () => {
                               Color
                             </span>
                             <span className="text-[11px] md:text-[13px] font-bold text-stone-900 block">
-                              {currentVariant?.diamondSpecs?.color || "---"}
+                              {currentVariant?.diamondSpecs?.color ||
+                                product?.diamondSpecs?.color ||
+                                "---"}
                             </span>
                           </div>
                           <div className="group transition-all duration-300">
@@ -1297,9 +1308,9 @@ const ProductDetails = () => {
                               Cut / Shape
                             </span>
                             <span className="text-[11px] md:text-[13px] font-bold text-stone-900 block">
-                              {currentVariant?.diamondSpecs?.cut || "---"}
+                              {currentVariant?.diamondSpecs?.cut || product?.diamondSpecs?.cut || "---"}
                               <span className="mx-1 text-stone-300">/</span>
-                              {currentVariant?.diamondSpecs?.shape || "---"}
+                              {currentVariant?.diamondSpecs?.shape || product?.diamondSpecs?.shape || "---"}
                             </span>
                           </div>
                           <div className="group transition-all duration-300">
@@ -1311,6 +1322,7 @@ const ProductDetails = () => {
                             </span>
                             <span className="text-[11px] md:text-[13px] font-bold text-stone-900 block">
                               {currentVariant?.diamondSpecs?.diamondCount ||
+                                product?.diamondSpecs?.diamondCount ||
                                 product.diamondCount ||
                                 currentVariant?.diamondCount ||
                                 "---"}
@@ -1332,21 +1344,25 @@ const ProductDetails = () => {
                       <div className="grid grid-cols-2 gap-y-3 md:gap-y-6 gap-x-6 md:gap-x-8 w-full">
                         <div className="space-y-0.5 md:space-y-1">
                           <span className="text-[8px] md:text-[9px] font-bold text-gray-400 uppercase tracking-widest block">
-                            Metal
+                            {metalType === "diamond" ? "Setting Metal" : "Metal"}
                           </span>
                           <span className="text-[11px] md:text-xs font-semibold text-gray-900 block">
-                            {product.material || product.metal || "925 Silver"}
+                            {metalType === "diamond"
+                              ? (product.settingMetal || product.material || "Gold")
+                              : (product.material || product.metal || "925 Silver")}
                           </span>
                         </div>
-                        <div 
+                        <div
                           onClick={() => setShowAuthPopup(true)}
                           className="space-y-0.5 md:space-y-1 cursor-pointer group/purity hover:opacity-90 transition-all duration-300 flex flex-col items-center"
                         >
                           <span className="text-[8px] md:text-[9px] font-bold text-gray-400 uppercase tracking-widest block group-hover/purity:text-[#C59B27] transition-colors">
-                            Purity
+                            {metalType === "diamond" ? "Setting Purity" : "Purity"}
                           </span>
                           <span className="inline-flex items-center gap-1.5 text-[11px] md:text-xs font-semibold text-gray-900 underline decoration-dashed decoration-gray-300 hover:decoration-[#C59B27] group-hover/purity:text-[#C59B27] transition-all">
-                            {product.silverCategory || product.purity || "---"}
+                            {metalType === "diamond"
+                              ? (product.settingPurity || product.purity || "14K / 18K")
+                              : (product.silverCategory || product.purity || "---")}
                             <span className="relative flex h-2 w-2">
                               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#C59B27] opacity-75"></span>
                               <span className="relative inline-flex rounded-full h-2 w-2 bg-[#C59B27]"></span>
@@ -1378,10 +1394,10 @@ const ProductDetails = () => {
                         )}
                         <div className="space-y-0.5 md:space-y-1">
                           <span className="text-[8px] md:text-[9px] font-bold text-gray-400 uppercase tracking-widest block">
-                            HUID
+                            {product.certificateNumber ? "Certificate" : "HUID"}
                           </span>
                           <span className="text-[11px] md:text-xs font-semibold text-emerald-700 block uppercase tracking-tighter">
-                            {product.huid || "SS-AUTH"}
+                            {product.certificateNumber || product.huid || "SS-AUTH"}
                           </span>
                         </div>
                       </div>
@@ -1411,7 +1427,11 @@ const ProductDetails = () => {
                         <tbody className="divide-y divide-gray-50">
                           {[
                             {
-                              label: "Metal (925 Silver)",
+                              label: metalType === "diamond"
+                                ? `Setting Metal (${product?.settingMetal ? `${product.settingMetal}${product.settingPurity ? ` ${product.settingPurity}` : ''}` : (product?.material || 'Setting')})`
+                                : metalType === "gold"
+                                  ? `Metal (${product?.purity || 'Gold'})`
+                                  : `Metal (${product?.purity || '925 Silver'})`,
                               rate: is925SterlingSilver
                                 ? "-"
                                 : `${selectedVariantWeight || product.weight || "---"} g`,
@@ -1423,8 +1443,10 @@ const ProductDetails = () => {
                               value: pricingBreakdown.makingCharge,
                             },
                             {
-                              label: "Diamond / Stones",
-                              rate: "-",
+                              label: metalType === "diamond" ? "Diamond Stones" : "Diamond / Stones",
+                              rate: (dSpecs?.carat || product?.diamondWeight || currentVariant?.diamondWeight)
+                                ? `${dSpecs?.carat || product?.diamondWeight || currentVariant?.diamondWeight} ct`
+                                : "-",
                               value: pricingBreakdown.diamondPrice,
                             },
                             {
@@ -1460,8 +1482,8 @@ const ProductDetails = () => {
                             <td className="px-3 md:px-6 py-3 md:py-5 text-base md:text-lg font-bold text-[#C59B27] text-right">
                               {formatCurrency(
                                 pricingBreakdown.finalPrice ||
-                                  variantPrice ||
-                                  0,
+                                variantPrice ||
+                                0,
                               )}
                             </td>
                           </tr>
@@ -1552,11 +1574,10 @@ const ProductDetails = () => {
                         key={variantId}
                         type="button"
                         onClick={() => setSelectedVariantId(variantId)}
-                        className={`px-5 py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-widest border transition-all duration-300 ${
-                          isSelected
+                        className={`px-5 py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-widest border transition-all duration-300 ${isSelected
                             ? "border-[#C59B27] bg-[#141211] text-[#E8D198] shadow-md"
                             : "border-stone-200 text-stone-600 hover:border-[#C59B27]/60 bg-stone-50/50"
-                        }`}
+                          }`}
                       >
                         {variant.name}
                         {variant.size ? ` (Size: ${variant.size})` : ""}
@@ -1572,11 +1593,10 @@ const ProductDetails = () => {
               <button
                 onClick={handleAddToCart}
                 disabled={!canAddToCart}
-                className={`w-full max-w-md py-4 rounded-xl font-bold uppercase tracking-[0.2em] text-[11px] transition-all duration-300 relative overflow-hidden group shadow-lg ${
-                  canAddToCart
+                className={`w-full max-w-md py-4 rounded-xl font-bold uppercase tracking-[0.2em] text-[11px] transition-all duration-300 relative overflow-hidden group shadow-lg ${canAddToCart
                     ? "bg-[#141211] hover:bg-[#1C1917] text-[#E8D198] border border-[#C59B27]/50 hover:border-[#C59B27] hover:-translate-y-0.5"
                     : "bg-stone-100 text-stone-400 cursor-not-allowed border border-stone-200"
-                }`}
+                  }`}
               >
                 <span className="relative z-10 flex items-center justify-center gap-3">
                   {canAddToCart ? (
@@ -1611,9 +1631,9 @@ const ProductDetails = () => {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full pt-8 border-t border-gray-50">
               {[
                 {
-                  icon: <ShieldCheck className="w-5 h-5 text-emerald-600" />,
-                  title: "BIS Hallmark",
-                  desc: "100% Pure & Certified",
+                  icon: metalType === "diamond" ? <Gem className="w-5 h-5 text-[#C59B27]" /> : <ShieldCheck className="w-5 h-5 text-emerald-600" />,
+                  title: metalType === "diamond" ? "Diamond Assurance" : (metalType === "silver" ? "925 Fine Silver" : "BIS Hallmark"),
+                  desc: metalType === "diamond" ? "Hallmarked Setting & Graded" : "100% Pure & Certified",
                 },
                 {
                   icon: <RotateCcw className="w-5 h-5 text-amber-600" />,
@@ -1695,26 +1715,25 @@ const ProductDetails = () => {
 
       {/* Mobile Sticky Bottom Action Bar - Always functional */}
       {!isAtBottom && (
-      <div className="fixed bottom-[90px] left-0 right-0 bg-white/95 backdrop-blur-md border-t border-stone-200 px-4 py-2.5 z-[150] md:hidden shadow-[0_-10px_30px_rgba(0,0,0,0.1)] animate-in slide-in-from-bottom duration-500">
-        <button
-          onClick={handleAddToCart}
-          disabled={!canAddToCart}
-          className={`w-full rounded-xl h-11 font-bold uppercase tracking-[0.15em] text-[11px] flex items-center justify-center gap-2 active:scale-[0.98] transition-all shadow-md ${
-            canAddToCart
-              ? "bg-[#141211] text-[#E8D198] border border-[#C59B27]/50 hover:bg-[#1C1917]"
-              : "bg-stone-100 text-stone-400 cursor-not-allowed border border-stone-200"
-          }`}
-        >
-          {canAddToCart ? (
-            <>
-              <ShoppingBag className="w-4 h-4 text-[#C59B27]" />
-              Add to Bag
-            </>
-          ) : (
-            "Out of Stock"
-          )}
-        </button>
-      </div>
+        <div className="fixed bottom-[90px] left-0 right-0 bg-white/95 backdrop-blur-md border-t border-stone-200 px-4 py-2.5 z-[150] md:hidden shadow-[0_-10px_30px_rgba(0,0,0,0.1)] animate-in slide-in-from-bottom duration-500">
+          <button
+            onClick={handleAddToCart}
+            disabled={!canAddToCart}
+            className={`w-full rounded-xl h-11 font-bold uppercase tracking-[0.15em] text-[11px] flex items-center justify-center gap-2 active:scale-[0.98] transition-all shadow-md ${canAddToCart
+                ? "bg-[#141211] text-[#E8D198] border border-[#C59B27]/50 hover:bg-[#1C1917]"
+                : "bg-stone-100 text-stone-400 cursor-not-allowed border border-stone-200"
+              }`}
+          >
+            {canAddToCart ? (
+              <>
+                <ShoppingBag className="w-4 h-4 text-[#C59B27]" />
+                Add to Bag
+              </>
+            ) : (
+              "Out of Stock"
+            )}
+          </button>
+        </div>
       )}
 
       <style>
@@ -1851,7 +1870,7 @@ const ProductDetails = () => {
               <div>
                 <h3 className="text-2xl font-sans font-bold text-black mb-2 flex items-center gap-3">
                   <Sparkles className="w-6 h-6 text-[#C59B27]" />
-                  The Swarna Sparsh Promise
+                  The Alankar Jewellers Promise
                 </h3>
                 <p className="text-gray-400 text-xs font-bold uppercase tracking-[0.2em]">
                   Our commitment to excellence
@@ -1958,91 +1977,91 @@ const ProductDetails = () => {
                     {(hasDiamonds ||
                       product.diamondWeight ||
                       product.diamondCount) && (
-                      <div className="bg-gray-50/50 rounded-2xl p-8 border border-gray-100">
-                        <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#C59B27] mb-8 flex items-center gap-2">
-                          <div className="w-1.5 h-1.5 rounded-full bg-[#C59B27]" />
-                          Diamond & Setting
-                        </h4>
-                        <div className="grid grid-cols-2 md:grid-cols-3 gap-y-10 gap-x-8">
-                          {[
-                            {
-                              label: "Type",
-                              value:
-                                String(diamondType)
-                                  .replace("_", " ")
-                                  .split(" ")
-                                  .map(
-                                    (w) =>
-                                      w.charAt(0).toUpperCase() + w.slice(1),
-                                  )
-                                  .join(" ") || "Natural",
-                            },
-                            {
-                              label: "Carat Weight",
-                              value: dSpecs?.carat
-                                ? `${dSpecs.carat} cts`
-                                : product.diamondWeight ||
+                        <div className="bg-gray-50/50 rounded-2xl p-8 border border-gray-100">
+                          <h4 className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#C59B27] mb-8 flex items-center gap-2">
+                            <div className="w-1.5 h-1.5 rounded-full bg-[#C59B27]" />
+                            Diamond & Setting
+                          </h4>
+                          <div className="grid grid-cols-2 md:grid-cols-3 gap-y-10 gap-x-8">
+                            {[
+                              {
+                                label: "Type",
+                                value:
+                                  String(diamondType)
+                                    .replace("_", " ")
+                                    .split(" ")
+                                    .map(
+                                      (w) =>
+                                        w.charAt(0).toUpperCase() + w.slice(1),
+                                    )
+                                    .join(" ") || "Natural",
+                              },
+                              {
+                                label: "Carat Weight",
+                                value: dSpecs?.carat
+                                  ? `${dSpecs.carat} cts`
+                                  : product.diamondWeight ||
                                   currentVariant?.diamondWeight ||
                                   "---",
-                            },
-                            {
-                              label: "Count",
-                              value:
-                                dSpecs?.diamondCount ||
-                                product.diamondCount ||
-                                currentVariant?.diamondCount ||
-                                "---",
-                            },
-                            {
-                              label: "Shape",
-                              value:
-                                dSpecs?.shape ||
-                                product.diamondShape ||
-                                currentVariant?.diamondShape ||
-                                "Round",
-                            },
-                            { label: "Color", value: dSpecs?.color || "---" },
-                            {
-                              label: "Clarity",
-                              value:
-                                dSpecs?.clarity ||
-                                product.diamondClarity ||
-                                currentVariant?.diamondClarity ||
-                                "---",
-                            },
-                            { label: "Cut", value: dSpecs?.cut || "---" },
-                            {
-                              label: "Setting",
-                              value:
-                                product.diamondSetting ||
-                                currentVariant?.diamondSetting ||
-                                "Prong",
-                            },
-                          ]
-                            .filter((s) => s.value && s.value !== "---")
-                            .map((spec, i) => (
-                              <div 
-                                key={i} 
-                                className={`space-y-1.5 ${spec.clickable ? "cursor-pointer group/spec" : ""}`}
-                                onClick={spec.onClick}
-                              >
-                                <span className={`text-[9px] font-bold text-gray-400 uppercase tracking-widest block ${spec.clickable ? "group-hover/spec:text-[#C59B27] transition-colors" : ""}`}>
-                                  {spec.label}
-                                </span>
-                                <span className={`inline-flex items-center justify-center gap-1.5 text-sm font-bold text-gray-900 w-full ${spec.clickable ? "underline decoration-dashed decoration-gray-300 group-hover/spec:text-[#C59B27] transition-all" : ""}`}>
-                                  {spec.value}
-                                  {spec.clickable && (
-                                    <span className="relative flex h-2 w-2">
-                                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#C59B27] opacity-75"></span>
-                                      <span className="relative inline-flex rounded-full h-2 w-2 bg-[#C59B27]"></span>
-                                    </span>
-                                  )}
-                                </span>
-                              </div>
-                            ))}
+                              },
+                              {
+                                label: "Count",
+                                value:
+                                  dSpecs?.diamondCount ||
+                                  product.diamondCount ||
+                                  currentVariant?.diamondCount ||
+                                  "---",
+                              },
+                              {
+                                label: "Shape",
+                                value:
+                                  dSpecs?.shape ||
+                                  product.diamondShape ||
+                                  currentVariant?.diamondShape ||
+                                  "Round",
+                              },
+                              { label: "Color", value: dSpecs?.color || "---" },
+                              {
+                                label: "Clarity",
+                                value:
+                                  dSpecs?.clarity ||
+                                  product.diamondClarity ||
+                                  currentVariant?.diamondClarity ||
+                                  "---",
+                              },
+                              { label: "Cut", value: dSpecs?.cut || "---" },
+                              {
+                                label: "Setting",
+                                value:
+                                  product.diamondSetting ||
+                                  currentVariant?.diamondSetting ||
+                                  "Prong",
+                              },
+                            ]
+                              .filter((s) => s.value && s.value !== "---")
+                              .map((spec, i) => (
+                                <div
+                                  key={i}
+                                  className={`space-y-1.5 ${spec.clickable ? "cursor-pointer group/spec" : ""}`}
+                                  onClick={spec.onClick}
+                                >
+                                  <span className={`text-[9px] font-bold text-gray-400 uppercase tracking-widest block ${spec.clickable ? "group-hover/spec:text-[#C59B27] transition-colors" : ""}`}>
+                                    {spec.label}
+                                  </span>
+                                  <span className={`inline-flex items-center justify-center gap-1.5 text-sm font-bold text-gray-900 w-full ${spec.clickable ? "underline decoration-dashed decoration-gray-300 group-hover/spec:text-[#C59B27] transition-all" : ""}`}>
+                                    {spec.value}
+                                    {spec.clickable && (
+                                      <span className="relative flex h-2 w-2">
+                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#C59B27] opacity-75"></span>
+                                        <span className="relative inline-flex rounded-full h-2 w-2 bg-[#C59B27]"></span>
+                                      </span>
+                                    )}
+                                  </span>
+                                </div>
+                              ))}
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      )}
 
                     {/* Metal Section */}
                     <div className="bg-gray-50/50 rounded-2xl p-8 border border-gray-100">
@@ -2083,7 +2102,7 @@ const ProductDetails = () => {
                                 View Certificate <ExternalLink size={10} />
                               </a>
                             ) : (
-                              product.certificate || "Swarna Sparsh Authenticated"
+                              product.certificate || "Alankar Jewellers Authenticated"
                             ),
                           },
                           { label: "HUID", value: product.huid || "---" },
@@ -2721,7 +2740,7 @@ const ProductDetails = () => {
               {/* Why Choose Section */}
               <div className="space-y-6">
                 <h4 className="text-2xl font-bold text-gray-900 leading-tight">
-                  Why Choose Swarna Sparsh Lab-Grown Diamonds?
+                  Why Choose Alankar Jewellers Lab-Grown Diamonds?
                 </h4>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   {[
@@ -3011,7 +3030,7 @@ const ProductDetails = () => {
                 </h2>
               </div>
               <p className="text-[10px] font-bold text-[#E8D198] uppercase tracking-[0.2em]">
-                Find your perfect fit with Swarna Sparsh
+                Find your perfect fit with Alankar Jewellers
               </p>
               <button
                 onClick={() => setIsSizeGuideOpen(false)}
@@ -3134,7 +3153,7 @@ const ProductDetails = () => {
       {/* Dynamic Authenticity Popup */}
       <AnimatePresence>
         {showAuthPopup && metalType && (
-          <div 
+          <div
             onClick={() => setShowAuthPopup(false)}
             className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
           >
@@ -3156,7 +3175,13 @@ const ProductDetails = () => {
               </button>
 
               {/* Badge Icon */}
-              {metalType === "silver" ? (
+              {metalType === "diamond" ? (
+                <div className="w-14 h-14 rounded-full bg-[#141211] flex items-center justify-center border border-[#C59B27]/50 mb-4 shadow-lg">
+                  <div className="w-11 h-11 rounded-full border border-dashed border-[#C59B27]/40 flex flex-col items-center justify-center">
+                    <Gem size={20} className="text-[#E8D198]" />
+                  </div>
+                </div>
+              ) : metalType === "silver" ? (
                 <div className="w-14 h-14 rounded-full bg-[#141211] flex items-center justify-center border border-[#C59B27]/50 mb-4 shadow-lg">
                   <div className="w-11 h-11 rounded-full border border-dashed border-[#C59B27]/40 flex flex-col items-center justify-center">
                     <span className="text-[12px] font-bold tracking-tight leading-none text-[#E8D198] font-sans">925</span>
@@ -3172,14 +3197,20 @@ const ProductDetails = () => {
 
               {/* Title */}
               <h3 className="text-base font-bold tracking-wide uppercase mb-2 font-sans">
-                {metalType === "silver" ? "Fine 925 Silver" : "BIS Hallmarked Gold"}
+                {metalType === "diamond"
+                  ? "Authentic Diamond Jewellery"
+                  : metalType === "silver"
+                    ? "Fine 925 Silver"
+                    : "BIS Hallmarked Gold"}
               </h3>
 
               {/* Description */}
               <p className="text-white/80 text-[11px] font-medium leading-relaxed tracking-wide font-sans">
-                {metalType === "silver" 
-                  ? "Get an assured 925 silver authenticity certificate with every piece of our silver jewellery."
-                  : "Get government-certified BIS Hallmarked gold with complete purity assurance."}
+                {metalType === "diamond"
+                  ? "Handcrafted with graded diamonds and hallmarked setting metals with verified purity assurance."
+                  : metalType === "silver"
+                    ? "Get an assured 925 silver authenticity certificate with every piece of our silver jewellery."
+                    : "Get government-certified BIS Hallmarked gold with complete purity assurance."}
               </p>
             </motion.div>
           </div>

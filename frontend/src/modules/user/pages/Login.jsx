@@ -15,15 +15,19 @@ import {
   clearWomenPendingCartItem,
 } from "../utils/womenNavigation";
 
-import defaultLogo from "@assets/logo.webp";
+import defaultLogo from "@/assets/Alankar jewllers.png";
 import { useSettings } from "../../../context/SettingsContext";
 
 const Login = () => {
   const { sendOtp, verifyOtp } = useAuth();
   const { addToCart } = useShop();
   const { settings } = useSettings();
-  const currentLogo = settings?.logo || defaultLogo;
-  const currentStoreName = settings?.storeName || "Swarna Sparsh";
+  const currentLogo = (settings?.logo && !settings.logo.includes('logo.webp') && !/swarna|sands/i.test(settings.logo))
+    ? settings.logo
+    : defaultLogo;
+  const currentStoreName = (!settings?.storeName || /swarna\s*sparsh/i.test(settings.storeName))
+    ? "Alankar Jewellers"
+    : settings.storeName;
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -141,142 +145,143 @@ const Login = () => {
         <div className="relative w-full max-w-sm mx-auto p-[2px] rounded-[2rem] overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.12)]">
           {/* Animated Border */}
           <div className="absolute w-[200%] h-[200%] -top-[50%] -left-[50%] bg-[conic-gradient(from_0deg,transparent_0_340deg,#C59B27_360deg)] animate-[spin_4s_linear_infinite] z-0" />
-          
+
           <div className="relative z-10 bg-white/95 backdrop-blur-xl px-6 py-8 rounded-[calc(2rem-2px)] w-full mx-auto border border-[#E8DFD0]/40">
-          {/* Brand */}
-          <div className="text-center mb-8 flex flex-col items-center gap-1.5">
-            <img
-              src={currentLogo}
-              alt={currentStoreName}
-              className="w-20 h-20 object-contain drop-shadow-sm"
-              onError={(e) => {
-                e.currentTarget.src = defaultLogo;
-              }}
-            />
-            <span className="font-serif text-lg font-bold tracking-wider text-stone-900 uppercase">
-              {currentStoreName}
-            </span>
-          </div>
+            {/* Brand */}
+            <div className="text-center mb-8 flex flex-col items-center gap-1.5">
+              <img
+                src={currentLogo}
+                alt={currentStoreName}
+                className="w-20 h-20 object-contain drop-shadow-sm"
+                onError={(e) => {
+                  e.currentTarget.onerror = null;
+                  e.currentTarget.src = defaultLogo;
+                }}
+              />
+              <span className="font-serif text-lg font-bold tracking-wider text-stone-900 uppercase">
+                {currentStoreName}
+              </span>
+            </div>
 
-          <div className="mb-6 text-center">
-            <h2 className="text-2xl font-serif text-stone-900 mb-1 font-bold">
-              {loginStep === 1
-                ? isSignup
-                  ? "Create Account"
-                  : "Welcome Back"
-                : "Verify OTP"}
-            </h2>
-            <p className="text-stone-500 text-sm font-sans">
-              {loginStep === 1
-                ? isSignup
-                  ? "Begin your journey with us."
-                  : "Please login to continue."
-                : `Enter code sent to +91 ${phoneNumber}`}
-            </p>
-          </div>
+            <div className="mb-6 text-center">
+              <h2 className="text-2xl font-serif text-stone-900 mb-1 font-bold">
+                {loginStep === 1
+                  ? isSignup
+                    ? "Create Account"
+                    : "Welcome Back"
+                  : "Verify OTP"}
+              </h2>
+              <p className="text-stone-500 text-sm font-sans">
+                {loginStep === 1
+                  ? isSignup
+                    ? "Begin your journey with us."
+                    : "Please login to continue."
+                  : `Enter code sent to +91 ${phoneNumber}`}
+              </p>
+            </div>
 
-          {loginStep === 1 ? (
-            <form onSubmit={handleSendOtp} className="space-y-4">
-              {isSignup && (
-                <>
-                  <div className="space-y-1">
-                    <label className="text-[10px] font-bold text-stone-500 uppercase tracking-wider pl-1">
-                      Full Name
-                    </label>
+            {loginStep === 1 ? (
+              <form onSubmit={handleSendOtp} className="space-y-4">
+                {isSignup && (
+                  <>
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold text-stone-500 uppercase tracking-wider pl-1">
+                        Full Name
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={fullName}
+                        onChange={(e) => setFullName(e.target.value)}
+                        className="w-full h-12 bg-stone-50/50 border border-stone-200 rounded-xl px-4 text-stone-900 font-medium placeholder:text-stone-400 focus:border-[#C59B27] focus:ring-1 focus:ring-[#C59B27] outline-none transition-all"
+                        placeholder="Enter your name"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold text-stone-500 uppercase tracking-wider pl-1">
+                        Email Address
+                      </label>
+                      <input
+                        type="email"
+                        required
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        className="w-full h-12 bg-stone-50/50 border border-stone-200 rounded-xl px-4 text-stone-900 font-medium placeholder:text-stone-400 focus:border-[#C59B27] focus:ring-1 focus:ring-[#C59B27] outline-none transition-all"
+                        placeholder="Enter your email"
+                      />
+                    </div>
+                  </>
+                )}
+                <div className="space-y-1">
+                  <label className="text-[10px] font-bold text-stone-500 uppercase tracking-wider pl-1">
+                    Mobile Number
+                  </label>
+                  <div className="flex bg-stone-50/50 border border-stone-200 rounded-xl overflow-hidden h-12 items-center focus-within:border-[#C59B27] focus-within:ring-1 focus-within:ring-[#C59B27] transition-all">
+                    <div className="h-full px-4 flex items-center gap-2 text-stone-700 font-semibold border-r border-stone-200">
+                      <span>+91</span>
+                    </div>
                     <input
-                      type="text"
+                      type="tel"
+                      value={phoneNumber}
+                      onChange={(e) =>
+                        setPhoneNumber(
+                          e.target.value.replace(/\D/g, "").slice(0, 10),
+                        )
+                      }
+                      placeholder="98765 43210"
+                      className="flex-1 h-full bg-transparent border-0 px-4 text-stone-900 font-medium text-base placeholder:text-stone-400 focus:ring-0 outline-none"
                       required
-                      value={fullName}
-                      onChange={(e) => setFullName(e.target.value)}
-                      className="w-full h-12 bg-stone-50/50 border border-stone-200 rounded-xl px-4 text-stone-900 font-medium placeholder:text-stone-400 focus:border-[#C59B27] focus:ring-1 focus:ring-[#C59B27] outline-none transition-all"
-                      placeholder="Enter your name"
                     />
                   </div>
-                  <div className="space-y-1">
-                    <label className="text-[10px] font-bold text-stone-500 uppercase tracking-wider pl-1">
-                      Email Address
-                    </label>
-                    <input
-                      type="email"
-                      required
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="w-full h-12 bg-stone-50/50 border border-stone-200 rounded-xl px-4 text-stone-900 font-medium placeholder:text-stone-400 focus:border-[#C59B27] focus:ring-1 focus:ring-[#C59B27] outline-none transition-all"
-                      placeholder="Enter your email"
-                    />
-                  </div>
-                </>
-              )}
-              <div className="space-y-1">
-                <label className="text-[10px] font-bold text-stone-500 uppercase tracking-wider pl-1">
-                  Mobile Number
-                </label>
-                <div className="flex bg-stone-50/50 border border-stone-200 rounded-xl overflow-hidden h-12 items-center focus-within:border-[#C59B27] focus-within:ring-1 focus-within:ring-[#C59B27] transition-all">
-                  <div className="h-full px-4 flex items-center gap-2 text-stone-700 font-semibold border-r border-stone-200">
-                    <span>+91</span>
-                  </div>
-                  <input
-                    type="tel"
-                    value={phoneNumber}
-                    onChange={(e) =>
-                      setPhoneNumber(
-                        e.target.value.replace(/\D/g, "").slice(0, 10),
-                      )
-                    }
-                    placeholder="98765 43210"
-                    className="flex-1 h-full bg-transparent border-0 px-4 text-stone-900 font-medium text-base placeholder:text-stone-400 focus:ring-0 outline-none"
-                    required
-                  />
                 </div>
-              </div>
-              <button
-                type="submit"
-                className="w-full bg-[#141211] text-[#E8D198] border border-[#C59B27]/50 hover:bg-[#1C1917] hover:border-[#C59B27] py-3.5 rounded-xl font-bold uppercase tracking-wider text-xs transition-all shadow-md mt-2">
-                Get OTP
-              </button>
-            </form>
-          ) : (
-            <form onSubmit={handleVerifyOtp} className="space-y-6">
-              <div className="flex justify-between gap-3 px-2">
-                {otp.map((data, index) => (
-                  <input
-                    key={index}
-                    type="text"
-                    inputMode="numeric"
-                    pattern="[0-9]*"
-                    maxLength="1"
-                    value={data}
-                    onChange={(e) => handleOtpChange(e.target, index)}
-                    onFocus={(e) => e.target.select()}
-                    className="w-14 h-16 bg-transparent border-b-2 border-stone-300 focus:border-[#C59B27] text-center text-3xl font-bold text-stone-900 outline-none transition-all p-0 rounded-none"
-                  />
-                ))}
-              </div>
-              <button
-                type="submit"
-                className="w-full bg-[#141211] text-[#E8D198] border border-[#C59B27]/50 hover:bg-[#1C1917] hover:border-[#C59B27] py-3.5 rounded-xl font-bold uppercase tracking-wider text-xs transition-all shadow-md">
-                Verify & Proceed
-              </button>
-              <button
-                type="button"
-                onClick={() => setLoginStep(1)}
-                className="w-full text-center text-[11px] font-bold text-stone-500 uppercase tracking-wider py-2 hover:text-[#C59B27] transition-colors">
-                Change Mobile Number
-              </button>
-            </form>
-          )}
+                <button
+                  type="submit"
+                  className="w-full bg-[#141211] text-[#E8D198] border border-[#C59B27]/50 hover:bg-[#1C1917] hover:border-[#C59B27] py-3.5 rounded-xl font-bold uppercase tracking-wider text-xs transition-all shadow-md mt-2">
+                  Get OTP
+                </button>
+              </form>
+            ) : (
+              <form onSubmit={handleVerifyOtp} className="space-y-6">
+                <div className="flex justify-between gap-3 px-2">
+                  {otp.map((data, index) => (
+                    <input
+                      key={index}
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      maxLength="1"
+                      value={data}
+                      onChange={(e) => handleOtpChange(e.target, index)}
+                      onFocus={(e) => e.target.select()}
+                      className="w-14 h-16 bg-transparent border-b-2 border-stone-300 focus:border-[#C59B27] text-center text-3xl font-bold text-stone-900 outline-none transition-all p-0 rounded-none"
+                    />
+                  ))}
+                </div>
+                <button
+                  type="submit"
+                  className="w-full bg-[#141211] text-[#E8D198] border border-[#C59B27]/50 hover:bg-[#1C1917] hover:border-[#C59B27] py-3.5 rounded-xl font-bold uppercase tracking-wider text-xs transition-all shadow-md">
+                  Verify & Proceed
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setLoginStep(1)}
+                  className="w-full text-center text-[11px] font-bold text-stone-500 uppercase tracking-wider py-2 hover:text-[#C59B27] transition-colors">
+                  Change Mobile Number
+                </button>
+              </form>
+            )}
 
-          <div className="mt-8 text-center">
-            <p className="text-xs text-stone-500 font-sans">
-              {isSignup ? "Already a Member?" : "New here?"}
-              <Link
-                to={isSignup ? "/login" : "/signup"}
-                className="ml-1 text-stone-900 font-bold border-b border-stone-900 hover:text-[#C59B27] hover:border-[#C59B27] transition-colors">
-                {isSignup ? "Login" : "Join Now"}
-              </Link>
-            </p>
+            <div className="mt-8 text-center">
+              <p className="text-xs text-stone-500 font-sans">
+                {isSignup ? "Already a Member?" : "New here?"}
+                <Link
+                  to={isSignup ? "/login" : "/signup"}
+                  className="ml-1 text-stone-900 font-bold border-b border-stone-900 hover:text-[#C59B27] hover:border-[#C59B27] transition-colors">
+                  {isSignup ? "Login" : "Join Now"}
+                </Link>
+              </p>
+            </div>
           </div>
-        </div>
         </div>
       </div>
 

@@ -4,7 +4,12 @@ const { success, error } = require("../../../utils/apiResponse");
 exports.getCategories = async (req, res) => {
   try {
     const scope = String(req.query?.scope || "all").trim().toLowerCase();
-    const query = { isActive: true };
+    const excludedSlugs = ["hand-bags", "clutches", "potli-bag", "sling-bag"];
+    const query = { 
+      isActive: true,
+      slug: { $nin: excludedSlugs },
+      name: { $not: { $regex: "bag|clutch|potli|sling", $options: "i" } }
+    };
 
     if (scope === "navbar") {
       query.showInNavbar = true;

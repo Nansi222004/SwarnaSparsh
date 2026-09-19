@@ -4,8 +4,8 @@ export const DEFAULT_PAGES = {
     title: 'Jewellery Care Instructions',
     lastUpdated: '2026-06-15T00:00:00.000Z',
     content: `
-      <h2>Caring for Your Precious Swarna Sparsh Jewellery</h2>
-      <p>Every piece of Swarna Sparsh jewellery is handcrafted with meticulous artistry using certified 925 Sterling Silver and Hallmarked Gold. Fine jewellery is delicate and deserves mindful care to retain its brilliant luster, shine, and structural perfection for generations.</p>
+      <h2>Caring for Your Precious Alankar Jewellers Jewellery</h2>
+      <p>Every piece of Alankar Jewellers jewellery is handcrafted with meticulous artistry using certified 925 Sterling Silver and Hallmarked Gold. Fine jewellery is delicate and deserves mindful care to retain its brilliant luster, shine, and structural perfection for generations.</p>
 
       <h3>1. Daily Wear Recommendations</h3>
       <ul>
@@ -16,7 +16,7 @@ export const DEFAULT_PAGES = {
 
       <h3>2. Proper Storage Guidelines</h3>
       <ul>
-        <li>Store each ornament individually in an airtight zip-lock bag or inside a fabric-lined Swarna Sparsh jewellery box to prevent oxidation and contact scratches.</li>
+        <li>Store each ornament individually in an airtight zip-lock bag or inside a fabric-lined Alankar Jewellers jewellery box to prevent oxidation and contact scratches.</li>
         <li>Keep pieces in a cool, dry place away from direct sunlight, humid bathrooms, and extreme temperature variations.</li>
         <li>For chains and necklaces, clasp the ends together and lay them flat or hang them vertically to avoid knots and kinks.</li>
       </ul>
@@ -32,7 +32,7 @@ export const DEFAULT_PAGES = {
       <p>Natural gemstones, cubic zirconias, and cultured pearls require delicate handling. Never immerse pearls or glued settings in hot water. Avoid ultrasonic cleaners unless specifically recommended by our gemologist.</p>
 
       <h3>5. Complimentary Professional Servicing</h3>
-      <p>Swarna Sparsh offers lifetime inspection and cleaning services for all authentic pieces. If your jewellery requires professional prong tightening, re-polishing, or re-plating, visit our boutique or reach out to our concierge at <strong>support@swarnasparsh.com</strong> or call <strong>+91 99211 28662</strong>.</p>
+      <p>Alankar Jewellers offers lifetime inspection and cleaning services for all authentic pieces. If your jewellery requires professional prong tightening, re-polishing, or re-plating, visit our boutique or reach out to our concierge at <strong>support@swarnasparsh.com</strong> or call <strong>+91 99211 28662</strong>.</p>
     `,
   },
   'about-us': {
@@ -40,11 +40,11 @@ export const DEFAULT_PAGES = {
     title: 'About Us',
     lastUpdated: '2026-06-15T00:00:00.000Z',
     content: `
-      <h2>Welcome to Swarna Sparsh</h2>
-      <p>Swarna Sparsh was founded on a singular, noble passion: celebrating the timeless grace of traditional Indian jewellery while elevating it with modern luxury and unmatched craftsmanship.</p>
+      <h2>Welcome to Alankar Jewellers</h2>
+      <p>Alankar Jewellers was founded on a singular, noble passion: celebrating the timeless grace of traditional Indian jewellery while elevating it with modern luxury and unmatched craftsmanship.</p>
 
       <h3>Our Heritage & Craft</h3>
-      <p>Born in the cultural heartland of Maharashtra, Swarna Sparsh collaborates with generational silversmiths and master karigars whose families have honed the art of ornament making for centuries. Each piece in our collection—from delicate silver anklets and temple necklaces to contemporary solitaire rings—embodies pure elegance, refined proportions, and emotional resonance.</p>
+      <p>Born in the cultural heartland of Maharashtra, Alankar Jewellers collaborates with generational silversmiths and master karigars whose families have honed the art of ornament making for centuries. Each piece in our collection—from delicate silver anklets and temple necklaces to contemporary solitaire rings—embodies pure elegance, refined proportions, and emotional resonance.</p>
 
       <h3>Our Promise of Purity</h3>
       <ul>
@@ -54,7 +54,7 @@ export const DEFAULT_PAGES = {
       </ul>
 
       <h3>Connect With Our World</h3>
-      <p>Whether you are commemorating a cherished milestone, seeking everyday elegance, or gifting a treasure to a loved one, Swarna Sparsh is honored to be part of your story. Visit our showroom at Sarafa Lane, Gandhi Chowk, Wani, or explore our curated collections online.</p>
+      <p>Whether you are commemorating a cherished milestone, seeking everyday elegance, or gifting a treasure to a loved one, Alankar Jewellers is honored to be part of your story. Visit our showroom at Sarafa Lane, Gandhi Chowk, Wani, or explore our curated collections online.</p>
     `,
   },
   'terms-conditions': {
@@ -63,7 +63,7 @@ export const DEFAULT_PAGES = {
     lastUpdated: '2026-06-15T00:00:00.000Z',
     content: `
       <h2>Terms and Conditions of Use</h2>
-      <p>Welcome to Swarna Sparsh ("we", "us", "our"). By accessing or purchasing from swarnasparsh.com, you agree to comply with and be bound by the following Terms & Conditions. Please read them carefully before placing an order.</p>
+      <p>Welcome to Alankar Jewellers ("we", "us", "our"). By accessing or purchasing from swarnasparsh.com, you agree to comply with and be bound by the following Terms & Conditions. Please read them carefully before placing an order.</p>
 
       <h3>1. General Agreement</h3>
       <p>These terms govern your use of our website and purchase of jewellery and accessories. If you do not agree with any part of these terms, please discontinue use of our services.</p>
@@ -72,7 +72,7 @@ export const DEFAULT_PAGES = {
       <ul>
         <li>We strive to ensure all product images, specifications, metal weights, and gemstone descriptions are accurate. Minor variations may occur due to handcrafted manufacturing processes and screen color calibrations.</li>
         <li>Precious metal rates (Gold & Silver) fluctuate according to market indices. Product prices displayed at checkout are final and inclusive of applicable GST unless stated otherwise.</li>
-        <li>In the event of an inadvertent typographical or system pricing error, Swarna Sparsh reserves the right to cancel or adjust affected orders prior to shipping.</li>
+        <li>In the event of an inadvertent typographical or system pricing error, Alankar Jewellers reserves the right to cancel or adjust affected orders prior to shipping.</li>
       </ul>
 
       <h3>3. Orders & Payments</h3>
@@ -82,7 +82,7 @@ export const DEFAULT_PAGES = {
       </ul>
 
       <h3>4. Intellectual Property</h3>
-      <p>All designs, trademarks, text, graphics, and photography featured on this site are the exclusive intellectual property of Swarna Sparsh. Any unauthorized reproduction, redistribution, or commercial use is strictly prohibited.</p>
+      <p>All designs, trademarks, text, graphics, and photography featured on this site are the exclusive intellectual property of Alankar Jewellers. Any unauthorized reproduction, redistribution, or commercial use is strictly prohibited.</p>
 
       <h3>5. Governing Law & Dispute Resolution</h3>
       <p>These terms shall be governed by and construed in accordance with the laws of India. Any legal proceedings arising hereunder shall be subject to the exclusive jurisdiction of the competent courts in Yavatmal, Maharashtra.</p>
@@ -94,7 +94,7 @@ export const DEFAULT_PAGES = {
     lastUpdated: '2026-06-15T00:00:00.000Z',
     content: `
       <h2>Privacy & Data Protection Policy</h2>
-      <p>At Swarna Sparsh, your privacy and trust are paramount. This Privacy Policy details how we collect, safeguard, and responsibly use your personal information when you visit our website or purchase our jewellery.</p>
+      <p>At Alankar Jewellers, your privacy and trust are paramount. This Privacy Policy details how we collect, safeguard, and responsibly use your personal information when you visit our website or purchase our jewellery.</p>
 
       <h3>1. Information We Collect</h3>
       <ul>
@@ -111,7 +111,7 @@ export const DEFAULT_PAGES = {
       </ul>
 
       <h3>3. Data Protection & Encryption</h3>
-      <p>All network communications on Swarna Sparsh are protected with 256-bit SSL encryption. We never sell, rent, or lease your personal information to third-party advertisers.</p>
+      <p>All network communications on Alankar Jewellers are protected with 256-bit SSL encryption. We never sell, rent, or lease your personal information to third-party advertisers.</p>
 
       <h3>4. Your Rights</h3>
       <p>You have the right to access, update, or request the deletion of your account profile at any time. For privacy inquiries or requests, contact our Data Protection Officer at <strong>support@swarnasparsh.com</strong>.</p>
@@ -123,7 +123,7 @@ export const DEFAULT_PAGES = {
     lastUpdated: '2026-06-15T00:00:00.000Z',
     content: `
       <h2>Safe, Insured & Express Worldwide Delivery</h2>
-      <p>We treat every piece of jewellery with the utmost care. All Swarna Sparsh shipments are fully insured and packaged in tamper-evident, luxury protective boxes.</p>
+      <p>We treat every piece of jewellery with the utmost care. All Alankar Jewellers shipments are fully insured and packaged in tamper-evident, luxury protective boxes.</p>
 
       <h3>1. Delivery Timelines</h3>
       <ul>
@@ -136,7 +136,7 @@ export const DEFAULT_PAGES = {
       <p>We offer complimentary, fully insured standard delivery on all prepaid orders across India. For Cash on Delivery (COD) orders, a nominal handling fee may apply as displayed during checkout.</p>
 
       <h3>3. Tamper-Proof Packaging</h3>
-      <p>Your order is sealed in an exclusive Swarna Sparsh tamper-evident pouch. If you notice any signs of tearing, damage, or tampering upon delivery, please <strong>refuse acceptance</strong> and immediately notify our support team.</p>
+      <p>Your order is sealed in an exclusive Alankar Jewellers tamper-evident pouch. If you notice any signs of tearing, damage, or tampering upon delivery, please <strong>refuse acceptance</strong> and immediately notify our support team.</p>
 
       <h3>4. Live Tracking</h3>
       <p>As soon as your shipment departs our vault, you will receive an SMS and email containing your live tracking airway bill (AWB) number.</p>
@@ -166,7 +166,7 @@ export const DEFAULT_PAGES = {
     lastUpdated: '2026-06-15T00:00:00.000Z',
     content: `
       <h2>7-Day Easy Return & Exchange Guarantee</h2>
-      <p>At Swarna Sparsh, your complete satisfaction is our highest priority. If an item does not meet your expectations, we offer a hassle-free 7-day return and exchange policy from the date of delivery.</p>
+      <p>At Alankar Jewellers, your complete satisfaction is our highest priority. If an item does not meet your expectations, we offer a hassle-free 7-day return and exchange policy from the date of delivery.</p>
 
       <h3>1. Eligibility Criteria for Returns</h3>
       <ul>
@@ -187,7 +187,7 @@ export const DEFAULT_PAGES = {
     title: 'Warranty Information',
     lastUpdated: '2026-06-15T00:00:00.000Z',
     content: `
-      <h2>Swarna Sparsh Assurance & Warranty</h2>
+      <h2>Alankar Jewellers Assurance & Warranty</h2>
       <p>We stand firmly behind the superior quality, purity, and craftsmanship of every ornament we create. Every purchase is accompanied by a certificate of authenticity detailing metal purity and gemstone specifications.</p>
 
       <h3>1. Purity Guarantee</h3>
@@ -197,7 +197,7 @@ export const DEFAULT_PAGES = {
       <p>All items carry a 6-month warranty against manufacturing defects, including prong looseness, defective clasps, or stone dislodgement under normal wear. Damaged caused by accidents, misuse, chemical exposure, or unauthorized third-party repairs is excluded.</p>
 
       <h3>3. Complimentary Annual Servicing</h3>
-      <p>Bring your jewellery to Swarna Sparsh once a year for complimentary ultrasonic cleaning, prong tightening, and polish inspection.</p>
+      <p>Bring your jewellery to Alankar Jewellers once a year for complimentary ultrasonic cleaning, prong tightening, and polish inspection.</p>
     `,
   },
   'our-craftsmanship': {
@@ -206,7 +206,7 @@ export const DEFAULT_PAGES = {
     lastUpdated: '2026-06-15T00:00:00.000Z',
     content: `
       <h2>The Soul of Indian Artistry</h2>
-      <p>At Swarna Sparsh, jewellery is more than precious metal—it is an intimate dialogue between centuries-old artisan traditions and modern sculptural design.</p>
+      <p>At Alankar Jewellers, jewellery is more than precious metal—it is an intimate dialogue between centuries-old artisan traditions and modern sculptural design.</p>
 
       <h3>1. Generational Karigars</h3>
       <p>Our workshop brings together master karigars whose lineage traces back through royal silversmithing families. Every filigree curve, bezel setting, and hand-chased texture is crafted with human touch and infinite patience.</p>
@@ -224,7 +224,7 @@ export const DEFAULT_PAGES = {
     lastUpdated: '2026-06-15T00:00:00.000Z',
     content: `
       <h2>Bring Your Dream Ornament to Life</h2>
-      <p>Have a vision for a unique bridal set, an heirloom redesign, or an engraved anniversary band? Swarna Sparsh Bespoke Services transforms your creative aspirations into exquisite, wearable art.</p>
+      <p>Have a vision for a unique bridal set, an heirloom redesign, or an engraved anniversary band? Alankar Jewellers Bespoke Services transforms your creative aspirations into exquisite, wearable art.</p>
 
       <h3>Our 3-Step Bespoke Journey</h3>
       <ol>

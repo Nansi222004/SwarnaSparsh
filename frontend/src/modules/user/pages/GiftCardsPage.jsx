@@ -93,7 +93,7 @@ const GiftCardsPage = () => {
 
     const giftCardItem = {
       id: `GIFT_CARD_${Date.now()}`,
-      name: `Swarna Sparsh E-Gift Card (₹${finalAmount})`,
+      name: `Alankar Jewellers E-Gift Card (₹${finalAmount})`,
       price: finalAmount,
       image: giftCardMockup,
       isGiftCard: true,
@@ -134,7 +134,7 @@ const GiftCardsPage = () => {
               </h1>
 
               <p className="text-gray-600 text-lg leading-relaxed max-w-lg">
-                Elevate every celebration with the Swarna Sparsh E-Gift Card. Whether
+                Elevate every celebration with the Alankar Jewellers E-Gift Card. Whether
                 it's a birthday, anniversary, or a simple "thank you", let them
                 discover the brilliance of pure silver craftsmanship.
               </p>
@@ -178,7 +178,7 @@ const GiftCardsPage = () => {
               <div className="absolute -inset-4 bg-[#C59B27]/10 blur-3xl rounded-full" />
               <img
                 src={giftCardMockup}
-                alt="Swarna Sparsh Gift Card"
+                alt="Alankar Jewellers Gift Card"
                 onError={(e) => handleImageError(e, giftCardMockup)}
                 className="relative z-10 w-full max-w-lg mx-auto rounded-[2rem] shadow-2xl shadow-black/10 transform hover:scale-[1.02] transition-transform duration-700 object-cover"
               />
@@ -236,11 +236,10 @@ const GiftCardsPage = () => {
                       setSelectedAmount(amt);
                       setIsCustomAmount(false);
                     }}
-                    className={`py-6 rounded-2xl border-2 transition-all duration-300 flex flex-col items-center gap-1 ${
-                      !isCustomAmount && selectedAmount === amt
+                    className={`py-6 rounded-2xl border-2 transition-all duration-300 flex flex-col items-center gap-1 ${!isCustomAmount && selectedAmount === amt
                         ? "border-[#C59B27] bg-[#C59B27]/5 shadow-md scale-[1.02]"
                         : "border-white bg-white hover:border-gray-200"
-                    }`}
+                      }`}
                   >
                     <span
                       className={`text-2xl font-semibold tracking-tight ${!isCustomAmount && selectedAmount === amt ? "text-[#C59B27]" : "text-gray-900"}`}
@@ -254,11 +253,10 @@ const GiftCardsPage = () => {
                 ))}
                 <button
                   onClick={() => setIsCustomAmount(true)}
-                  className={`py-6 rounded-2xl border-2 transition-all duration-300 flex flex-col items-center justify-center gap-1 ${
-                    isCustomAmount
+                  className={`py-6 rounded-2xl border-2 transition-all duration-300 flex flex-col items-center justify-center gap-1 ${isCustomAmount
                       ? "border-[#C59B27] bg-[#C59B27]/5 shadow-md scale-[1.02]"
                       : "border-white bg-white hover:border-gray-200"
-                  }`}
+                    }`}
                 >
                   <span
                     className={`text-[11px] font-bold uppercase tracking-widest ${isCustomAmount ? "text-[#C59B27]" : "text-gray-400"}`}
@@ -419,7 +417,7 @@ const GiftCardsPage = () => {
 
                   <p className="text-center text-[10px] text-gray-400 font-medium mt-6 flex items-center justify-center gap-2">
                     <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
-                    Secure payment guaranteed by Swarna Sparsh
+                    Secure payment guaranteed by Alankar Jewellers
                   </p>
                 </div>
               </div>
@@ -473,7 +471,7 @@ const GiftCardsPage = () => {
                   <div className="flex gap-2">
                     <input
                       type="text"
-                      placeholder="SWARNA-XXXX-XXXX-XXXX"
+                      placeholder="Alankar-XXXX-XXXX-XXXX"
                       value={balanceCode}
                       onChange={(e) =>
                         setBalanceCode(e.target.value.toUpperCase())
@@ -532,11 +530,10 @@ const GiftCardsPage = () => {
                             Status
                           </span>
                           <span
-                            className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
-                              balanceResult.status === "active"
+                            className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${balanceResult.status === "active"
                                 ? "bg-emerald-100 text-emerald-850"
                                 : "bg-amber-100 text-amber-850"
-                            }`}
+                              }`}
                           >
                             {balanceResult.status.replace("_", " ")}
                           </span>
@@ -559,7 +556,7 @@ const GiftCardsPage = () => {
               Simple Steps
             </span>
             <h2 className="text-3xl md:text-5xl font-display font-bold text-black">
-              How Swarna Sparsh Gift Cards Work
+              How Alankar Jewellers Gift Cards Work
             </h2>
             <p className="text-gray-500 font-medium">
               Sharing the love with your favorite people has never been easier.
@@ -607,11 +604,11 @@ const GiftCardsPage = () => {
           <div className="space-y-4">
             {[
               {
-                q: "Where can I use my Swarna Sparsh Gift Card?",
-                a: "Swarna Sparsh Gift Cards can be redeemed on our official website for any product across gold and silver collections.",
+                q: "Where can I use my Alankar Jewellers Gift Card?",
+                a: "Alankar Jewellers Gift Cards can be redeemed on our official website for any product across gold and silver collections.",
               },
               {
-                q: "Do Swarna Sparsh Gift Cards expire?",
+                q: "Do Alankar Jewellers Gift Cards expire?",
                 a: "No, our gift cards have lifetime validity. You can use them whenever you're ready to sparkle.",
               },
               {

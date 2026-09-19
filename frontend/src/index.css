@@ -1,68 +1,89 @@
 /* Google Fonts are loaded via <link> in index.html — do NOT add @import here (render-blocking) */
 @import "tailwindcss";
 
+:root {
+    --primary-gold: #C6A04A;
+    --champagne-gold: #E5CC85;
+    --deep-charcoal: #171717;
+    --warm-ivory: #FAF7F0;
+    --white: #FFFFFF;
+    --text-primary: #242424;
+    --text-secondary: #77716A;
+    --border-gold: #E8E0D2;
+}
+
 @theme {
     --font-display: 'Cinzel', serif;
     --font-body: 'Lato', sans-serif;
     --font-serif: 'Cormorant Garamond', serif;
 
     --color-pure-white: #FFFFFF;
-    --color-primary: #1C1917;
-    --color-obsidian: #141211;
-    --color-dark: #1F1C1A;
-    --color-muted: #706760;
-    --color-gold: #C59B27;
-    --color-gold-light: #E8D198;
-    --color-gold-dark: #A47E1B;
+    --color-primary: #171717;
+    --color-obsidian: #171717;
+    --color-dark: #171717;
+    --color-charcoal: #171717;
+    --color-text-primary: #242424;
+    --color-text-secondary: #77716A;
+    --color-muted: #77716A;
+    --color-gold: #C6A04A;
+    --color-gold-light: #E5CC85;
+    --color-gold-dark: #A88338;
+    --color-champagne: #E5CC85;
     --color-wine: #7A1C28;
-    --color-beige: #FAF8F5;
-    --color-champagne: #F5EFEB;
-    --color-border-gold: #E8DFD0;
+    --color-beige: #FAF7F0;
+    --color-ivory: #FAF7F0;
+    --color-border-gold: #E8E0D2;
+    --color-border-subtle: #E8E0D2;
 }
 
-/* Swarna Sparsh Luxury UI Utilities */
+/* Alankar Jewellers Luxury UI Utilities */
 .luxury-card {
     background-color: #FFFFFF;
-    border: 1px solid #E8DFD0;
-    box-shadow: 0 4px 20px -2px rgba(20, 18, 17, 0.04);
-    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    border: 1px solid #E8E0D2;
+    box-shadow: 0 2px 12px -2px rgba(23, 23, 23, 0.03);
+    transition: all 0.25s ease;
 }
+
 .luxury-card:hover {
-    border-color: #D4AF37;
-    box-shadow: 0 10px 30px -4px rgba(197, 155, 39, 0.12);
+    border-color: #C6A04A;
+    box-shadow: 0 8px 24px -4px rgba(198, 160, 74, 0.12);
 }
 
 .luxury-btn-primary {
-    background: linear-gradient(135deg, #1C1917 0%, #141211 100%);
+    background: #171717;
     color: #FFFFFF;
-    border: 1px solid rgba(197, 155, 39, 0.35);
-    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
-    transition: all 0.3s ease;
+    border: 1px solid #171717;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: all 0.25s ease;
 }
+
 .luxury-btn-primary:hover {
-    background: linear-gradient(135deg, #2A2522 0%, #1C1917 100%);
-    border-color: #C59B27;
-    box-shadow: 0 6px 20px rgba(197, 155, 39, 0.25);
+    background: #242424;
+    border-color: #C6A04A;
+    box-shadow: 0 4px 14px rgba(198, 160, 74, 0.18);
     transform: translateY(-1px);
 }
 
 .luxury-btn-gold {
-    background: linear-gradient(135deg, #D4AF37 0%, #C59B27 100%);
-    color: #141211;
-    font-weight: 700;
-    box-shadow: 0 4px 15px rgba(197, 155, 39, 0.25);
-    transition: all 0.3s ease;
+    background: #C6A04A;
+    color: #FFFFFF;
+    font-weight: 600;
+    border: 1px solid #C6A04A;
+    box-shadow: 0 2px 10px rgba(198, 160, 74, 0.18);
+    transition: all 0.25s ease;
 }
+
 .luxury-btn-gold:hover {
-    background: linear-gradient(135deg, #E5C158 0%, #D4AF37 100%);
-    box-shadow: 0 6px 22px rgba(197, 155, 39, 0.35);
+    background: #B38E39;
+    border-color: #B38E39;
+    box-shadow: 0 4px 16px rgba(198, 160, 74, 0.25);
     transform: translateY(-1px);
 }
 
 .luxury-badge-gold {
-    background: linear-gradient(135deg, #FAF4E6 0%, #F5E8C7 100%);
-    color: #8C6A12;
-    border: 1px solid #E5CE93;
+    background: #FAF7F0;
+    color: #A88338;
+    border: 1px solid #E8E0D2;
 }
 
 /* Utility classes for font families used across components */
@@ -266,19 +287,13 @@ html.lenis body {
     animation: scan 2s linear infinite;
 }
 
-@keyframes loader-pulse {
-
-    0%,
-    100% {
-        transform: scale(0.9);
-        opacity: 0.7;
-        filter: drop-shadow(0 0 0px rgba(156, 91, 97, 0));
+@keyframes fadeIn {
+    from {
+        opacity: 0;
     }
 
-    50% {
-        transform: scale(1.1);
+    to {
         opacity: 1;
-        filter: drop-shadow(0 0 20px rgba(156, 91, 97, 0.3));
     }
 }
 
@@ -480,18 +495,18 @@ input:-webkit-autofill:active {
 }
 
 .rich-text-content li[data-list="bullet"],
-.rich-text-content ul > li {
+.rich-text-content ul>li {
     display: list-item !important;
     list-style-type: disc !important;
 }
 
 .rich-text-content li[data-list="ordered"],
-.rich-text-content ol > li {
+.rich-text-content ol>li {
     display: list-item !important;
     list-style-type: decimal !important;
 }
 
-.rich-text-content li > ul {
+.rich-text-content li>ul {
     margin-top: 0.5rem !important;
     margin-bottom: 0.5rem !important;
     list-style-type: circle !important;
@@ -501,9 +516,11 @@ input:-webkit-autofill:active {
 .rich-text-content .ql-indent-1 {
     padding-left: 2rem !important;
 }
+
 .rich-text-content .ql-indent-2 {
     padding-left: 4rem !important;
 }
+
 .rich-text-content .ql-indent-3 {
     padding-left: 6rem !important;
 }
@@ -512,9 +529,11 @@ input:-webkit-autofill:active {
 .rich-text-content .ql-align-center {
     text-align: center !important;
 }
+
 .rich-text-content .ql-align-right {
     text-align: right !important;
 }
+
 .rich-text-content .ql-align-justify {
     text-align: justify !important;
 }

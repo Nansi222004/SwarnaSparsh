@@ -129,7 +129,7 @@ const AdminLogin = () => {
 
         {/* Footer */}
         <p className="text-center text-gray-400 text-sm mt-6">
-          © 2026 Swarna Sparsh. Admin Access Only.
+          © 2026 Alankar Jewellers. Admin Access Only.
         </p>
       </div>
     </div>

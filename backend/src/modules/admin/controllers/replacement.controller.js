@@ -190,15 +190,15 @@ exports.updateReplacementStatus = async (req, res) => {
 
     const currentStatus = String(repl.status || "").trim();
     const nextStatus = String(status || "").trim();
-    
+
     const effectiveReplacementMode = String(replacementMode || repl.replacementMode || "after_pickup").trim();
     const transitions = effectiveReplacementMode === "immediate" ? ALLOWED_TRANSITIONS_IMMEDIATE : ALLOWED_TRANSITIONS_AFTER_PICKUP;
     const allowed = transitions[currentStatus] || [];
-    
+
     if (currentStatus !== nextStatus && !allowed.includes(nextStatus)) {
       return error(res, `Invalid status transition from ${currentStatus} to ${nextStatus}`, 400);
     }
-    
+
     if (nextStatus === "Replacement Shipped" && effectiveReplacementMode === "after_pickup" && currentStatus !== "Pickup Completed") {
       return error(res, "After-pickup replacements can only be shipped after pickup is completed", 400);
     }
@@ -453,7 +453,7 @@ exports.updateReplacementStatus = async (req, res) => {
 
       enqueueEmail({
         to: replUser.email,
-        subject: `Replacement Update - ${refreshed.replacementId} | Swarna Sparsh`,
+        subject: `Replacement Update - ${refreshed.replacementId} | Alankar Jewellers`,
         html: emailTemplates.replacementStatusUpdate({
           replacementReq: refreshed,
           userName: replUser.name,

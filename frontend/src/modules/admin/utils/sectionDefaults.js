@@ -3,6 +3,12 @@ import price1999 from "@assets/price_under_1999.png";
 import price2999 from "@assets/price_under_2999.png";
 import price3999 from "@assets/price_under_3999.png";
 
+import goldColorWhite from "@assets/gold_color_white.png";
+import goldColorRose from "@assets/gold_color_rose.png";
+import goldColorYellow from "@assets/gold_color_yellow.png";
+import diamondNaturalImg from "@assets/hero/diamond_luxury.png";
+import diamondLabGrownImg from "@assets/hero/diamond_elegance_campaign.png";
+
 import giftMother from "@assets/gift_mother_silver.png";
 import giftFriends from "@assets/gift_friends_silver.png";
 import giftWife from "@assets/gift_wife_silver.png";
@@ -67,6 +73,11 @@ import testimonialCustomer1 from "@assets/testimonial_customer_1.png";
 import testimonialCustomer2 from "@assets/testimonial_customer_2.png";
 import testimonialCustomer3 from "@assets/testimonial_customer_3.png";
 import { homeCategoryGridDefaults } from "../../user/utils/homeCategoryGridDefaults";
+import {
+  goldCollectionGridDefaults,
+  silverCollectionGridDefaults,
+  diamondCollectionGridDefaults
+} from "../../user/utils/collectionGridDefaults";
 
 import menHeroDefault from "@assets/hero/modern_gold_fusion.png";
 import womenHeroDefault from "@assets/hero/eternal_diamond_brilliance.png";
@@ -125,6 +136,7 @@ import silverChains from "@assets/categories/silverchains.png";
 import menSilver from "@assets/categories/mensilver.png";
 import rings from "@assets/categories/rings.png";
 import earrings from "@assets/categories/earrings.png";
+import bracelets from "@assets/categories/bracelets.png";
 import brandVideo from "@assets/20260414-1037-04.7611184.mp4";
 import womenCategoryRings from "@assets/women-categories/Rings.png";
 import womenCategoryEarrings from "@assets/women-categories/Earrings.png";
@@ -214,6 +226,12 @@ export const PAGE_SECTIONS = [
     description:
       "Manage the gold landing page sections, campaigns, and merchandising blocks.",
   },
+  {
+    pageKey: "diamond-collection",
+    label: "Diamond Collection",
+    description:
+      "Manage the diamond landing page sections, hero banners, category grid, and atelier showcases.",
+  },
 ];
 
 const homeSections = [
@@ -221,10 +239,61 @@ const homeSections = [
     pageKey: "home",
     sectionKey: "category-grid",
     sectionType: "category-grid",
-    label: "Category Grid",
+    label: "Shop by Category",
     isActive: true,
-    sortOrder: 2,
+    sortOrder: 1.4,
+    settings: {
+      title: "Shop by Category",
+      subtitle: "Handcrafted Categories",
+      badge: "Curated Dimensions",
+      description: "Thoughtfully curated fine jewellery categories, handcrafted for every moment.",
+    },
     items: homeCategoryGridDefaults,
+  },
+  {
+    pageKey: "home",
+    sectionKey: "gold-collection-grid",
+    sectionType: "category-grid",
+    label: "Gold Collection Grid",
+    isActive: true,
+    sortOrder: 2.1,
+    settings: {
+      title: "Gold Collection",
+      subtitle: "Pure 22K & 18K Radiance",
+      badge: "Pure Radiance",
+      description: "Timeless gold jewellery crafted with exceptional artistry",
+    },
+    items: goldCollectionGridDefaults,
+  },
+  {
+    pageKey: "home",
+    sectionKey: "silver-collection-grid",
+    sectionType: "category-grid",
+    label: "Silver Collection Grid",
+    isActive: true,
+    sortOrder: 2.2,
+    settings: {
+      title: "Silver Collection",
+      subtitle: "Sterling 925 Hallmarked Perfection",
+      badge: "Sterling Elegance",
+      description: "Handcrafted 925 sterling silver essentials for everyday elegance",
+    },
+    items: silverCollectionGridDefaults,
+  },
+  {
+    pageKey: "home",
+    sectionKey: "diamond-collection-grid",
+    sectionType: "category-grid",
+    label: "Diamond Collection Grid",
+    isActive: true,
+    sortOrder: 2.3,
+    settings: {
+      title: "Diamond Collection",
+      subtitle: "Certified Natural & Lab Brilliance",
+      badge: "Timeless Sparkle",
+      description: "Dazzling certified diamond jewellery designed to capture light",
+    },
+    items: diamondCollectionGridDefaults,
   },
   {
     pageKey: "home",
@@ -343,7 +412,12 @@ const homeSections = [
     sectionType: "product-collection",
     label: "Limited Edition",
     isActive: true,
-    sortOrder: 11,
+    sortOrder: 1.5,
+    settings: {
+      title: "Limited Edition",
+      subtitle: "New Launch",
+      badge: "New Launch",
+    },
     items: [
       {
         id: "earrings",
@@ -763,40 +837,131 @@ const homeSections = [
     pageKey: "home",
     sectionKey: "shop-by-colour",
     sectionType: "promo-grid",
-    label: "Shop by Colour",
+    label: "Shop by Colour (Gold Tone Panel)",
     isActive: true,
-    sortOrder: 7,
+    sortOrder: 2.15,
     settings: {
       title: "Shop by Colour",
+      subtitle: "Choose Your Gold Tone",
+      badge: "Atelier Palette",
+      position: "right",
+      enabled: true,
     },
     items: [
       {
-        id: "colour-silver",
-        name: "Pure 925 Silver",
-        image: categoryGoldPendant,
-        tag: "Pure 925 Silver",
-        metalKey: "silver",
-      },
-      {
-        id: "colour-gold",
-        name: "Gold Plated",
-        image: catRing,
-        tag: "18KT Gold Plated",
-        metalKey: "gold",
+        id: "colour-white-gold",
+        name: "White Gold",
+        label: "White Gold",
+        tag: "Pure Modern Brilliance",
+        image: goldColorWhite,
+        path: "/shop?metal=gold&tone=white-gold",
+        sortOrder: 0,
       },
       {
         id: "colour-rose-gold",
-        name: "Rose Gold Plated",
-        image: categoryGoldBracelet,
-        tag: "18KT Rose Gold Plated",
-        metalKey: "rose-gold",
+        name: "Rose Gold",
+        label: "Rose Gold",
+        tag: "Warm Romantic Glow",
+        image: goldColorRose,
+        path: "/shop?metal=gold&tone=rose-gold",
+        sortOrder: 1,
       },
       {
-        id: "colour-oxidised",
-        name: "Oxidised Silver",
-        image: catEarrings,
-        tag: "Pure 925 Silver",
-        metalKey: "oxidised",
+        id: "colour-gold",
+        name: "Gold",
+        label: "Gold",
+        tag: "Classic 22K Radiance",
+        image: goldColorYellow,
+        path: "/shop?metal=gold",
+        sortOrder: 2,
+      },
+    ],
+  },
+  {
+    pageKey: "home",
+    sectionKey: "shop-by-silver",
+    sectionType: "promo-grid",
+    label: "Shop by Silver (Silver Type Panel)",
+    isActive: true,
+    sortOrder: 2.25,
+    settings: {
+      title: "Shop by Silver",
+      subtitle: "Handcrafted 925 Sterling Silver",
+      badge: "Pure 925 Silver",
+      position: "right",
+      enabled: true,
+    },
+    items: [
+      {
+        id: "silver-rings",
+        name: "925 Silver Rings",
+        label: "925 Silver Rings",
+        tag: "Everyday elegance in genuine sterling silver",
+        image: rings,
+        path: "/shop?metal=silver&silver_type=925&category=finger-ring",
+        sortOrder: 0,
+      },
+      {
+        id: "silver-earrings",
+        name: "925 Silver Earrings",
+        label: "925 Silver Earrings",
+        tag: "Timeless silver styles for every occasion",
+        image: earrings,
+        path: "/shop?metal=silver&silver_type=925&category=earrings",
+        sortOrder: 1,
+      },
+      {
+        id: "silver-chains",
+        name: "925 Silver Chains & Necklaces",
+        label: "925 Silver Chains & Necklaces",
+        tag: "Classic silver essentials",
+        image: silverChains,
+        path: "/shop?metal=silver&silver_type=925&category=necklace",
+        sortOrder: 2,
+      },
+      {
+        id: "silver-bracelets",
+        name: "925 Silver Bracelets",
+        label: "925 Silver Bracelets",
+        tag: "Refined styles for everyday wear",
+        image: bracelets,
+        path: "/shop?metal=silver&silver_type=925&category=bracelet",
+        sortOrder: 3,
+      },
+    ],
+  },
+  {
+    pageKey: "home",
+    sectionKey: "shop-by-diamond",
+    sectionType: "promo-grid",
+    label: "Shop by Diamond (Diamond Type Panel)",
+    isActive: true,
+    sortOrder: 2.35,
+    settings: {
+      title: "Shop by Diamond Type",
+      subtitle: "Discover brilliance, your way.",
+      badge: "DIAMOND COLLECTION",
+      position: "right",
+      enabled: true,
+    },
+    items: [
+      {
+        id: "diamond-natural",
+        name: "Natural Diamonds",
+        label: "Natural Diamonds",
+        tag: "Timeless Brilliance, Naturally Formed",
+        image: diamondNaturalImg,
+        path: "/shop?metal=diamond&diamondType=natural",
+        sortOrder: 0,
+      },
+      {
+        id: "diamond-lab-grown",
+        name: "Lab-Grown Diamonds",
+        label: "Lab-Grown Diamonds",
+        tag: "Modern Brilliance, Beautifully Created",
+        image: diamondLabGrownImg,
+        path: "/shop?metal=diamond&diamondType=lab_grown",
+        sortOrder: 1,
       },
     ],
   },
@@ -885,7 +1050,7 @@ const homeSections = [
         image: testimonialCustomer2,
         rating: 5,
         description:
-          "Bought a bracelet for my sister's birthday. She absolutely loved it! The shine is perfect, and the delivery was very fast. Highly recommend Swarna Sparsh for quality silver.",
+          "Bought a bracelet for my sister's birthday. She absolutely loved it! The shine is perfect, and the delivery was very fast. Highly recommend Alankar Jewellers for quality silver.",
         location: "Delhi",
       },
       {
@@ -986,7 +1151,7 @@ const shopMenSections = [
     items: [
       {
         id: "men-hero-1",
-        name: "SWARNA SPARSH BRINGS TO YOU",
+        name: "Alankar JEWELLERS BRINGS TO YOU",
         label: "MEN",
         subtitle: "Modern Silver for\nthe Bold Man",
         image: menHeroBoldDefault,
@@ -2430,7 +2595,7 @@ const goldCollectionSections = [
         image: testimonialCustomer2,
         rating: 5,
         description:
-          "Most gold rings for men look dated. I wanted to gift him something that matches the wedding ring he got me too. Finally got to know Swarna Sparsh's gold made-to-order option.",
+          "Most gold rings for men look dated. I wanted to gift him something that matches the wedding ring he got me too. Finally got to know Alankar Jewellers's gold made-to-order option.",
         location: "Mumbai",
       },
       {
@@ -2493,12 +2658,116 @@ const goldCollectionSections = [
   },
 ];
 
+const diamondCollectionSections = [
+  {
+    pageKey: "diamond-collection",
+    sectionKey: "hero-banners-diamond",
+    sectionType: "banner",
+    label: "Hero Banners",
+    isActive: true,
+    sortOrder: 1,
+    settings: {
+      autoplayMs: 4000,
+    },
+    items: [
+      {
+        id: "diamond-hero-1",
+        label: "Diamond Atelier",
+        subtitle: "Timeless Brilliance & Precision Craftsmanship",
+        tag: "Handcrafted Luxury",
+        ctaLabel: "Shop Diamond Collection",
+        path: "/shop?metal=diamond",
+        image: "",
+      }
+    ],
+  },
+  {
+    pageKey: "diamond-collection",
+    sectionKey: "diamond-category-grid",
+    sectionType: "category-grid",
+    label: "Category Grid",
+    isActive: true,
+    sortOrder: 2,
+    settings: {
+      title: "Curated Diamond Atelier",
+      eyebrow: "Explore Categories",
+    },
+    items: [],
+  },
+  {
+    pageKey: "diamond-collection",
+    sectionKey: "diamond-featured-creations",
+    sectionType: "product-collection",
+    label: "Featured Creations",
+    isActive: true,
+    sortOrder: 3,
+    settings: {
+      title: "Featured Diamond Creations",
+      eyebrow: "Atelier Highlights",
+      productLimit: 8,
+      sourceMode: "dynamic",
+    },
+    items: [],
+  },
+  {
+    pageKey: "diamond-collection",
+    sectionKey: "diamond-trust-markers",
+    sectionType: "promo-grid",
+    label: "Trust Markers",
+    isActive: true,
+    sortOrder: 4,
+    settings: {},
+    items: [
+      {
+        id: "diamond-trust-1",
+        name: "100% Certified",
+        subtitle: "Authentic Diamonds",
+        iconName: "ShieldCheck",
+      },
+      {
+        id: "diamond-trust-2",
+        name: "Lifetime Exchange",
+        subtitle: "& Buyback",
+        iconName: "RefreshCw",
+      },
+      {
+        id: "diamond-trust-3",
+        name: "Easy 15",
+        subtitle: "Days Return",
+        iconName: "RotateCcw",
+      },
+      {
+        id: "diamond-trust-4",
+        name: "Hallmark",
+        subtitle: "Purity Assurance",
+        iconName: "Star",
+      },
+    ],
+  },
+  {
+    pageKey: "diamond-collection",
+    sectionKey: "diamond-products-listing",
+    sectionType: "product-carousel",
+    label: "Products Listing",
+    isActive: true,
+    sortOrder: 5,
+    settings: {
+      title: "All Diamond Jewellery",
+      eyebrow: "The Collection",
+      sourceMode: "dynamic",
+      productLimit: 12,
+    },
+    items: [],
+  },
+];
+
 export const sectionDefaultsByPage = {
   home: homeSections,
   "shop-men": shopMenSections,
   "shop-women": shopWomenSections,
   "shop-family": shopFamilySections,
   "gold-collection": goldCollectionSections,
+  "diamond-collection": diamondCollectionSections,
 };
 
 const buildSectionIdentity = (pageKey, sectionKey) =>

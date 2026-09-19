@@ -5,7 +5,9 @@ const resolveMaterialPayload = (materialOrProduct = {}) => {
     return {
       material: materialOrProduct.material,
       goldCategory: materialOrProduct.goldCategory,
-      silverCategory: materialOrProduct.silverCategory
+      silverCategory: materialOrProduct.silverCategory,
+      settingMetal: materialOrProduct.settingMetal,
+      settingPurity: materialOrProduct.settingPurity
     };
   }
 
@@ -14,15 +16,16 @@ const resolveMaterialPayload = (materialOrProduct = {}) => {
 
 const getTenGramRate = (payload = {}, rates = {}) => {
   const material = normalizeString(payload.material);
+  const settingMetal = normalizeString(payload.settingMetal);
 
-  if (material === "gold") {
-    const goldCategory = normalizeString(payload.goldCategory);
+  if (material === "gold" || (material === "diamond" && (settingMetal === "gold" || settingMetal === "white gold" || settingMetal === "rose gold"))) {
+    const goldCategory = normalizeString(payload.goldCategory || payload.settingPurity);
     const gold10g = rates.gold10g || {};
 
-    if (goldCategory === "14") return Number(gold10g.k14) || Number(rates.goldPerGram || 0) * 10;
-    if (goldCategory === "18") return Number(gold10g.k18) || Number(rates.goldPerGram || 0) * 10;
-    if (goldCategory === "22") return Number(gold10g.k22) || Number(rates.goldPerGram || 0) * 10;
-    if (goldCategory === "24") return Number(gold10g.k24) || Number(rates.goldPerGram || 0) * 10;
+    if (goldCategory.includes("14")) return Number(gold10g.k14) || Number(rates.goldPerGram || 0) * 10;
+    if (goldCategory.includes("18")) return Number(gold10g.k18) || Number(rates.goldPerGram || 0) * 10;
+    if (goldCategory.includes("22")) return Number(gold10g.k22) || Number(rates.goldPerGram || 0) * 10;
+    if (goldCategory.includes("24")) return Number(gold10g.k24) || Number(rates.goldPerGram || 0) * 10;
 
     const fallbackGold10g = Number(gold10g.k18)
       || Number(gold10g.k22)
@@ -32,10 +35,10 @@ const getTenGramRate = (payload = {}, rates = {}) => {
     return fallbackGold10g || Number(rates.goldPerGram || 0) * 10;
   }
 
-  if (material === "silver") {
-    const silverCategory = normalizeString(payload.silverCategory);
+  if (material === "silver" || (material === "diamond" && settingMetal === "silver")) {
+    const silverCategory = normalizeString(payload.silverCategory || payload.settingPurity);
     const silver10g = rates.silver10g || {};
-    const isSterling = silverCategory.includes("sterling");
+    const isSterling = silverCategory.includes("sterling") || silverCategory.includes("925");
     if (isSterling) return Number(silver10g.sterling925) || Number(rates.silverPerGram || 0) * 10;
     return Number(silver10g.silverOther) || Number(rates.silverPerGram || 0) * 10;
   }

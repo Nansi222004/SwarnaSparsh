@@ -49,13 +49,18 @@ exports.getProducts = async (req, res) => {
       search,
       category,
       metal,
+      tone,
+      settingMetal,
       karat,
       silver_type,
+      purity,
+      stone,
       audience,
       diamondType,
       tags,
       sort,
-      inStockOnly = "false",
+      availability,
+      inStockOnly,
       page = 1,
       limit = 20
     } = req.query;
@@ -73,9 +78,10 @@ exports.getProducts = async (req, res) => {
     if (search) {
       andFilters.push({
         $or: [
-        { name: { $regex: search, $options: "i" } },
-        { brand: { $regex: search, $options: "i" } },
-        { description: { $regex: search, $options: "i" } }
+          { name: { $regex: search, $options: "i" } },
+          { brand: { $regex: search, $options: "i" } },
+          { description: { $regex: search, $options: "i" } },
+          { settingMetal: { $regex: search, $options: "i" } }
         ]
       });
     }
@@ -100,9 +106,18 @@ exports.getProducts = async (req, res) => {
       if (effectiveMaxPrice) query["variants.price"].$lte = Number(effectiveMaxPrice);
     }
 
+    // Exclude unrelated categories (e.g. bags, clutches, potlis) from public storefront
+    const excludedCategorySlugs = ["hand-bags", "clutches", "potli-bag", "sling-bag"];
+    andFilters.push({
+      categorySlug: { $nin: excludedCategorySlugs },
+      category: { $not: { $regex: "bag|clutch|potli|sling", $options: "i" } },
+      name: { $not: { $regex: "\\bbag\\b|\\bclutch\\b|\\bpotli\\b|\\bsling\\b", $options: "i" } }
+    });
+
     // 3.1 Metal + purity filters
     // Backwards-compat: older links may pass karat/silver_type without metal.
     // In that case, infer metal from the purity param to avoid silently returning all products.
+    const effectivePurity = purity || karat || silver_type;
     const inferredMetal = !metal
       ? (karat ? "gold" : (silver_type ? "silver" : ""))
       : "";
@@ -110,22 +125,139 @@ exports.getProducts = async (req, res) => {
     const effectiveMetal = metal || inferredMetal;
     if (effectiveMetal) {
       const normalized = String(effectiveMetal || "").trim().toLowerCase();
-      // material is stored like "Silver" / "Gold" / etc. Keep this case-insensitive exact match.
-      query.material = { $regex: `^${normalized}$`, $options: "i" };
 
-      const normalizedKarat = normalizeGoldKarat(karat);
-      if (normalized === "gold" && normalizedKarat) {
-        query.goldCategory = String(normalizedKarat);
-      }
+      if (normalized === "diamond") {
+        andFilters.push({
+          $and: [
+            {
+              $or: [
+                { diamondType: { $in: ["lab_grown", "natural"] } },
+                { "variants.diamondType": { $in: ["lab_grown", "natural"] } },
+                { "variants.diamondPrice": { $gt: 0 } },
+                { material: { $regex: "\\bdiamond\\b", $options: "i" } },
+                { name: { $regex: "\\bdiamond\\b", $options: "i" } }
+              ]
+            },
+            { material: { $not: { $regex: "plated|alloy|imitation|antique finish", $options: "i" } } },
+            { name: { $not: { $regex: "plated|alloy|imitation|oxydis", $options: "i" } } }
+          ]
+        });
 
-      const tier = normalizeSilverTier(silver_type);
-      if (normalized === "silver" && tier) {
-        if (tier === "sterling") {
-          query.silverCategory = { $regex: "^925\\s+sterling\\s+silver$", $options: "i" };
-        } else if (tier === "fine") {
-          // Treat all other silver categories as fine (including empty), but exclude sterling.
-          query.silverCategory = { $not: { $regex: "^925\\s+sterling\\s+silver$", $options: "i" } };
+        if (effectivePurity) {
+          andFilters.push({
+            $or: [
+              { settingPurity: { $regex: effectivePurity, $options: "i" } },
+              { purity: { $regex: effectivePurity, $options: "i" } }
+            ]
+          });
         }
+      } else if (normalized === "gold") {
+        andFilters.push({
+          $and: [
+            {
+              $or: [
+                { material: { $in: ["Gold", "14K Gold", "18K Gold", "22K Gold", "24K Gold", "Solid Gold", "Yellow Gold", "White Gold", "Rose Gold"] } },
+                { goldCategory: { $in: ["14", "18", "22", "24"] } },
+                { settingMetal: { $in: ["Gold", "White Gold", "Rose Gold"] } }
+              ]
+            },
+            { material: { $not: { $regex: "plated|alloy|imitation|antique finish", $options: "i" } } },
+            { name: { $not: { $regex: "plated|alloy|imitation|oxydis", $options: "i" } } },
+            { name: { $not: { $regex: "\\bdiamond\\b", $options: "i" } } },
+            { diamondType: { $nin: ["lab_grown", "natural"] } }
+          ]
+        });
+
+        // Specific Gold Tone filter (White Gold, Rose Gold, Gold)
+        const effectiveTone = String(tone || settingMetal || "").trim().toLowerCase();
+        if (effectiveTone === "white-gold" || effectiveTone === "white" || effectiveTone === "white gold") {
+          andFilters.push({
+            $or: [
+              { settingMetal: "White Gold" },
+              { material: { $regex: "white\\s*gold", $options: "i" } }
+            ]
+          });
+        } else if (effectiveTone === "rose-gold" || effectiveTone === "rose" || effectiveTone === "rose gold") {
+          andFilters.push({
+            $or: [
+              { settingMetal: "Rose Gold" },
+              { material: { $regex: "rose\\s*gold", $options: "i" } }
+            ]
+          });
+        } else if (effectiveTone === "gold" || effectiveTone === "yellow-gold" || effectiveTone === "yellow" || effectiveTone === "yellow gold") {
+          andFilters.push({
+            $and: [
+              {
+                $or: [
+                  { settingMetal: "Gold" },
+                  { material: { $in: ["Gold", "Yellow Gold", "22K Gold", "18K Gold", "24K Gold", "14K Gold", "Solid Gold"] } },
+                  { goldCategory: { $in: ["14", "18", "22", "24"] } }
+                ]
+              },
+              { settingMetal: { $nin: ["White Gold", "Rose Gold"] } },
+              { material: { $not: { $regex: "white\\s*gold|rose\\s*gold", $options: "i" } } }
+            ]
+          });
+        }
+
+        const normalizedKarat = normalizeGoldKarat(effectivePurity);
+        if (normalizedKarat) {
+          andFilters.push({
+            $or: [
+              { goldCategory: String(normalizedKarat) },
+              { settingPurity: { $regex: String(normalizedKarat), $options: "i" } },
+              { name: { $regex: `\\b${normalizedKarat}\\s*k\\b`, $options: "i" } }
+            ]
+          });
+        }
+      } else if (normalized === "silver") {
+        andFilters.push({
+          $and: [
+            {
+              $or: [
+                { material: { $in: ["Silver", "925 Silver", "Sterling Silver", "Fine Silver", "925 sterling silver"] } },
+                { silverCategory: { $in: ["800", "835", "925", "925 sterling silver", "958", "970", "990", "999", "fine", "sterling"] } },
+                { settingMetal: "Silver" }
+              ]
+            },
+            { material: { $not: { $regex: "plated|alloy|imitation|antique finish", $options: "i" } } },
+            { name: { $not: { $regex: "plated|alloy|imitation|oxydis", $options: "i" } } },
+            { name: { $not: { $regex: "\\bdiamond\\b", $options: "i" } } }
+          ]
+        });
+
+        const tier = normalizeSilverTier(effectivePurity);
+        if (tier === "sterling" || effectivePurity === "925") {
+          andFilters.push({
+            $or: [
+              { silverCategory: { $in: ["925", "925 sterling silver", "sterling", "Sterling", "925 Sterling Silver"] } },
+              { material: { $in: ["925 Silver", "Sterling Silver", "925 sterling silver"] } },
+              { silverCategory: { $regex: "^925", $options: "i" } }
+            ]
+          });
+        } else if (tier === "fine" || effectivePurity === "999") {
+          andFilters.push({
+            $or: [
+              { silverCategory: { $in: ["999", "fine", "958", "970", "990"] } },
+              { name: { $regex: "999|fine\\s*silver", $options: "i" } }
+            ]
+          });
+        } else if (effectivePurity === "800") {
+          andFilters.push({
+            $or: [
+              { silverCategory: { $in: ["800", "835"] } },
+              { name: { $regex: "\\b800\\b", $options: "i" } }
+            ]
+          });
+        }
+      }
+    } else if (effectivePurity) {
+      // General purity filter when metal is not strictly filtered
+      const digits = normalizeGoldKarat(effectivePurity);
+      if (digits) {
+        query.goldCategory = String(digits);
+      } else if (effectivePurity === "925" || normalizeSilverTier(effectivePurity) === "sterling") {
+        query.silverCategory = { $regex: "925", $options: "i" };
       }
     }
 
@@ -143,16 +275,44 @@ exports.getProducts = async (req, res) => {
       }
     }
 
-    // 3.3 Diamond Type Filter
-    if (diamondType) {
-      const requested = String(diamondType || "").trim().toLowerCase();
-      if (requested !== "all" && requested !== "") {
-          andFilters.push({
-              $or: [
-                  { diamondType: requested },
-                  { "variants.diamondType": requested }
-              ]
-          });
+    // 3.3 Stone / Diamond Type Filter
+    const effectiveStone = stone || diamondType;
+    if (effectiveStone && effectiveStone !== "All" && effectiveStone !== "all") {
+      const requested = String(effectiveStone).trim().toLowerCase();
+      if (requested === "none") {
+        andFilters.push({
+          diamondType: { $in: ["none", null, ""] },
+          "variants.diamondType": { $in: ["none", null, ""] },
+          name: { $not: { $regex: "\\bAD\\b|american\\s*diamond|\\bdiamond\\b|\\bpearl\\b|\\bmoti\\b|\\bkundan\\b", $options: "i" } }
+        });
+      } else if (requested === "ad") {
+        andFilters.push({
+          $or: [
+            { name: { $regex: "\\bAD\\b|american\\s*diamond", $options: "i" } },
+            { description: { $regex: "\\bAD\\b|american\\s*diamond", $options: "i" } }
+          ]
+        });
+      } else if (requested === "natural") {
+        andFilters.push({
+          $or: [
+            { diamondType: "natural" },
+            { "variants.diamondType": "natural" }
+          ]
+        });
+      } else if (requested === "lab_grown") {
+        andFilters.push({
+          $or: [
+            { diamondType: "lab_grown" },
+            { "variants.diamondType": "lab_grown" }
+          ]
+        });
+      } else if (requested === "pearl_kundan") {
+        andFilters.push({
+          $or: [
+            { material: "Kundan & Pearls" },
+            { name: { $regex: "pearl|moti|kundan|emerald|ruby", $options: "i" } }
+          ]
+        });
       }
     }
 
@@ -166,9 +326,13 @@ exports.getProducts = async (req, res) => {
       });
     }
 
-    if (String(inStockOnly).toLowerCase() === "true") {
+    // 5. Availability Filter
+    if (availability === "in_stock" || (!availability && String(inStockOnly).toLowerCase() === "true")) {
       query["variants.stock"] = { $gt: 0 };
+    } else if (availability === "out_of_stock") {
+      query["variants.stock"] = { $lte: 0 };
     }
+    // Note: availability === "all" applies no stock constraint
 
     // 5. Sorting
     let sortOption = { createdAt: -1 }; // Default: Newest
@@ -181,6 +345,7 @@ exports.getProducts = async (req, res) => {
         case "rating":    sortOption = { rating: -1 }; break;
         case "newest":    sortOption = { createdAt: -1 }; break;
         case "latest":    sortOption = { createdAt: -1 }; break;
+        case "discount":  sortOption = { "variants.discount": -1, createdAt: -1 }; break;
         case "most-sold": sortOption = { sold: -1, createdAt: -1 }; break;
         case "random":    sortOption = null; break;
       }
@@ -194,7 +359,7 @@ exports.getProducts = async (req, res) => {
     let products = [];
     if (sortOption) {
       products = await Product.find(query)
-        .select("name slug productCode brand images videoUrl variants tags rating reviewCount categories category categorySlug categoryId navShopByCategory weight weightUnit goldCategory silverCategory material audience sold createdAt updatedAt")
+        .select("name slug productCode brand images videoUrl variants tags rating reviewCount categories category categorySlug categoryId navShopByCategory weight weightUnit goldCategory silverCategory material settingMetal settingPurity diamondType audience sold createdAt updatedAt")
         .populate("categories", "name slug")
         .sort(sortOption)
         .limit(resolvedLimit)
@@ -210,8 +375,31 @@ exports.getProducts = async (req, res) => {
 
     const total = await Product.countDocuments(query);
 
+    const isDiamondOriginFilter = effectiveStone === "natural" || effectiveStone === "lab_grown";
+
+    const normalizedProducts = products.map((product) => {
+      const normalized = normalizeProductForResponse(product);
+      if (isDiamondOriginFilter) {
+        const targetOrigin = effectiveStone;
+        if (Array.isArray(normalized.variants) && normalized.variants.length > 0) {
+          const matchingVariants = normalized.variants.filter((v) => {
+            const vType = String(v?.diamondType || "").trim().toLowerCase();
+            if (vType === targetOrigin) return true;
+            if (!vType || vType === "none") {
+              return String(product?.diamondType || "").trim().toLowerCase() === targetOrigin;
+            }
+            return false;
+          });
+          if (matchingVariants.length > 0) {
+            normalized.variants = matchingVariants;
+          }
+        }
+      }
+      return normalized;
+    });
+
     return success(res, {
-      products: products.map((product) => normalizeProductForResponse(product)),
+      products: normalizedProducts,
       pagination: {
         total,
         page: Number(resolvedPage),

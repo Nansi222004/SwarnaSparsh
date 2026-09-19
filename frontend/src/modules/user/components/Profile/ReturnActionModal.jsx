@@ -94,11 +94,11 @@ const ReturnActionModal = ({ isOpen, onClose, type, order, onSuccess }) => {
                             Select Items
                         </h4>
                         <div className="space-y-2">
-                        {safeItems.map((item) => (
-                            <div key={item._id || item.id} onClick={() => handleToggleItem(item._id || item.id)} className={`flex items-center gap-3 p-2 rounded-lg border cursor-pointer transition-all ${selectedItems.includes(item._id || item.id) ? 'border-[#C59B27] bg-[#FAF8F5]' : 'border-gray-100 hover:border-gray-200'}`}>
-                                <div className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${selectedItems.includes(item._id || item.id) ? 'bg-[#141211] border-[#141211]' : 'border-gray-300'}`}>
-                                    {selectedItems.includes(item._id || item.id) && <Check className="w-2.5 h-2.5 text-[#E8D198]" />}
-                                </div>
+                            {safeItems.map((item) => (
+                                <div key={item._id || item.id} onClick={() => handleToggleItem(item._id || item.id)} className={`flex items-center gap-3 p-2 rounded-lg border cursor-pointer transition-all ${selectedItems.includes(item._id || item.id) ? 'border-[#C59B27] bg-[#FAF8F5]' : 'border-gray-100 hover:border-gray-200'}`}>
+                                    <div className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${selectedItems.includes(item._id || item.id) ? 'bg-[#141211] border-[#141211]' : 'border-gray-300'}`}>
+                                        {selectedItems.includes(item._id || item.id) && <Check className="w-2.5 h-2.5 text-[#E8D198]" />}
+                                    </div>
                                     <ProductThumb
                                         src={item.image}
                                         alt={item.name}
@@ -148,7 +148,7 @@ const ReturnActionModal = ({ isOpen, onClose, type, order, onSuccess }) => {
                                     <div className="text-[9px] font-normal opacity-70 mt-0.5">5-7 Business Days</div>
                                 </button>
                                 <button type="button" onClick={() => setResolution('credit')} className={`p-3 rounded-lg border text-left text-xs font-bold transition-all ${resolution === 'credit' ? 'border-[#141211] bg-[#141211] text-white' : 'border-gray-200 text-gray-700'}`}>
-                                    Swarna Sparsh Store Credit
+                                    Alankar Jewellers Store Credit
                                     <div className="text-[9px] font-normal opacity-70 mt-0.5">Instant Credit</div>
                                 </button>
                             </div>

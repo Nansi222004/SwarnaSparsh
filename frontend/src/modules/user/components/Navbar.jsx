@@ -4,7 +4,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Search, Heart, ShoppingCart, User, Users, Menu, X, ChevronDown, ChevronRight, Bell, Sparkles, Coins, Gem, Droplet, LifeBuoy, Sun, Hexagon, Gift, MoreHorizontal, ShoppingBag, Info } from 'lucide-react';
 import { useShop } from '../../../context/ShopContext';
 import { useNotification } from '../../../context/NotificationContext';
-import defaultLogo from '@assets/logo.webp';
+import defaultLogo from '@/assets/Alankar jewllers.png';
 import { useSettings } from '../../../context/SettingsContext';
 import api from '../../../services/api';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -24,8 +24,15 @@ const Navbar = () => {
 
     const { unreadCount } = useNotification();
     const { settings } = useSettings();
-    const currentLogo = settings?.logo || defaultLogo;
-    const currentStoreName = settings?.storeName || 'Swarna Sparsh';
+    const currentLogo = (settings?.logo && !settings.logo.includes('logo.webp') && !/swarna|sands/i.test(settings.logo))
+        ? settings.logo
+        : defaultLogo;
+    const currentStoreName = (!settings?.storeName || /swarna\s*sparsh/i.test(settings.storeName))
+        ? 'Alankar Jewellers'
+        : settings.storeName;
+    const currentTagline = (settings?.tagline && !/swarna\s*sparsh/i.test(settings.tagline))
+        ? settings.tagline.replace(/^Alankar Jewellers\s*[–—-]\s*/i, '')
+        : 'Where Luxury Meets Identity';
 
     const location = useLocation();
     const navigate = useNavigate();
@@ -74,16 +81,10 @@ const Navbar = () => {
         const params = new URLSearchParams(location.search);
         const metalParam = String(params.get('metal') || '').trim().toLowerCase();
         const karatParam = String(params.get('karat') || params.get('purity') || '').trim();
-        const silverTypeParam = String(params.get('silver_type') || '').trim();
-        const isGoldRoute = location.pathname.startsWith('/gold');
-        const desiredMetal = (
-            metalParam === 'gold'
-            || isGoldRoute
-            || (!metalParam && Boolean(karatParam))
-        ) ? 'gold' : (
-            metalParam === 'silver'
-            || (!metalParam && Boolean(silverTypeParam))
-        ) ? 'silver' : 'silver';
+        const isDiamondRoute = location.pathname.startsWith('/diamond') || metalParam === 'diamond';
+        const isGoldRoute = location.pathname.startsWith('/gold') || metalParam === 'gold' || (!metalParam && Boolean(karatParam));
+
+        const desiredMetal = isDiamondRoute ? 'diamond' : (isGoldRoute ? 'gold' : 'silver');
 
         if (desiredMetal && desiredMetal !== activeMetal) {
             updateActiveMetal(desiredMetal);
@@ -167,25 +168,26 @@ const Navbar = () => {
                                 alt={currentStoreName}
                                 className="h-[52px] w-auto object-contain transition-transform group-hover:scale-105 duration-300"
                                 onError={(e) => {
+                                    e.currentTarget.onerror = null;
                                     e.currentTarget.src = defaultLogo;
                                 }}
                             />
                             <div className="flex flex-col">
-                                <span className="font-serif text-lg font-bold tracking-wider text-[#141211] leading-tight uppercase">
+                                <span className="font-serif text-lg font-bold tracking-wider text-[#171717] leading-tight uppercase">
                                     {currentStoreName}
                                 </span>
-                                <span className="text-[9px] font-medium tracking-[0.2em] text-[#C59B27] uppercase">
-                                    Golden Touch
+                                <span className="text-[9px] font-medium tracking-[0.2em] text-[#C6A04A] uppercase">
+                                    {currentTagline}
                                 </span>
                             </div>
                         </Link>
 
                         <div
                             onClick={() => setIsPincodeModalOpen(true)}
-                            className="flex items-center gap-2.5 px-3.5 h-[46px] rounded-xl cursor-pointer transition-all duration-200 group border border-[#E8DFD0] bg-[#FAF8F5] hover:border-[#C59B27] hover:bg-white"
+                            className="flex items-center gap-2.5 px-3.5 h-[46px] rounded-xl cursor-pointer transition-all duration-200 group border border-[#E8E0D2] bg-[#FAF7F0] hover:border-[#C6A04A] hover:bg-white"
                         >
                             <div
-                                className="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center bg-[#1C1917] text-[#C59B27] group-hover:bg-[#C59B27] group-hover:text-[#1C1917] transition-colors"
+                                className="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center bg-[#171717] text-[#C6A04A] group-hover:bg-[#C6A04A] group-hover:text-[#171717] transition-colors"
                             >
                                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M1 3H16V17H1V3Z" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
@@ -195,12 +197,12 @@ const Navbar = () => {
                                 </svg>
                             </div>
                             <div className="flex flex-col">
-                                <span className="text-[10px] font-semibold text-[#8C6A12] uppercase tracking-[0.08em] leading-tight">Where to Deliver?</span>
+                                <span className="text-[10px] font-semibold text-[#A88338] uppercase tracking-[0.08em] leading-tight">Where to Deliver?</span>
                                 <div className="flex items-center gap-1 mt-0.5">
-                                    <span className="text-[12px] font-bold text-[#1C1917] font-sans">
+                                    <span className="text-[12px] font-bold text-[#171717] font-sans">
                                         {pincode ? `Deliver to ${pincode}` : 'Enter Pincode'}
                                     </span>
-                                    <ChevronDown className="w-3 h-3 text-[#C59B27]" />
+                                    <ChevronDown className="w-3 h-3 text-[#C6A04A]" />
                                 </div>
                             </div>
                         </div>
@@ -220,11 +222,11 @@ const Navbar = () => {
                                 onKeyDown={handleSearchKeyDown}
                                 onBlur={() => setTimeout(() => setShowResults(false), 200)}
                                 onFocus={() => setShowResults(true)}
-                                className="w-full bg-[#FAF8F5] border border-[#E8DFD0] rounded-xl py-2 pl-4 pr-12 text-sm text-[#1C1917] placeholder:text-[#948B83] focus:outline-none focus:border-[#C59B27] focus:bg-white focus:ring-2 focus:ring-[#C59B27]/10 transition-all shadow-sm"
+                                className="w-full bg-[#FAF7F0] border border-[#E8E0D2] rounded-xl py-2 pl-4 pr-12 text-sm text-[#242424] placeholder:text-[#77716A] focus:outline-none focus:border-[#C6A04A] focus:bg-white focus:ring-2 focus:ring-[#C6A04A]/10 transition-all shadow-xs"
                             />
                             <button
                                 onClick={submitSearch}
-                                className="absolute right-4 top-1/2 -translate-y-1/2 text-[#C59B27] hover:text-[#1C1917] transition-colors"
+                                className="absolute right-4 top-1/2 -translate-y-1/2 text-[#C6A04A] hover:text-[#171717] transition-colors"
                             >
                                 <Search className="w-[18px] h-[18px]" strokeWidth={2.2} />
                             </button>
@@ -310,13 +312,13 @@ const Navbar = () => {
                                             className="absolute inset-0 rounded-2xl"
                                             initial={{ opacity: 0 }}
                                             whileHover={{ opacity: 1 }}
-                                            style={{ background: 'rgba(197, 155, 39, 0.08)' }}
+                                            style={{ background: 'rgba(198, 160, 74, 0.08)' }}
                                         />
                                         {/* Icon chip */}
                                         <motion.div
                                             className="w-7.5 h-7.5 rounded-xl flex items-center justify-center relative z-10"
-                                            style={{ background: isActive ? 'linear-gradient(135deg, #1C1917, #2A2522)' : 'rgba(0,0,0,0.045)' }}
-                                            whileHover={!isActive ? { background: 'linear-gradient(135deg, #1C1917, #2A2522)', scale: 1.08 } : {}}
+                                            style={{ background: isActive ? '#171717' : 'rgba(0,0,0,0.04)' }}
+                                            whileHover={!isActive ? { background: '#171717', scale: 1.08 } : {}}
                                             transition={{ duration: 0.22 }}
                                         >
                                             <motion.div
@@ -324,19 +326,19 @@ const Navbar = () => {
                                                 transition={{ duration: 0.5, delay: 0.1 }}
                                                 whileHover={{ rotate: [0, -10, 10, -6, 0] }}
                                             >
-                                                <User className="w-[17px] h-[17px]" style={{ color: isActive ? '#D4AF37' : '#4B4B4B' }} strokeWidth={2.1} />
+                                                <User className="w-[17px] h-[17px]" style={{ color: isActive ? '#C6A04A' : '#77716A' }} strokeWidth={2.1} />
                                             </motion.div>
                                         </motion.div>
                                         {/* Label */}
                                         <motion.span
-                                            style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', fontFamily: "'Inter',sans-serif", color: isActive ? '#C59B27' : '#706760', position: 'relative', zIndex: 10 }}
-                                            whileHover={{ color: '#C59B27' }}
+                                            style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', fontFamily: "'Inter',sans-serif", color: isActive ? '#C6A04A' : '#77716A', position: 'relative', zIndex: 10 }}
+                                            whileHover={{ color: '#C6A04A' }}
                                         >ACCOUNT</motion.span>
                                         {/* Active dot */}
                                         {isActive && (
                                             <motion.div
                                                 initial={{ scaleX: 0 }} animate={{ scaleX: 1 }}
-                                                style={{ position: 'absolute', bottom: 4, left: '50%', transform: 'translateX(-50%)', width: 16, height: 2.5, borderRadius: 4, background: 'linear-gradient(90deg, #D4AF37, #C59B27)', zIndex: 10 }}
+                                                style={{ position: 'absolute', bottom: 4, left: '50%', transform: 'translateX(-50%)', width: 16, height: 2, borderRadius: 2, background: '#C6A04A', zIndex: 10 }}
                                             />
                                         )}
                                     </Link>
@@ -353,21 +355,21 @@ const Navbar = () => {
                                         style={{ minWidth: 64, height: 48 }}
                                     >
                                         <motion.div className="absolute inset-0 rounded-2xl" initial={{ opacity: 0 }} whileHover={{ opacity: 1 }}
-                                            style={{ background: 'rgba(197, 155, 39, 0.08)' }}
+                                            style={{ background: 'rgba(198, 160, 74, 0.08)' }}
                                         />
                                         <motion.div
                                             className="w-7.5 h-7.5 rounded-xl flex items-center justify-center relative z-10"
-                                            style={{ background: isActive ? 'linear-gradient(135deg, #1C1917, #2A2522)' : 'rgba(0,0,0,0.045)' }}
-                                            whileHover={!isActive ? { background: 'linear-gradient(135deg, #1C1917, #2A2522)', scale: 1.08 } : {}}
+                                            style={{ background: isActive ? '#171717' : 'rgba(0,0,0,0.04)' }}
+                                            whileHover={!isActive ? { background: '#171717', scale: 1.08 } : {}}
                                             transition={{ duration: 0.22 }}
                                         >
                                             {/* Badge */}
                                             {wishlist?.length > 0 && (
-                                                 <motion.span
+                                                <motion.span
                                                     initial={{ scale: 0 }} animate={{ scale: 1 }}
                                                     transition={{ type: 'spring', stiffness: 500, damping: 20 }}
-                                                    className="absolute -top-1.5 -right-1.5 text-[#1C1917] flex items-center justify-center rounded-full z-20"
-                                                    style={{ width: 15, height: 15, fontSize: 8, fontWeight: 800, background: 'linear-gradient(135deg, #E5C158, #C59B27)', boxShadow: '0 2px 6px rgba(197, 155, 39, 0.5)' }}
+                                                    className="absolute -top-1.5 -right-1.5 text-white flex items-center justify-center rounded-full z-20"
+                                                    style={{ width: 15, height: 15, fontSize: 8, fontWeight: 800, background: '#C6A04A' }}
                                                 >{wishlist.length}</motion.span>
                                             )}
                                             <motion.div
@@ -376,18 +378,18 @@ const Navbar = () => {
                                             >
                                                 <Heart
                                                     className="w-[17px] h-[17px]"
-                                                    style={{ color: isActive ? '#D4AF37' : '#4B4B4B' }}
+                                                    style={{ color: isActive ? '#C6A04A' : '#77716A' }}
                                                     strokeWidth={2.1}
                                                 />
                                             </motion.div>
                                         </motion.div>
                                         <motion.span
-                                            style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', fontFamily: "'Inter',sans-serif", color: isActive ? '#C59B27' : '#706760', position: 'relative', zIndex: 10 }}
-                                            whileHover={{ color: '#C59B27' }}
+                                            style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', fontFamily: "'Inter',sans-serif", color: isActive ? '#C6A04A' : '#77716A', position: 'relative', zIndex: 10 }}
+                                            whileHover={{ color: '#C6A04A' }}
                                         >WISHLIST</motion.span>
                                         {isActive && (
                                             <motion.div initial={{ scaleX: 0 }} animate={{ scaleX: 1 }}
-                                                style={{ position: 'absolute', bottom: 4, left: '50%', transform: 'translateX(-50%)', width: 20, height: 2.5, borderRadius: 4, background: 'linear-gradient(90deg, #D4AF37, #C59B27)', zIndex: 10 }}
+                                                style={{ position: 'absolute', bottom: 4, left: '50%', transform: 'translateX(-50%)', width: 20, height: 2, borderRadius: 2, background: '#C6A04A', zIndex: 10 }}
                                             />
                                         )}
                                     </Link>
@@ -404,12 +406,12 @@ const Navbar = () => {
                                         style={{ minWidth: 58, height: 48 }}
                                     >
                                         <motion.div className="absolute inset-0 rounded-2xl" initial={{ opacity: 0 }} whileHover={{ opacity: 1 }}
-                                            style={{ background: 'rgba(197, 155, 39, 0.08)' }}
+                                            style={{ background: 'rgba(198, 160, 74, 0.08)' }}
                                         />
                                         <motion.div
                                             className="w-7.5 h-7.5 rounded-xl flex items-center justify-center relative z-10"
-                                            style={{ background: isActive ? 'linear-gradient(135deg, #1C1917, #2A2522)' : 'rgba(0,0,0,0.045)' }}
-                                            whileHover={!isActive ? { background: 'linear-gradient(135deg, #1C1917, #2A2522)', scale: 1.08 } : {}}
+                                            style={{ background: isActive ? '#171717' : 'rgba(0,0,0,0.04)' }}
+                                            whileHover={!isActive ? { background: '#171717', scale: 1.08 } : {}}
                                             transition={{ duration: 0.22 }}
                                         >
                                             {/* Unread badge */}
@@ -417,8 +419,8 @@ const Navbar = () => {
                                                 <motion.span
                                                     initial={{ scale: 0 }} animate={{ scale: [1, 1.2, 1] }}
                                                     transition={{ repeat: Infinity, repeatDelay: 3, duration: 0.4 }}
-                                                    className="absolute -top-1.5 -right-1.5 text-[#1C1917] flex items-center justify-center rounded-full z-20"
-                                                    style={{ width: 15, height: 15, fontSize: 8, fontWeight: 800, background: 'linear-gradient(135deg, #E5C158, #C59B27)', boxShadow: '0 2px 6px rgba(197, 155, 39, 0.5)' }}
+                                                    className="absolute -top-1.5 -right-1.5 text-white flex items-center justify-center rounded-full z-20"
+                                                    style={{ width: 15, height: 15, fontSize: 8, fontWeight: 800, background: '#C6A04A' }}
                                                 >{unreadCount}</motion.span>
                                             )}
                                             {/* Bell shake on hover */}
@@ -426,16 +428,16 @@ const Navbar = () => {
                                                 whileHover={{ rotate: [0, -18, 18, -12, 12, -6, 6, 0], transformOrigin: 'top center' }}
                                                 transition={{ duration: 0.55, ease: 'easeInOut' }}
                                             >
-                                                <Bell className="w-[17px] h-[17px]" style={{ color: isActive ? '#D4AF37' : '#4B4B4B' }} strokeWidth={2.1} />
+                                                <Bell className="w-[17px] h-[17px]" style={{ color: isActive ? '#C6A04A' : '#77716A' }} strokeWidth={2.1} />
                                             </motion.div>
                                         </motion.div>
                                         <motion.span
-                                            style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', fontFamily: "'Inter',sans-serif", color: isActive ? '#C59B27' : '#706760', position: 'relative', zIndex: 10 }}
-                                            whileHover={{ color: '#C59B27' }}
+                                            style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', fontFamily: "'Inter',sans-serif", color: isActive ? '#C6A04A' : '#77716A', position: 'relative', zIndex: 10 }}
+                                            whileHover={{ color: '#C6A04A' }}
                                         >INBOX</motion.span>
                                         {isActive && (
                                             <motion.div initial={{ scaleX: 0 }} animate={{ scaleX: 1 }}
-                                                style={{ position: 'absolute', bottom: 4, left: '50%', transform: 'translateX(-50%)', width: 14, height: 2.5, borderRadius: 4, background: 'linear-gradient(90deg, #D4AF37, #C59B27)', zIndex: 10 }}
+                                                style={{ position: 'absolute', bottom: 4, left: '50%', transform: 'translateX(-50%)', width: 14, height: 2, borderRadius: 2, background: '#C6A04A', zIndex: 10 }}
                                             />
                                         )}
                                     </Link>
@@ -452,20 +454,20 @@ const Navbar = () => {
                                         style={{ minWidth: 58, height: 48 }}
                                     >
                                         <motion.div className="absolute inset-0 rounded-2xl" initial={{ opacity: 0 }} whileHover={{ opacity: 1 }}
-                                            style={{ background: 'rgba(197, 155, 39, 0.08)' }}
+                                            style={{ background: 'rgba(198, 160, 74, 0.08)' }}
                                         />
                                         <motion.div
                                             className="w-7.5 h-7.5 rounded-xl flex items-center justify-center relative z-10"
-                                            style={{ background: isActive ? 'linear-gradient(135deg, #1C1917, #2A2522)' : 'rgba(0,0,0,0.045)' }}
-                                            whileHover={!isActive ? { background: 'linear-gradient(135deg, #1C1917, #2A2522)', scale: 1.08 } : {}}
+                                            style={{ background: isActive ? '#171717' : 'rgba(0,0,0,0.04)' }}
+                                            whileHover={!isActive ? { background: '#171717', scale: 1.08 } : {}}
                                             transition={{ duration: 0.22 }}
                                         >
                                             {cart?.length > 0 && (
                                                 <motion.span
                                                     initial={{ scale: 0 }} animate={{ scale: 1 }}
                                                     transition={{ type: 'spring', stiffness: 500, damping: 20 }}
-                                                    className="absolute -top-1.5 -right-1.5 text-[#1C1917] flex items-center justify-center rounded-full z-20"
-                                                    style={{ width: 15, height: 15, fontSize: 8, fontWeight: 800, background: 'linear-gradient(135deg, #E5C158, #C59B27)', boxShadow: '0 2px 6px rgba(197, 155, 39, 0.5)' }}
+                                                    className="absolute -top-1.5 -right-1.5 text-white flex items-center justify-center rounded-full z-20"
+                                                    style={{ width: 15, height: 15, fontSize: 8, fontWeight: 800, background: '#C6A04A' }}
                                                 >{cart.length}</motion.span>
                                             )}
                                             {/* Cart bounce on hover */}
@@ -473,16 +475,16 @@ const Navbar = () => {
                                                 whileHover={{ x: [0, -3, 3, -2, 2, 0], y: [0, -2, 0] }}
                                                 transition={{ duration: 0.45, ease: 'easeInOut' }}
                                             >
-                                                <ShoppingCart className="w-[17px] h-[17px]" style={{ color: isActive ? '#D4AF37' : '#4B4B4B' }} strokeWidth={2.1} />
+                                                <ShoppingCart className="w-[17px] h-[17px]" style={{ color: isActive ? '#C6A04A' : '#77716A' }} strokeWidth={2.1} />
                                             </motion.div>
                                         </motion.div>
                                         <motion.span
-                                            style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', fontFamily: "'Inter',sans-serif", color: isActive ? '#C59B27' : '#706760', position: 'relative', zIndex: 10 }}
-                                            whileHover={{ color: '#C59B27' }}
+                                            style={{ fontSize: 9, fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', fontFamily: "'Inter',sans-serif", color: isActive ? '#C6A04A' : '#77716A', position: 'relative', zIndex: 10 }}
+                                            whileHover={{ color: '#C6A04A' }}
                                         >CART</motion.span>
                                         {isActive && (
                                             <motion.div initial={{ scaleX: 0 }} animate={{ scaleX: 1 }}
-                                                style={{ position: 'absolute', bottom: 4, left: '50%', transform: 'translateX(-50%)', width: 14, height: 2.5, borderRadius: 4, background: 'linear-gradient(90deg, #D4AF37, #C59B27)', zIndex: 10 }}
+                                                style={{ position: 'absolute', bottom: 4, left: '50%', transform: 'translateX(-50%)', width: 14, height: 2, borderRadius: 2, background: '#C6A04A', zIndex: 10 }}
                                             />
                                         )}
                                     </Link>
@@ -517,6 +519,7 @@ const Navbar = () => {
                                 alt={currentStoreName}
                                 className="h-[40px] w-auto object-contain"
                                 onError={(e) => {
+                                    e.currentTarget.onerror = null;
                                     e.currentTarget.src = defaultLogo;
                                 }}
                             />
@@ -691,7 +694,7 @@ const Navbar = () => {
                                                 <ShoppingBag className="w-7 h-7 text-[#1C1917] absolute -bottom-1 -right-2 bg-white" strokeWidth={1.5} />
                                             </div>
                                             <div className="flex-1">
-                                                <h3 className="text-[17px] font-serif font-bold text-[#1C1917] leading-tight mb-2 tracking-wide">Welcome to Swarna Sparsh</h3>
+                                                <h3 className="text-[17px] font-serif font-bold text-[#1C1917] leading-tight mb-2 tracking-wide">Welcome to Alankar Jewellers</h3>
                                                 <div className="flex items-center gap-2">
                                                     <Link to="/login" className="text-[11px] font-bold text-[#C59B27] hover:underline uppercase tracking-wider" onClick={() => setIsMenuOpen(false)}>LOGIN</Link>
                                                     <span className="text-gray-300">|</span>
@@ -720,23 +723,20 @@ const Navbar = () => {
                                             key={index}
                                             to={item.path}
                                             onClick={() => setIsMenuOpen(false)}
-                                            className={`flex items-center justify-between py-4 px-4 hover:shadow-sm rounded-xl transition-all group border-b border-[#E8DFD0] last:border-0 relative overflow-hidden ${
-                                                item.label === 'Gold' ? 'bg-gradient-to-r from-amber-50 to-white hover:from-amber-100 border-amber-200' :
-                                                item.label === 'Silver' ? 'bg-gradient-to-r from-slate-50 to-white hover:from-slate-100 border-slate-200' :
-                                                'text-gray-800 hover:bg-white hover:text-[#C59B27]'
-                                            }`}
+                                            className={`flex items-center justify-between py-4 px-4 hover:shadow-sm rounded-xl transition-all group border-b border-[#E8DFD0] last:border-0 relative overflow-hidden ${item.label === 'Gold' ? 'bg-gradient-to-r from-amber-50 to-white hover:from-amber-100 border-amber-200' :
+                                                    item.label === 'Silver' ? 'bg-gradient-to-r from-slate-50 to-white hover:from-slate-100 border-slate-200' :
+                                                        'text-gray-800 hover:bg-white hover:text-[#C59B27]'
+                                                }`}
                                         >
                                             <div className="flex items-center gap-5 relative z-10">
-                                                <item.icon className={`w-5 h-5 transition-colors ${
-                                                    item.label === 'Gold' ? 'text-amber-500 group-hover:text-amber-600 animate-pulse' :
-                                                    item.label === 'Silver' ? 'text-slate-400 group-hover:text-slate-600 animate-pulse' :
-                                                    'text-gray-600 group-hover:text-[#C59B27]'
-                                                }`} strokeWidth={1.5} />
-                                                <span className={`text-[15px] tracking-wide ${
-                                                    item.label === 'Gold' ? 'text-amber-700 font-bold group-hover:text-amber-800' :
-                                                    item.label === 'Silver' ? 'text-slate-600 font-bold group-hover:text-slate-800' :
-                                                    'font-medium text-gray-800 group-hover:font-semibold group-hover:text-[#C59B27]'
-                                                }`}>{item.label}</span>
+                                                <item.icon className={`w-5 h-5 transition-colors ${item.label === 'Gold' ? 'text-amber-500 group-hover:text-amber-600 animate-pulse' :
+                                                        item.label === 'Silver' ? 'text-slate-400 group-hover:text-slate-600 animate-pulse' :
+                                                            'text-gray-600 group-hover:text-[#C59B27]'
+                                                    }`} strokeWidth={1.5} />
+                                                <span className={`text-[15px] tracking-wide ${item.label === 'Gold' ? 'text-amber-700 font-bold group-hover:text-amber-800' :
+                                                        item.label === 'Silver' ? 'text-slate-600 font-bold group-hover:text-slate-800' :
+                                                            'font-medium text-gray-800 group-hover:font-semibold group-hover:text-[#C59B27]'
+                                                    }`}>{item.label}</span>
                                             </div>
                                             <ChevronRight className="w-4 h-4 text-gray-900 group-hover:text-[#C59B27] transition-colors relative z-10" strokeWidth={2.5} />
                                         </Link>

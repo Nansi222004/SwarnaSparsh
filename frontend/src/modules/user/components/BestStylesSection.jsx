@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { useShop } from '../../../context/ShopContext';
 import { useHomepageCms } from '../hooks/useHomepageCms';
 import { getProductPrice, getProductMRP } from '../utils/price';
+import { matchesRequestedMetal, isUnrelatedProduct } from '../utils/productMetal';
 
 import ProductCard from './ProductCard';
 
@@ -37,18 +38,15 @@ const BestStylesSection = ({ sectionData = null }) => {
             return Math.max(0, originalPrice - effectivePrice);
         };
 
-        const getProductMetal = (product) => {
-            const explicitMetal = String(product?.metal || product?.material || '').trim().toLowerCase();
-            if (explicitMetal) return explicitMetal;
-            if (product?.goldCategory) return 'gold';
-            return 'silver';
-        };
-
         const matchingMetalProducts = products.filter((product) => {
+            if (isUnrelatedProduct(product)) return false;
             if (isGoldSection || activeMetal === 'gold') {
-                return getProductMetal(product) === 'gold';
+                return matchesRequestedMetal(product, 'gold');
             }
-            return getProductMetal(product) !== 'gold';
+            if (activeMetal === 'diamond') {
+                return matchesRequestedMetal(product, 'diamond');
+            }
+            return matchesRequestedMetal(product, 'silver');
         });
 
         return matchingMetalProducts

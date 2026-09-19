@@ -21,7 +21,7 @@ const PRODUCT_UPDATE_WHITELIST = [
   "showInNavbar", "showInCollection", "active",
   "navShopByCategory",
   "cardLabel", "cardBadge", "careTips", "silverCategory",
-  "goldCategory", "weightUnit", "specifications", "supplierInfo",
+  "goldCategory", "settingMetal", "settingPurity", "weightUnit", "specifications", "supplierInfo",
   "huid", "sizes", "isSerialized", "paymentGatewayChargeBearer", "audience",
   "diamondType",
   "seo", "logistics", "relatedProducts",

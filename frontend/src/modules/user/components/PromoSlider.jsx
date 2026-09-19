@@ -52,7 +52,7 @@ const PromoSlider = ({ externalSlides, autoplayInterval }) => {
                 id: item.itemId || item.id || `hero-slide-${index + 1}`,
                 image: resolveLegacyCmsAsset(item.image, item.image),
                 mobileImage: item.mobileImage ? resolveLegacyCmsAsset(item.mobileImage, item.mobileImage) : null,
-                title: item.label || item.title || 'Swarna Sparsh Atelier',
+                title: item.label || item.title || 'Alankar Jewellers Atelier',
                 subtitle: item.subtitle || '',
                 tag: item.tag || item.name || 'Signature Collection',
                 link: item.path || '/shop',
@@ -131,7 +131,7 @@ const PromoSlider = ({ externalSlides, autoplayInterval }) => {
                             {/* Professional Gradient Overlay for Text Readability */}
                             <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/35 to-transparent pointer-events-none z-[5]" />
 
-                            {slide.mobileImage && (
+                            {Boolean(slide.mobileImage) && (
                                 <img
                                     src={slide.mobileImage}
                                     alt={`${slide.title} Mobile`}
@@ -143,7 +143,7 @@ const PromoSlider = ({ externalSlides, autoplayInterval }) => {
                                 />
                             )}
                             <img
-                                src={slide.image}
+                                src={slide.image || IMAGE_FALLBACKS.editorial}
                                 alt={slide.title}
                                 loading={idx === 1 ? 'eager' : 'lazy'}
                                 fetchPriority={idx === 1 ? 'high' : 'low'}
@@ -155,7 +155,7 @@ const PromoSlider = ({ externalSlides, autoplayInterval }) => {
                             {/* Subtle Brand Watermark */}
                             <div className="absolute top-1 left-2 md:top-8 md:left-12 z-20">
                                 <span className="bg-white/10 backdrop-blur-md border border-white/20 text-white text-[4px] sm:text-[6px] md:text-[10px] font-bold uppercase tracking-[0.3em] px-1 py-0.5 md:px-3 md:py-1.5 rounded-sm">
-                                    A SWARNA SPARSH PRODUCT
+                                    AN Alankar JEWELLERS PRODUCT
                                 </span>
                             </div>
 
@@ -206,8 +206,8 @@ const PromoSlider = ({ externalSlides, autoplayInterval }) => {
                                     key={i}
                                     onClick={() => !isTransitioning && setCurrentIndex(i + 1)}
                                     className={`transition-all duration-500 rounded-full ${isActive
-                                            ? 'w-10 md:w-12 h-1 bg-white'
-                                            : 'w-4 md:w-5 h-1 bg-white/40 hover:bg-white/70'
+                                        ? 'w-10 md:w-12 h-1 bg-white'
+                                        : 'w-4 md:w-5 h-1 bg-white/40 hover:bg-white/70'
                                         }`}
                                     aria-label={`Go to slide ${i + 1}`}
                                 />

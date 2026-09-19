@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Send } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../../../services/api';
-import defaultLogo from '@assets/logo.webp';
+import defaultLogo from '@/assets/Alankar jewllers.png';
 import { useSettings } from '../../../context/SettingsContext';
 
 const ChitChatSection = () => {
@@ -13,7 +13,9 @@ const ChitChatSection = () => {
     });
     const [submitting, setSubmitting] = useState(false);
     const { settings } = useSettings();
-    const logo = settings?.logo || defaultLogo;
+    const logo = (settings?.logo && !settings.logo.includes('logo.webp') && !/swarna|sands/i.test(settings.logo))
+        ? settings.logo
+        : defaultLogo;
     const title = "We're Here for You";
     const subtitle = "Questions or styling advice? We'd love to hear from you.";
     const responseText = 'Replies within 2 hours';
@@ -68,10 +70,14 @@ const ChitChatSection = () => {
                         {/* Text Content Side (Slimmer & Elegant) */}
                         <div className="w-full md:w-5/12 p-6 md:p-10 bg-[#1C1917] relative flex flex-col justify-center">
                             <div className="mb-4">
-                                <img 
-                                    src={logo} 
-                                    alt="Swarna Sparsh" 
-                                    className="w-12 md:w-14 h-auto mb-4 object-contain drop-shadow-md" 
+                                <img
+                                    src={logo}
+                                    alt="Alankar Jewellers"
+                                    className="w-12 md:w-14 h-auto mb-4 object-contain drop-shadow-md"
+                                    onError={(e) => {
+                                        e.currentTarget.onerror = null;
+                                        e.currentTarget.src = defaultLogo;
+                                    }}
                                 />
                                 <h2 className="font-serif text-2xl md:text-3xl text-white mb-2 leading-tight tracking-wide">
                                     {title}
@@ -80,11 +86,11 @@ const ChitChatSection = () => {
                                     {subtitle}
                                 </p>
                             </div>
-                            
+
                             <div className="flex items-center gap-3 mt-auto pt-4 md:pt-0">
                                 <div className="relative flex h-2 w-2">
-                                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#34D399] opacity-75"></span>
-                                  <span className="relative inline-flex rounded-full h-2 w-2 bg-[#34D399]"></span>
+                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#34D399] opacity-75"></span>
+                                    <span className="relative inline-flex rounded-full h-2 w-2 bg-[#34D399]"></span>
                                 </div>
                                 <span className="text-[11px] text-white/80 tracking-widest font-semibold uppercase">
                                     {responseText}
@@ -124,7 +130,7 @@ const ChitChatSection = () => {
                                         />
                                     </div>
                                 </div>
-                                
+
                                 <div>
                                     <label htmlFor="message" className="block text-[10px] font-bold text-[#C59B27] uppercase tracking-[0.2em] mb-1.5">Message</label>
                                     <textarea
@@ -138,7 +144,7 @@ const ChitChatSection = () => {
                                         required
                                     ></textarea>
                                 </div>
-                                
+
                                 <button
                                     type="submit"
                                     disabled={submitting}

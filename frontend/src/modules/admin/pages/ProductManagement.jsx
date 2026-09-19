@@ -22,7 +22,7 @@ const ProductManagement = () => {
     const [selectedIds, setSelectedIds] = useState([]);
     const [categoryOptions, setCategoryOptions] = useState([]);
     const [categoriesById, setCategoriesById] = useState({});
-    
+
     // Advanced Filters & Pagination
     const [filtersObj, setFiltersObj] = useState({
         minPrice: '',
@@ -106,7 +106,7 @@ const ProductManagement = () => {
                     price,
                     stock,
                     categoryName: primaryCat?.name || primaryCat?.category || categoriesById[p.category] || 'Uncategorized',
-                    brand: p.brand || 'Swarna Sparsh',
+                    brand: p.brand || 'Alankar Jewellers',
                     status: p.active === false ? 'INACTIVE' : 'ACTIVE'
                 };
             });
@@ -132,9 +132,9 @@ const ProductManagement = () => {
                 page: isLoadMore ? filtersObj.page + 1 : 1,
                 limit: filtersObj.limit
             };
-            
+
             const { products: data, pagination: pagin } = await adminService.getProducts(params);
-            
+
             if (isLoadMore) {
                 setProducts(prev => [...prev, ...data]);
                 setFiltersObj(prev => ({ ...prev, page: prev.page + 1 }));
@@ -285,7 +285,7 @@ const ProductManagement = () => {
                     const success = await adminService.toggleProductStatus(item._id);
                     if (success) {
                         toast.success(`Product ${!isActive ? 'activated' : 'deactivated'}`);
-                        setProducts(prev => prev.map(p => 
+                        setProducts(prev => prev.map(p =>
                             p._id === item._id ? { ...p, active: !isActive } : p
                         ));
                     } else {
@@ -303,9 +303,8 @@ const ProductManagement = () => {
                                 }`}>
                             {isActive ? 'Active' : 'Inactive'}
                         </button>
-                        <span className={`text-[9px] font-bold uppercase tracking-tighter ${
-                            status === 'Draft' ? 'text-amber-500' : 'text-blue-500'
-                        }`}>
+                        <span className={`text-[9px] font-bold uppercase tracking-tighter ${status === 'Draft' ? 'text-amber-500' : 'text-blue-500'
+                            }`}>
                             {status}
                         </span>
                     </div>
@@ -424,7 +423,7 @@ const ProductManagement = () => {
 
             <DataTable
                 columns={columns}
-                data={products} 
+                data={products}
                 searchTerm={searchTerm}
                 setSearchTerm={setSearchTerm}
                 searchPlaceholder="Search products by name..."
@@ -433,17 +432,17 @@ const ProductManagement = () => {
                 <div className="flex gap-2 items-center">
                     <div className="flex items-center bg-white border border-gray-200 rounded-lg px-2 py-1 shadow-sm focus-within:ring-2 focus-within:ring-[#3E2723]/10 focus-within:border-[#3E2723] transition-all">
                         <span className="text-[10px] font-bold text-gray-400 mr-2">₹</span>
-                        <input 
-                            type="number" 
-                            placeholder="Min" 
+                        <input
+                            type="number"
+                            placeholder="Min"
                             className="w-16 bg-transparent text-xs focus:outline-none"
                             value={filtersObj.minPrice}
                             onChange={(e) => setFiltersObj(prev => ({ ...prev, minPrice: e.target.value, page: 1 }))}
                         />
                         <span className="text-gray-300 mx-1">-</span>
-                        <input 
-                            type="number" 
-                            placeholder="Max" 
+                        <input
+                            type="number"
+                            placeholder="Max"
                             className="w-16 bg-transparent text-xs focus:outline-none"
                             value={filtersObj.maxPrice}
                             onChange={(e) => setFiltersObj(prev => ({ ...prev, maxPrice: e.target.value, page: 1 }))}

@@ -30,9 +30,19 @@ const resolveLaunchPath = (item, fallbackPath = '/shop') => {
 };
 
 const NewLaunchSection = () => {
-    const { data: homepageSections = {} } = useHomepageCms();
+    const { data: homepageSections = {}, isSuccess } = useHomepageCms();
 
     const sectionData = homepageSections?.['new-launch'];
+
+    // Section visibility: respect isActive toggle from Admin CMS
+    if (sectionData && sectionData.isActive === false) {
+        return null;
+    }
+    // If CMS data loaded successfully and new-launch is absent from active sections, it is disabled
+    if (isSuccess && Object.keys(homepageSections).length > 0 && !sectionData) {
+        return null;
+    }
+
     const configuredItems = Array.isArray(sectionData?.items) ? sectionData.items : [];
     const normalizedConfiguredItems = configuredItems.map((item, index) => {
         return {
@@ -41,7 +51,8 @@ const NewLaunchSection = () => {
             name: item.name || item.label || newLaunches[index]?.name || 'Limited Edition',
             image: resolveLegacyCmsAsset(item.image, newLaunches[index]?.image || newEarrings),
             path: resolveLaunchPath(item, newLaunches[index]?.path || '/shop'),
-            categoryId: item.categoryId || null
+            categoryId: item.categoryId || null,
+            ctaLabel: item.ctaLabel || item.buttonText || 'EXPLORE'
         };
     });
     const baseItems = normalizedConfiguredItems.length > 0 ? normalizedConfiguredItems : newLaunches;
@@ -142,10 +153,10 @@ const NewLaunchSection = () => {
                     className="relative flex flex-col items-center justify-center text-center"
                 >
                     <div className="inline-block bg-[#C59B27]/10 border border-[#C59B27]/30 text-[#E8D198] px-4 py-0.5 font-serif tracking-[0.2em] text-[9px] uppercase rounded-full shadow-sm mb-2 md:mb-3">
-                        New Launch
+                        {sectionData?.settings?.badge || sectionData?.settings?.subtitle || sectionData?.subtitle || "New Launch"}
                     </div>
                     <h3 className="font-serif text-[#FAF8F5] text-2xl md:text-4xl font-light tracking-tight uppercase drop-shadow-sm">
-                        {sectionData?.label || "Limited Edition"}
+                        {sectionData?.settings?.title || sectionData?.label || "Limited Edition"}
                     </h3>
                 </motion.div>
 
@@ -189,7 +200,7 @@ const NewLaunchSection = () => {
                                             <div className="flex items-center gap-2 text-[#E8D198] transition-all duration-500">
                                                 <div className="h-[1px] w-4 bg-[#C59B27]/40 group-hover:w-6 transition-all"></div>
                                                 <span className="text-[9px] font-bold uppercase tracking-[0.35em] drop-shadow-md">
-                                                    EXPLORE
+                                                    {item.ctaLabel || item.buttonText || 'EXPLORE'}
                                                 </span>
                                                 <div className="h-[1px] w-4 bg-[#C59B27]/40 group-hover:w-6 transition-all"></div>
                                             </div>

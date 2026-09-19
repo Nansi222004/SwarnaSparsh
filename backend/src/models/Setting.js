@@ -2,17 +2,17 @@ const mongoose = require("mongoose");
 
 const settingSchema = new mongoose.Schema(
   {
-    storeName: { type: String, default: "Swarna Sparsh" },
-    tagline: { type: String, default: "Swarna Sparsh – Where Luxury Meets Identity" },
+    storeName: { type: String, default: "Alankar Jewellers" },
+    tagline: { type: String, default: "Alankar Jewellers – Where Luxury Meets Identity" },
     contactEmail: { type: String, default: "support@swarnasparsh.com" },
     contactPhone: { type: String, default: "+919921128662" },
     address: {
       type: String,
-      default: "Swarna Sparsh, Sarafa Lane Gandhi Chowk Wani, 445304, Dist - Yavatmal, Maharashtra",
+      default: "Alankar Jewellers, Sarafa Lane Gandhi Chowk Wani, 445304, Dist - Yavatmal, Maharashtra",
     },
     email: { type: String, default: "support@swarnasparsh.com" },
     phone: { type: String, default: "+919921128662" },
-    website: { type: String, default: "www.sandsjewels.com" },
+    website: { type: String, default: "www.swarnasparsh.com" },
     socialLinks: {
       facebook: { type: String, default: "#" },
       instagram: { type: String, default: "#" },
@@ -115,7 +115,7 @@ const settingSchema = new mongoose.Schema(
     fraudWarning: {
       type: String,
       default:
-        "BEWARE OF FRAUD: Swarna Sparsh never asks for confidential banking details over phone or email.",
+        "BEWARE OF FRAUD: Alankar Jewellers never asks for confidential banking details over phone or email.",
     },
 
     // Footer Taglines and Texts
@@ -124,7 +124,7 @@ const settingSchema = new mongoose.Schema(
     footerDescription: {
       type: String,
       default:
-        "Every piece at Swarna Sparsh tells a story of heritage and modern grace. Join our community of silver lovers and celebrate life's most precious moments.",
+        "Every piece at Alankar Jewellers tells a story of heritage and modern grace. Join our community of silver lovers and celebrate life's most precious moments.",
     },
 
     footerColumn1Title: { type: String, default: "Experience" },
@@ -180,7 +180,7 @@ const settingSchema = new mongoose.Schema(
     },
     footerCopyrightText: {
       type: String,
-      default: "Swarna Sparsh. All Rights Reserved.",
+      default: "Alankar Jewellers. All Rights Reserved.",
     },
     logo: { type: String, default: "/logo.webp" },
     favicon: { type: String, default: "/favicon.png" },
@@ -195,7 +195,7 @@ const settingSchema = new mongoose.Schema(
     state: { type: String, default: "Maharashtra" },
     hsnCode: { type: String, default: "7113" },
     bisHallmarkLicense: { type: String, default: "HM/C-7590214818" },
-    invoicePrefix: { type: String, default: "SS" },
+    invoicePrefix: { type: String, default: "AJ" },
     metalPricingUpdatedAt: { type: Date, default: null },
     taxSettingsUpdatedAt: { type: Date, default: null },
     metalRates: {

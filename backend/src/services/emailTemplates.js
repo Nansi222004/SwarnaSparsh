@@ -1,5 +1,5 @@
 /**
- * 📧 Email Templates — Swarna Sparsh
+ * 📧 Email Templates — Alankar Jewellers
  * All transactional HTML email templates live here.
  */
 "use strict";
@@ -23,7 +23,7 @@ const layout = (title, bodyHtml) => `<!DOCTYPE html>
         <!-- Header -->
         <tr>
           <td style="background:${BRAND_DARK};padding:28px 40px;text-align:center;">
-            <span style="font-size:22px;font-weight:700;color:#fff;letter-spacing:2px;">Swarna Sparsh</span>
+            <span style="font-size:22px;font-weight:700;color:#fff;letter-spacing:2px;">Alankar Jewellers</span>
             <p style="color:${BRAND_COLOR};margin:4px 0 0;font-size:12px;letter-spacing:3px;">FINE JEWELLERY</p>
           </td>
         </tr>
@@ -36,7 +36,7 @@ const layout = (title, bodyHtml) => `<!DOCTYPE html>
         <!-- Footer -->
         <tr>
           <td style="background:#f9f4ef;padding:24px 40px;text-align:center;border-top:1px solid #ece8e1;">
-            <p style="margin:0;font-size:12px;color:#888;">© ${new Date().getFullYear()} Swarna Sparsh. All rights reserved.</p>
+            <p style="margin:0;font-size:12px;color:#888;">© ${new Date().getFullYear()} Alankar Jewellers. All rights reserved.</p>
             <p style="margin:6px 0 0;font-size:12px;color:#aaa;">
               Questions? <a href="mailto:support@swarnasparsh.com" style="color:${BRAND_COLOR};text-decoration:none;">support@swarnasparsh.com</a>
             </p>
@@ -301,7 +301,7 @@ const returnStatusUpdate = ({
  */
 const welcomeEmail = ({ userName }) => {
   const body = `
-    <h2 style="margin:0 0 4px;font-size:24px;color:${BRAND_DARK};">Welcome to Swarna Sparsh ✨</h2>
+    <h2 style="margin:0 0 4px;font-size:24px;color:${BRAND_DARK};">Welcome to Alankar Jewellers ✨</h2>
     <p style="color:#666;margin:0 0 24px;font-size:15px;">Hi ${userName || "there"}, we're thrilled to have you join our community of fine jewellery lovers.</p>
 
     <div style="background:${BRAND_LIGHT};border-radius:8px;padding:24px;text-align:center;margin-bottom:24px;">
@@ -314,7 +314,7 @@ const welcomeEmail = ({ userName }) => {
       ${btn("Start Shopping", `${process.env.CLIENT_URL || "https://sandsjewels.com"}/shop`)}
     </div>`;
 
-  return layout("Welcome to Swarna Sparsh!", body);
+  return layout("Welcome to Alankar Jewellers!", body);
 };
 
 // ── Exports ───────────────────────────────────────────────────────────────────
@@ -329,12 +329,12 @@ const giftCardDelivery = ({ giftCard }) => {
   const body = `
     <h2 style="margin:0 0 4px;font-size:22px;color:${BRAND_DARK};">You've Received a Gift! 🎁</h2>
     <p style="color:#666;margin:0 0 24px;font-size:15px;">
-      <strong>${giftCard.senderName}</strong> has sent you a Swarna Sparsh E-Gift Card.
+      <strong>${giftCard.senderName}</strong> has sent you an Alankar Jewellers E-Gift Card.
       ${giftCard.personalMessage ? `<br/><em style="color:#888;">"${giftCard.personalMessage}"</em>` : ""}
     </p>
 
     <div style="background:linear-gradient(135deg,#1a1a1a 0%,#3d1a24 100%);border-radius:16px;padding:36px 32px;text-align:center;margin-bottom:28px;">
-      <p style="margin:0;font-size:11px;font-weight:700;color:${BRAND_COLOR};text-transform:uppercase;letter-spacing:3px;">Swarna Sparsh</p>
+      <p style="margin:0;font-size:11px;font-weight:700;color:${BRAND_COLOR};text-transform:uppercase;letter-spacing:3px;">Alankar Jewellers</p>
       <p style="margin:8px 0 24px;font-size:12px;color:#aaa;letter-spacing:1px;">E-Gift Card</p>
       <p style="margin:0;font-size:13px;color:#aaa;text-transform:uppercase;letter-spacing:2px;">Card Value</p>
       <p style="margin:4px 0 28px;font-size:42px;font-weight:700;color:#fff;letter-spacing:-1px;">${rupees(giftCard.value)}</p>
@@ -354,7 +354,7 @@ const giftCardDelivery = ({ giftCard }) => {
     <div style="background:${BRAND_LIGHT};border-radius:8px;padding:18px 20px;margin-bottom:24px;">
       <p style="margin:0;font-size:12px;font-weight:700;color:${BRAND_DARK};text-transform:uppercase;letter-spacing:1px;">How to Redeem</p>
       <ol style="margin:10px 0 0;padding-left:20px;font-size:13px;color:#555;line-height:2;">
-        <li>Visit <a href="${shopUrl}/shop" style="color:${BRAND_COLOR};text-decoration:none;">Swarna Sparsh</a> and add items to your bag</li>
+        <li>Visit <a href="${shopUrl}/shop" style="color:${BRAND_COLOR};text-decoration:none;">Alankar Jewellers</a> and add items to your bag</li>
         <li>At checkout, enter your gift card code in the "Gift Card" field</li>
         <li>The card balance will be deducted from your order total</li>
       </ol>
@@ -364,7 +364,7 @@ const giftCardDelivery = ({ giftCard }) => {
       ${btn("Start Shopping", `${shopUrl}/shop`)}
     </div>`;
 
-  return layout(`Your Swarna Sparsh Gift Card — ${rupees(giftCard.value)}`, body);
+  return layout(`Your Alankar Jewellers Gift Card — ${rupees(giftCard.value)}`, body);
 };
 
 /**
@@ -376,7 +376,7 @@ const giftCardPurchaseConfirmation = ({ giftCard, buyerName }) => {
 
   const body = `
     <h2 style="margin:0 0 4px;font-size:22px;color:${BRAND_DARK};">Gift Card Sent Successfully! ✅</h2>
-    <p style="color:#666;margin:0 0 24px;font-size:15px;">Hi ${buyerName || "there"}, your Swarna Sparsh E-Gift Card has been delivered to <strong>${giftCard.recipientEmail}</strong>.</p>
+    <p style="color:#666;margin:0 0 24px;font-size:15px;">Hi ${buyerName || "there"}, your Alankar Jewellers E-Gift Card has been delivered to <strong>${giftCard.recipientEmail}</strong>.</p>
 
     <div style="background:${BRAND_LIGHT};border-radius:8px;padding:20px 24px;margin-bottom:24px;">
       <table width="100%" cellpadding="0" cellspacing="0">
@@ -396,7 +396,7 @@ const giftCardPurchaseConfirmation = ({ giftCard, buyerName }) => {
       ${btn("Send Another Gift", `${shopUrl}/gift-cards`)}
     </div>`;
 
-  return layout("Gift Card Sent — Swarna Sparsh", body);
+  return layout("Gift Card Sent — Alankar Jewellers", body);
 };
 
 module.exports = {

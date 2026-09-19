@@ -35,7 +35,7 @@ const ShopForFamily = () => {
   } = usePublicCmsPage("shop-family");
 
   useEffect(() => {
-    document.title = "Gifts for Family | Swarna Sparsh";
+    document.title = "Gifts for Family | Alankar Jewellers";
   }, []);
 
   useEffect(() => {

@@ -1,5 +1,5 @@
 /**
- * Universal Price Utility for Sands Jewels
+ * Universal Price Utility for Alankar Jewellers
  * Centralizes the logic for extracting product prices to avoid ₹0 errors.
  */
 
@@ -60,4 +60,24 @@ export const getProductMRP = (product) => {
  */
 export const formatCurrency = (value) => {
   return `₹${Number(value || 0).toLocaleString("en-IN")}`;
+};
+
+/**
+ * Gets the highest discount percentage for a product.
+ * @param {Object} product - The product object from the API.
+ * @returns {number} - Discount percentage (0-100).
+ */
+export const getProductDiscountPercent = (product) => {
+  if (!product) return 0;
+  const price = getProductPrice(product);
+  const mrp = getProductMRP(product);
+  if (mrp > price && mrp > 0) {
+    return Math.round(((mrp - price) / mrp) * 100);
+  }
+  const variantDiscounts = (product.variants || [])
+    .map((v) => Number(v.discount))
+    .filter((v) => !isNaN(v) && v > 0);
+  if (variantDiscounts.length > 0) return Math.max(...variantDiscounts);
+  if (product.discount && Number(product.discount) > 0) return Number(product.discount);
+  return 0;
 };

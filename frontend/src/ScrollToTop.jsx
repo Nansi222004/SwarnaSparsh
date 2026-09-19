@@ -3,7 +3,7 @@ import { useLocation, useNavigationType } from "react-router-dom";
 import { scrollToTop, getLenis } from "./lib/lenis";
 
 /**
- * Bulletproof Scroll Restoration for Sands Jewels
+ * Bulletproof Scroll Restoration for Alankar Jewellers
  * Uses useRef to remember viewport positions across navigations.
  * Optimized for Lenis Smooth Scroll.
  */
@@ -75,17 +75,17 @@ const ScrollToTop = () => {
         const performRestore = () => {
           const lenis = getLenis();
           console.log("[ScrollToTop] Performing restore to", savedScroll, "Lenis:", !!lenis);
-          
+
           const doScroll = () => {
             if (lenis) {
               lenis.resize();
               lenis.scrollTo(savedScroll, { immediate: true });
               // Backup after a tiny delay in case lenis takes a frame to update bounds
               setTimeout(() => {
-                  if (lenis) {
-                      lenis.resize();
-                      lenis.scrollTo(savedScroll, { immediate: true });
-                  }
+                if (lenis) {
+                  lenis.resize();
+                  lenis.scrollTo(savedScroll, { immediate: true });
+                }
               }, 100);
             } else {
               window.scrollTo(0, savedScroll);
@@ -112,11 +112,11 @@ const ScrollToTop = () => {
             }
           });
           observer.observe(document.documentElement);
-          
+
           // Timeout as a fallback to try restoring anyway and clean up after 2.5s
           timeoutId = setTimeout(() => {
-             console.log("[ScrollToTop] Timeout reached, restoring anyway.");
-             performRestore(); // will just try its best
+            console.log("[ScrollToTop] Timeout reached, restoring anyway.");
+            performRestore(); // will just try its best
           }, 2500);
         }
 
@@ -125,7 +125,7 @@ const ScrollToTop = () => {
           if (timeoutId) clearTimeout(timeoutId);
         };
       } else {
-         console.log("[ScrollToTop] No saved scroll found for", key);
+        console.log("[ScrollToTop] No saved scroll found for", key);
       }
     } else {
       console.log("[ScrollToTop] New navigation (PUSH/REPLACE). Scrolling to top.");

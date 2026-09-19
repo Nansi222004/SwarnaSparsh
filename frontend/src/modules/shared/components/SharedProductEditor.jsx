@@ -148,7 +148,9 @@ const SharedProductEditor = ({
             cardBadge: '',
             audience: ['unisex'],
             silverCategory: '',
-            goldCategory: ''
+            goldCategory: '',
+            settingMetal: '',
+            settingPurity: ''
         };
 
         if (typeof window !== 'undefined' && !Boolean(id)) {

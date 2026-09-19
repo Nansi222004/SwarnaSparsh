@@ -1,5 +1,5 @@
 /**
- * ✉️  Production Email Service — Swarna Sparsh
+ * ✉️  Production Email Service — Alankar Jewellers
  *
  *  Features:
  *    - Auto-detects provider: Brevo (preferred), generic SMTP, Mailtrap (dev)
@@ -156,7 +156,7 @@ const sendEmail = async ({
   }
 
   const mailOptions = {
-    from: `Swarna Sparsh <${process.env.SMTP_FROM || "noreply@swarnasparsh.com"}>`,
+    from: `Alankar Jewellers <${process.env.SMTP_FROM || process.env.SUPPORT_EMAIL || "noreply@swarnasparsh.com"}>`,
     to,
     subject,
     html,
@@ -242,7 +242,7 @@ const verifyConnection = async () => {
 };
 
 // Run verification on module load (non-blocking)
-verifyConnection().catch(() => {});
+verifyConnection().catch(() => { });
 
 // ── Exports ───────────────────────────────────────────────────────────────────
 

@@ -21,9 +21,8 @@ const LAUNCH_CATEGORIES = [
     { id: 4, name: 'Earrings', image: earringsImg, path: '/category/earrings', tag: 'New' },
     { id: 5, name: 'Pendants', image: pendantsImg, path: '/category/necklaces', tag: 'New' },
     { id: 6, name: 'Mens', image: mensilverImg, path: '/category/men', tag: 'New' },
-    { id: 7, name: 'Perfumes', image: setsImg, path: '/category/perfumes', tag: 'New' },
-    { id: 8, name: 'Sets', image: setsImg, path: '/category/sets', tag: 'New' },
-    { id: 9, name: 'Anklets', image: ankletsImg, path: '/category/anklets', tag: 'New' }
+    { id: 7, name: 'Sets', image: setsImg, path: '/category/sets', tag: 'New' },
+    { id: 8, name: 'Anklets', image: ankletsImg, path: '/category/anklets', tag: 'New' }
 ];
 
 const SilverNewLaunchGrid = () => {

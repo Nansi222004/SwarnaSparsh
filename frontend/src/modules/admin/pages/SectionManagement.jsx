@@ -165,9 +165,31 @@ const SectionManagement = () => {
                                 <div className="h-10 w-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center">
                                     <ImageIcon size={20} />
                                 </div>
-                                <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded ${section.isActive === false ? 'bg-red-50 text-red-600' : 'bg-green-50 text-green-600'}`}>
+                                <button
+                                    type="button"
+                                    onClick={async (e) => {
+                                        e.stopPropagation();
+                                        const newStatus = section.isActive === false ? true : false;
+                                        try {
+                                            await adminService.updateSection(section.sectionKey || section.sectionId, {
+                                                ...section,
+                                                isActive: newStatus
+                                            }, activePageKey);
+                                            setSections(prev => prev.map(s => (s.sectionId === section.sectionId || s.sectionKey === section.sectionKey) ? { ...s, isActive: newStatus } : s));
+                                            toast.success(`${section.label} marked as ${newStatus ? 'Active' : 'Inactive'}`);
+                                        } catch (err) {
+                                            toast.error('Failed to update status');
+                                        }
+                                    }}
+                                    className={`text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded cursor-pointer transition-all hover:scale-105 border ${
+                                        section.isActive === false
+                                            ? 'bg-red-50 text-red-600 border-red-200 hover:bg-red-100'
+                                            : 'bg-green-50 text-green-600 border-green-200 hover:bg-green-100'
+                                    }`}
+                                    title="Click to toggle Active / Inactive"
+                                >
                                     {section.isActive === false ? 'Inactive' : 'Active'}
-                                </span>
+                                </button>
                             </div>
                             <h3 className="font-display text-lg font-bold text-gray-800 mb-2">{section.label}</h3>
                             <p className="text-gray-500 text-sm mb-6 line-clamp-2">

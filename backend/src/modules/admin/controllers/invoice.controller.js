@@ -1,6 +1,6 @@
 /**
  * 🧾 Admin Tax Invoice Controller
- *    Generates official, GST-compliant Swarna Sparsh Tax Invoices.
+ *    Generates official, GST-compliant Alankar Jewellers Tax Invoices.
  *    Reads tax configuration, store GSTIN, state code, and HSN dynamically from Setting model.
  */
 
@@ -147,9 +147,9 @@ exports.getOrderInvoice = async (req, res) => {
       paymentStatus: (order.paymentStatus || "Paid").toUpperCase(),
 
       store: {
-        name: settings?.storeName || "Swarna Sparsh",
+        name: settings?.storeName || "Alankar Jewellers",
         tagline: settings?.tagline || "Where Luxury Meets Identity",
-        address: settings?.address || "Swarna Sparsh, Sarafa Lane Gandhi Chowk Wani, 445304, Maharashtra",
+        address: settings?.address || "Alankar Jewellers, Sarafa Lane Gandhi Chowk Wani, 445304, Maharashtra",
         email: settings?.email || "support@swarnasparsh.com",
         phone: settings?.phone || "+919921128662",
         website: settings?.website || "www.swarnasparsh.com",

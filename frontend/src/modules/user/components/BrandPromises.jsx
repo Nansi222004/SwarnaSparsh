@@ -67,7 +67,7 @@ const BrandPromises = () => {
                 <div className="text-center mb-10 md:mb-16">
                     <div className="inline-flex items-center gap-2 mb-2 text-[#C59B27] text-[10px] uppercase font-bold tracking-[0.3em]">
                         <Sparkles className="w-3.5 h-3.5" />
-                        <span>The Swarna Sparsh Touch</span>
+                        <span>The Alankar Jewellers Touch</span>
                     </div>
                     <h2 className="font-serif text-2xl md:text-4xl text-[#141211] font-normal tracking-tight">
                         {sectionData?.label || 'Our Commitments'}

@@ -63,7 +63,7 @@ const SupportChatPanel = () => {
     try {
       setIsUploading(true);
       setUploadProgress(0);
-      
+
       const { uploadToCloudinary } = await import("../../../utils/upload");
       const attachment = await uploadToCloudinary(
         file,
@@ -94,17 +94,17 @@ const SupportChatPanel = () => {
         {attachments.map((att, idx) => (
           <div key={idx} className="relative">
             {att.type === 'video' ? (
-              <video 
-                src={att.url} 
-                controls 
-                preload="none" 
-                className="max-h-40 rounded-lg border border-gray-200 bg-black" 
+              <video
+                src={att.url}
+                controls
+                preload="none"
+                className="max-h-40 rounded-lg border border-gray-200 bg-black"
               />
             ) : (
-              <img 
-                src={att.url} 
-                alt={att.name || "attachment"} 
-                className="max-h-40 rounded-lg border border-gray-200 cursor-pointer object-contain bg-gray-50" 
+              <img
+                src={att.url}
+                alt={att.name || "attachment"}
+                className="max-h-40 rounded-lg border border-gray-200 cursor-pointer object-contain bg-gray-50"
                 onClick={() => window.open(att.url, '_blank')}
               />
             )}
@@ -235,7 +235,7 @@ const SupportChatPanel = () => {
               </div>
               <div>
                 <h3 className="font-display font-bold text-sm tracking-wide text-[#FAF8F5]">
-                  Swarna Sparsh Support
+                  Alankar Jewellers Support
                 </h3>
                 <div className="flex items-center gap-1.5 mt-0.5">
                   <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
@@ -316,11 +316,10 @@ const SupportChatPanel = () => {
                           className={`flex flex-col max-w-[85%] ${isAdmin ? "items-start" : "items-end ml-auto"}`}
                         >
                           <div
-                            className={`px-4 py-2.5 rounded-2xl text-xs font-medium shadow-sm border ${
-                              isAdmin
+                            className={`px-4 py-2.5 rounded-2xl text-xs font-medium shadow-sm border ${isAdmin
                                 ? "bg-white text-gray-800 rounded-tl-none border-gray-200/50"
                                 : "bg-[#141211] text-[#FAF8F5] rounded-tr-none border-[#C59B27]/30"
-                            }`}
+                              }`}
                           >
                             {reply.text}
                             {renderAttachments(reply.attachments)}
@@ -349,8 +348,8 @@ const SupportChatPanel = () => {
                               ) : (
                                 <img src={att.url} className="w-full h-full object-cover" />
                               )}
-                              <button 
-                                type="button" 
+                              <button
+                                type="button"
                                 onClick={() => removeStagedAttachment(idx)}
                                 className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white cursor-pointer"
                               >
@@ -556,7 +555,7 @@ const SupportChatPanel = () => {
                       <label className="block text-[9px] font-bold text-gray-400 uppercase tracking-widest">
                         Attachments (Optional)
                       </label>
-                      
+
                       {stagedAttachments.length > 0 && (
                         <div className="flex flex-wrap gap-2 py-1">
                           {stagedAttachments.map((att, idx) => (
@@ -566,8 +565,8 @@ const SupportChatPanel = () => {
                               ) : (
                                 <img src={att.url} className="w-full h-full object-cover" />
                               )}
-                              <button 
-                                type="button" 
+                              <button
+                                type="button"
                                 onClick={() => removeStagedAttachment(idx)}
                                 className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white cursor-pointer"
                               >
@@ -611,12 +610,12 @@ const SupportChatPanel = () => {
             </AnimatePresence>
           </div>
 
-          <input 
-            type="file" 
-            ref={fileInputRef} 
-            onChange={handleFileChange} 
-            accept="image/*,video/*" 
-            className="hidden" 
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileChange}
+            accept="image/*,video/*"
+            className="hidden"
           />
         </motion.div>
       )}

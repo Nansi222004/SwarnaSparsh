@@ -2,12 +2,12 @@ import React, { useState, useEffect, useMemo } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useShop } from "../../../context/ShopContext";
 import ProductCard from "../components/ProductCard";
-import { getProductPrice, formatCurrency } from "../utils/price";
+import { getProductPrice, formatCurrency, getProductDiscountPercent } from "../utils/price";
 import ProductSkeleton from "../components/ProductSkeleton";
 import Loader from "../../shared/components/Loader";
 import api from "../../../services/api";
 import { usePublicProductsQuery } from "../hooks/usePublicProductsQuery";
-import CategoryHeroBanner from "../components/CategoryHeroBanner";
+import { matchesRequestedMetal, isUnrelatedProduct, matchesGoldTone, is925SilverProduct, matchesDiamondType, filterProductVariantsByDiamondType } from "../utils/productMetal";
 import {
   Filter,
   ChevronDown,
@@ -98,7 +98,7 @@ const Shop = () => {
   const [filterTrending, setFilterTrending] = useState(false);
   const [isSortOpen, setIsSortOpen] = useState(false);
   const [isWebSortOpen, setIsWebSortOpen] = useState(false);
-  const [sortBy, setSortBy] = useState("Newest");
+  const [sortBy, setSortBy] = useState("New Arrival");
   const [priceRange, setPriceRange] = useState(50000);
   const [filteredProducts, setFilteredProducts] = useState(products || []);
   const [pageTitle, setPageTitle] = useState("All Jewellery");
@@ -137,7 +137,11 @@ const Shop = () => {
   const silverTypeQuery = queryParams.get("silver_type");
   // Backwards compatibility for older links (e.g. All Type mega menu used `purity`)
   const purityQuery = queryParams.get("purity");
+  const toneQuery = queryParams.get("tone") || queryParams.get("settingMetal");
+  const stoneQuery = queryParams.get("stone");
   const diamondTypeQuery = queryParams.get("diamondType");
+  const availabilityQuery = queryParams.get("availability");
+  const inStockQuery = queryParams.get("inStock");
   const isMenFlow = sourceQuery === "men";
   const isWomenFlow = sourceQuery === "women";
 
@@ -275,20 +279,37 @@ const Shop = () => {
       Number(String(limitQuery || "").replace(/[^0-9]/g, "")) || 60;
     const resolvedPage =
       Number(String(qp.get("page") || "").replace(/[^0-9]/g, "")) || 1;
+    const purityParam = purityQuery || karatQuery || silverTypeQuery || "";
+    const stoneParam = stoneQuery || diamondTypeQuery || "";
+    const availabilityParam =
+      availabilityQuery ||
+      (inStockQuery === "false"
+        ? "all"
+        : inStockQuery === "true"
+          ? "in_stock"
+          : "");
+
+    const inStockOnly =
+      availabilityParam === "all" || availabilityParam === "out_of_stock"
+        ? false
+        : true;
 
     return {
       ...(searchQuery ? { search: searchQuery } : {}),
       ...(categoryParam ? { category: categoryParam } : {}),
       ...(metal ? { metal } : {}),
+      ...(toneQuery ? { tone: toneQuery } : {}),
+      ...(purityParam ? { purity: purityParam } : {}),
       ...(effectiveKarat ? { karat: effectiveKarat } : {}),
       ...(silverTypeQuery ? { silver_type: silverTypeQuery } : {}),
+      ...(stoneParam ? { stone: stoneParam } : {}),
+      ...(availabilityParam ? { availability: availabilityParam } : {}),
       ...(resolvedTags ? { tags: resolvedTags } : {}),
       ...(audienceParam ? { audience: audienceParam } : {}),
       ...(priceMin ? { price_min: priceMin } : {}),
       ...(priceMax ? { price_max: priceMax } : {}),
       ...(sortParam ? { sort: sortParam } : {}),
-      ...(diamondTypeQuery ? { diamondType: diamondTypeQuery } : {}),
-      inStockOnly: true,
+      inStockOnly,
       page: resolvedPage,
       limit: resolvedLimit,
     };
@@ -299,6 +320,10 @@ const Shop = () => {
     karatQuery,
     purityQuery,
     silverTypeQuery,
+    stoneQuery,
+    diamondTypeQuery,
+    availabilityQuery,
+    inStockQuery,
     sourceQuery,
     sortQuery,
     searchQuery,
@@ -306,7 +331,7 @@ const Shop = () => {
     priceMaxQuery,
     limitQuery,
     location.pathname,
-    diamondTypeQuery,
+    toneQuery,
   ]);
 
   const {
@@ -426,12 +451,10 @@ const Shop = () => {
 
     if (sortQuery === "most-sold" && sortBy !== "Best Selling") {
       if (!isCancelled) setSortBy("Best Selling");
-    } else if (sortQuery === "latest" && sortBy !== "Newest") {
-      if (!isCancelled) setSortBy("Newest");
-    } else if (sortQuery === "price-asc" && sortBy !== "Price: Low to High") {
-      if (!isCancelled) setSortBy("Price: Low to High");
-    } else if (sortQuery === "price-desc" && sortBy !== "Price: High to Low") {
-      if (!isCancelled) setSortBy("Price: High to Low");
+    } else if ((sortQuery === "latest" || sortQuery === "newest") && sortBy !== "New Arrival") {
+      if (!isCancelled) setSortBy("New Arrival");
+    } else if (sortQuery === "discount" && sortBy !== "Discount") {
+      if (!isCancelled) setSortBy("Discount");
     }
 
     if (Number.isFinite(parsedPrice) && parsedPrice > 0) {
@@ -545,13 +568,13 @@ const Shop = () => {
 
     const categoryQueryObj = categoryQuery
       ? categories.find(
-          (c) =>
-            c._id === categoryQuery ||
-            c.id === categoryQuery ||
-            c.name === categoryQuery ||
-            c.slug === categoryQuery ||
-            c.path === categoryQuery,
-        ) || null
+        (c) =>
+          c._id === categoryQuery ||
+          c.id === categoryQuery ||
+          c.name === categoryQuery ||
+          c.slug === categoryQuery ||
+          c.path === categoryQuery,
+      ) || null
       : null;
 
     const matchesCategory = (product, value, cat) => {
@@ -643,9 +666,9 @@ const Shop = () => {
 
     const effectiveKarat = normalizeGoldKarat(
       karatQuery ||
-        (purityQuery && String(purityQuery).toLowerCase().includes("k")
-          ? purityQuery
-          : ""),
+      (purityQuery && String(purityQuery).toLowerCase().includes("k")
+        ? purityQuery
+        : ""),
     );
     const effectiveSilverType = (() => {
       if (silverTypeQuery) return normalizeSilverTier(silverTypeQuery);
@@ -653,21 +676,42 @@ const Shop = () => {
       const normalized = String(purityQuery).trim().toLowerCase();
       if (normalized === "925" || normalized.includes("sterling"))
         return "sterling";
-      if (normalized.includes("fine")) return "fine";
+      if (normalized.includes("fine") || normalized === "999") return "fine";
+      if (normalized === "800") return "800";
       return null;
     })();
 
     const matchesPurityTier = (product) => {
-      if (metalQuery?.toLowerCase() === "gold" && effectiveKarat) {
-        return String(product.goldCategory || "") === String(effectiveKarat);
+      const activePurity = purityQuery || effectiveKarat || effectiveSilverType;
+      if (!activePurity) return true;
+      const pLow = String(activePurity).toLowerCase();
+
+      if (metalQuery?.toLowerCase() === "gold") {
+        const num = pLow.replace(/[^0-9]/g, "");
+        if (num) {
+          return String(product.goldCategory || "").includes(num) || String(product.settingPurity || "").includes(num);
+        }
+        return String(product.goldCategory || "").toLowerCase().includes(pLow);
       }
-      if (metalQuery?.toLowerCase() === "silver" && effectiveSilverType) {
-        const productTier =
-          normalizeSilverTier(product.silverCategory) || "fine";
-        if (effectiveSilverType === "sterling")
-          return productTier === "sterling";
-        if (effectiveSilverType === "fine") return productTier !== "sterling";
-        return true;
+      if (metalQuery?.toLowerCase() === "silver") {
+        const productTier = normalizeSilverTier(product.silverCategory) || "fine";
+        const silverCat = String(product.silverCategory || "").toLowerCase();
+        if (pLow === "925" || pLow.includes("sterling")) {
+          return is925SilverProduct(product) || productTier === "sterling" || silverCat.includes("925");
+        }
+        if (pLow === "fine" || pLow.includes("999")) {
+          return productTier !== "sterling" || silverCat.includes("999") || silverCat.includes("fine");
+        }
+        if (pLow === "800") {
+          return silverCat.includes("800") || silverCat.includes("835");
+        }
+        return silverCat.includes(pLow);
+      }
+      if (metalQuery?.toLowerCase() === "diamond") {
+        const settingP = String(product.settingPurity || "").toLowerCase();
+        const num = pLow.replace(/[^0-9]/g, "");
+        if (num) return settingP.includes(num);
+        return settingP.includes(pLow);
       }
       return true;
     };
@@ -680,23 +724,40 @@ const Shop = () => {
       title = "Trending Now";
       baseProducts = products.filter((p) => p.rating >= 4.5);
     } else if (metalQuery) {
+      const normalizedMetal = metalQuery.toLowerCase();
       title = `${metalQuery.charAt(0).toUpperCase() + metalQuery.slice(1)} Collection`;
       baseProducts = products.filter((p) => {
-        const metal = getProductMetal(p);
-        return metal?.toLowerCase() === metalQuery.toLowerCase();
+        if (isUnrelatedProduct(p)) return false;
+        return matchesRequestedMetal(p, normalizedMetal);
       });
-      if (metalQuery?.toLowerCase() === "gold" && effectiveKarat) {
+      if (normalizedMetal === "diamond") {
+        const dLow = String(diamondTypeQuery || "").toLowerCase();
+        if (dLow === "natural") {
+          title = "Natural Diamonds Collection";
+        } else if (dLow === "lab_grown" || dLow === "lab-grown") {
+          title = "Lab-Grown Diamonds Collection";
+        } else {
+          title = "Diamond Jewellery Collection";
+        }
+      } else if (normalizedMetal === "gold" && toneQuery) {
+        const tLow = toneQuery.toLowerCase();
+        if (tLow.includes("white")) {
+          title = "White Gold Collection";
+        } else if (tLow.includes("rose")) {
+          title = "Rose Gold Collection";
+        } else {
+          title = "Gold Collection";
+        }
+      } else if (normalizedMetal === "gold" && effectiveKarat) {
         title = `${effectiveKarat}K Gold`;
       } else if (
-        metalQuery?.toLowerCase() === "silver" &&
+        normalizedMetal === "silver" &&
         effectiveSilverType
       ) {
         title =
-          metalQuery.toLowerCase() === "silver"
-            ? effectiveSilverType === "sterling"
-              ? "925 Sterling Silver"
-              : "Fine Silver"
-            : title;
+          effectiveSilverType === "sterling"
+            ? "925 Sterling Silver"
+            : "Fine Silver";
       }
     } else if (category) {
       const currentCat = categories.find(
@@ -710,7 +771,19 @@ const Shop = () => {
       );
     }
 
-    if (metalQuery && (effectiveKarat || effectiveSilverType)) {
+    baseProducts = baseProducts.filter((p) => !isUnrelatedProduct(p));
+
+    if (metalQuery?.toLowerCase() === "gold" && toneQuery) {
+      baseProducts = baseProducts.filter((p) => matchesGoldTone(p, toneQuery));
+    }
+
+    if (diamondTypeQuery) {
+      baseProducts = baseProducts
+        .filter((p) => matchesDiamondType(p, diamondTypeQuery))
+        .map((p) => filterProductVariantsByDiamondType(p, diamondTypeQuery));
+    }
+
+    if (metalQuery && (effectiveKarat || effectiveSilverType || purityQuery)) {
       baseProducts = baseProducts.filter(matchesPurityTier);
     }
 
@@ -819,6 +892,8 @@ const Shop = () => {
           product.shortDescription,
           product.category,
           product.categorySlug,
+          product.settingMetal,
+          product.material,
           ...(product.tags || []),
           ...(product.variants || []).map((variant) => variant.name),
         ]
@@ -857,20 +932,72 @@ const Shop = () => {
       result = result.filter((p) => getProductPrice(p) >= urlPriceMin);
     }
 
+    // 3.1 Apply Stone Filter (Fallback mode)
+    if (stoneQuery) {
+      const sLow = String(stoneQuery).toLowerCase();
+      result = result.filter((p) => {
+        const dType = String(p.diamondType || "none").toLowerCase();
+        const title = String(p.name || "").toLowerCase();
+        const desc = String(p.description || "").toLowerCase();
+        const mat = String(p.material || "").toLowerCase();
+        const isAD =
+          /\b(ad|american diamond)\b/i.test(title) ||
+          /\b(ad|american diamond)\b/i.test(desc);
+        const isKundanOrPearl =
+          mat.includes("kundan") ||
+          mat.includes("pearl") ||
+          /\b(moti|pearl|kundan)\b/i.test(title);
+
+        if (sLow === "none") return dType === "none" && !isAD && !isKundanOrPearl;
+        if (sLow === "ad") return isAD;
+        if (sLow === "natural") return dType === "natural";
+        if (sLow === "lab_grown" || sLow === "lab-grown" || sLow === "lab grown")
+          return dType === "lab_grown";
+        if (sLow === "pearl_kundan" || sLow === "pearls_kundan" || sLow === "pearl")
+          return isKundanOrPearl;
+        return true;
+      });
+    }
+
+    // 3.2 Apply Availability Filter (Fallback mode)
+    const effectiveAvailability =
+      availabilityQuery ||
+      (inStockQuery === "false"
+        ? "all"
+        : inStockQuery === "true"
+          ? "in_stock"
+          : "");
+    if (effectiveAvailability === "in_stock") {
+      result = result.filter((p) => {
+        const variantStock = (p.variants || []).reduce(
+          (acc, v) => acc + (Number(v.stock) || 0),
+          0,
+        );
+        return p.variants && p.variants.length > 0
+          ? variantStock > 0
+          : Number(p.stock || 0) > 0;
+      });
+    } else if (effectiveAvailability === "out_of_stock") {
+      result = result.filter((p) => {
+        const variantStock = (p.variants || []).reduce(
+          (acc, v) => acc + (Number(v.stock) || 0),
+          0,
+        );
+        return p.variants && p.variants.length > 0
+          ? variantStock <= 0
+          : Number(p.stock || 0) <= 0;
+      });
+    }
+
     // 4. Apply Sorting
-    if (sortQuery === "latest") {
-      result.sort((a, b) => getProductCreatedAt(b) - getProductCreatedAt(a));
-    } else if (sortQuery === "most-sold") {
-      result.sort((a, b) => getProductSold(b) - getProductSold(a));
+    if (sortQuery === "discount" || sortBy === "Discount") {
+      result.sort((a, b) => getProductDiscountPercent(b) - getProductDiscountPercent(a));
+    } else if (sortQuery === "most-sold" || sortBy === "Best Selling") {
+      result.sort((a, b) => (getProductSold(b) - getProductSold(a)) || ((b.rating || 0) - (a.rating || 0)));
     } else if (sortQuery === "random") {
       result = shuffleArray(result);
-    } else if (sortBy === "Price: Low to High") {
-      result.sort((a, b) => getProductPrice(a) - getProductPrice(b));
-    } else if (sortBy === "Price: High to Low") {
-      result.sort((a, b) => getProductPrice(b) - getProductPrice(a));
-    } else if (sortBy === "Best Selling") {
-      result.sort((a, b) => b.rating - a.rating);
-    } else if (sortBy === "Newest") {
+    } else {
+      // Default: New Arrival ("New Arrival" / "Newest" / "latest")
       result.sort((a, b) => {
         const dateDiff = getProductCreatedAt(b) - getProductCreatedAt(a);
         if (dateDiff !== 0) return dateDiff;
@@ -908,6 +1035,10 @@ const Shop = () => {
     canUseServerProducts,
     serverProducts,
     productsQuery,
+    purityQuery,
+    stoneQuery,
+    availabilityQuery,
+    inStockQuery,
   ]);
 
   useEffect(() => {
@@ -919,8 +1050,10 @@ const Shop = () => {
         ? "Gold Jewellery"
         : metal === "silver"
           ? "Silver Jewellery"
-          : "Jewellery";
-    document.title = `${pageTitle} | Swarna Sparsh - ${suffix}`;
+          : metal === "diamond"
+            ? "Diamond Jewellery"
+            : "Jewellery";
+    document.title = `${pageTitle} | Alankar Jewellers - ${suffix}`;
   }, [pageTitle]);
 
   // Handle Category Change
@@ -943,10 +1076,10 @@ const Shop = () => {
   const handleSortChange = (option) => {
     setSortBy(option);
     const sortMap = {
+      "New Arrival": "latest",
       Newest: "latest",
+      Discount: "discount",
       "Best Selling": "most-sold",
-      "Price: Low to High": "priceLtoH",
-      "Price: High to Low": "priceHtoL",
     };
     updateShopQuery({ sort: sortMap[option] || null });
   };
@@ -995,6 +1128,28 @@ const Shop = () => {
     });
   };
 
+  const handlePurityChange = (val) => {
+    updateShopQuery({
+      purity: val === "All" ? null : val,
+      karat: null,
+      silver_type: null,
+    });
+  };
+
+  const handleStonesChange = (val) => {
+    updateShopQuery({
+      stone: val === "All" ? null : val,
+      diamondType: null,
+    });
+  };
+
+  const handleAvailabilityChange = (val) => {
+    updateShopQuery({
+      availability: val === "All" ? null : val,
+      inStock: null,
+    });
+  };
+
   const handleDiamondTypeChange = (val) => {
     updateShopQuery({ diamondType: val === "All" ? null : val });
   };
@@ -1016,8 +1171,13 @@ const Shop = () => {
     setFilterNewArrivals(false);
     setFilterTrending(false);
     setPriceRange(50000);
-    setSortBy("Newest");
-    navigate("/shop");
+    setSortBy("New Arrival");
+    const currentMetal = queryParams.get("metal");
+    if (currentMetal) {
+      navigate(`/shop?metal=${currentMetal}`);
+    } else {
+      navigate("/shop");
+    }
   };
 
   return (
@@ -1088,24 +1248,35 @@ const Shop = () => {
             </div>
           </div>
 
-          {/* Horizontal Desktop Filters - Swarna Sparsh Premium Style */}
+          {/* Horizontal Desktop Filters - Alankar Jewellers Premium Style */}
           <HorizontalFilters
             categories={visibleCategories}
             selectedCategory={selectedCategory}
             onCategoryChange={handleCategoryChange}
+            metal={
+              queryParams.get("metal")?.charAt(0).toUpperCase() +
+              queryParams.get("metal")?.slice(1) || "All"
+            }
+            onMetalChange={handleMetalChange}
+            purity={purityQuery || karatQuery || silverTypeQuery || "All"}
+            onPurityChange={handlePurityChange}
+            stone={stoneQuery || diamondTypeQuery || "All"}
+            onStonesChange={handleStonesChange}
             priceRange={priceRange}
             onPriceChange={handlePriceRangeChange}
             audience={queryParams.get("source") || "All"}
             onAudienceChange={handleAudienceChange}
-            metal={
-              queryParams.get("metal")?.charAt(0).toUpperCase() +
-                queryParams.get("metal")?.slice(1) || "All"
-            }
-            onMetalChange={handleMetalChange}
-            diamondType={diamondTypeQuery || "All"}
-            onDiamondTypeChange={handleDiamondTypeChange}
             tags={queryParams.get("tags")?.split(",").filter(Boolean) || []}
             onTagsChange={handleTagsChange}
+            availability={
+              availabilityQuery ||
+              (inStockQuery === "false"
+                ? "all"
+                : inStockQuery === "true"
+                  ? "in_stock"
+                  : "All")
+            }
+            onAvailabilityChange={handleAvailabilityChange}
             sortBy={sortBy}
             onSortChange={handleSortChange}
             clearAll={clearAllFilters}
@@ -1114,10 +1285,10 @@ const Shop = () => {
 
         {/* Product Grid */}
         {isLoading ||
-        isPinnedLoading ||
-        (!productsQuery &&
-          isServerProductsLoading &&
-          productsToRender.length === 0) ? (
+          isPinnedLoading ||
+          (!productsQuery &&
+            isServerProductsLoading &&
+            productsToRender.length === 0) ? (
           <div className="flex items-center justify-center py-20">
             <Loader fullPage={false} />
           </div>
@@ -1166,7 +1337,7 @@ const Shop = () => {
                   {serverModeEnabled &&
                     serverPagination &&
                     Number(serverPagination.page) <
-                      Number(serverPagination.pages) && (
+                    Number(serverPagination.pages) && (
                       <div className="mt-10 flex justify-center">
                         <button
                           type="button"
@@ -1229,10 +1400,10 @@ const Shop = () => {
           </span>
           <span className="text-[10px] text-stone-500 font-bold mt-1 uppercase tracking-tighter">
             {selectedCategory !== "All" ||
-            filterNewArrivals ||
-            filterTrending ||
-            priceRange < 50000 ||
-            !!searchQuery
+              filterNewArrivals ||
+              filterTrending ||
+              priceRange < 50000 ||
+              !!searchQuery
               ? "Filters applied"
               : "No filter applied"}
           </span>
@@ -1269,23 +1440,23 @@ const Shop = () => {
             ref={sidebarScroll.ref}
             className={`p-6 flex-1 overflow-y-auto space-y-10 custom-scrollbar overscroll-contain ${sidebarScroll.isDragging ? "cursor-grabbing select-none" : "cursor-grab"}`}
           >
-            {/* 1. Category Filter */}
+            {/* 1. Product Type Filter */}
             <section>
-              <h4 className="font-bold text-[#141211] text-[11px] uppercase tracking-[0.2em] mb-5">
-                Category
+              <h4 className="font-bold text-[#141211] text-[11px] uppercase tracking-[0.2em] mb-4">
+                Product Type
               </h4>
-              <div className="flex flex-col gap-3">
-                <label className="flex items-center space-x-3 cursor-pointer group">
+              <div className="flex flex-col gap-2.5 max-h-48 overflow-y-auto pr-1 custom-scrollbar">
+                <label className="flex items-center space-x-3 cursor-pointer group py-1">
                   <input
                     type="radio"
-                    name="category"
+                    name="mobile-category"
                     value="All"
                     checked={selectedCategory === "All"}
                     onChange={(e) => handleCategoryChange(e.target.value)}
                     className="form-radio text-[#141211] focus:ring-[#C59B27] accent-[#C59B27] h-4 w-4 border-stone-300"
                   />
                   <span
-                    className={`text-[13px] transition-all ${selectedCategory === "All" ? "text-[#141211] font-bold underline underline-offset-4 decoration-[#C59B27]" : "text-stone-500 group-hover:text-[#141211]"}`}
+                    className={`text-[13px] transition-all ${selectedCategory === "All" ? "text-[#141211] font-bold underline underline-offset-4 decoration-[#C59B27]" : "text-stone-600 group-hover:text-[#141211]"}`}
                   >
                     All Jewellery
                   </span>
@@ -1293,18 +1464,18 @@ const Shop = () => {
                 {visibleCategories.map((cat) => (
                   <label
                     key={cat.id}
-                    className="flex items-center space-x-3 cursor-pointer group"
+                    className="flex items-center space-x-3 cursor-pointer group py-1"
                   >
                     <input
                       type="radio"
-                      name="category"
+                      name="mobile-category"
                       value={cat.name}
                       checked={selectedCategory === cat.name}
                       onChange={(e) => handleCategoryChange(e.target.value)}
                       className="form-radio text-[#141211] focus:ring-[#C59B27] accent-[#C59B27] h-4 w-4 border-stone-300"
                     />
                     <span
-                      className={`text-[13px] transition-all ${selectedCategory === cat.name ? "text-[#141211] font-bold underline underline-offset-4 decoration-[#C59B27]" : "text-stone-500 group-hover:text-[#141211]"}`}
+                      className={`text-[13px] transition-all ${selectedCategory === cat.name ? "text-[#141211] font-bold underline underline-offset-4 decoration-[#C59B27]" : "text-stone-600 group-hover:text-[#141211]"}`}
                     >
                       {cat.name}
                     </span>
@@ -1313,9 +1484,130 @@ const Shop = () => {
               </div>
             </section>
 
-            {/* 2. Price Range Filter */}
-            <section className="pt-8 border-t border-stone-100">
-              <div className="flex justify-between items-center mb-6">
+            {/* 2. Metal Filter */}
+            <section className="pt-6 border-t border-stone-100">
+              <h4 className="font-bold text-[#141211] text-[11px] uppercase tracking-[0.2em] mb-4">
+                Metal
+              </h4>
+              <div className="grid grid-cols-4 gap-1.5">
+                {[
+                  { id: "All", label: "All" },
+                  { id: "silver", label: "Silver" },
+                  { id: "gold", label: "Gold" },
+                  { id: "diamond", label: "Diamond" },
+                ].map((m) => {
+                  const currentMetal = queryParams.get("metal")?.toLowerCase();
+                  const isActive = m.id === "All" ? !currentMetal : currentMetal === m.id;
+                  return (
+                    <button
+                      key={m.id}
+                      onClick={() => handleMetalChange(m.id)}
+                      className={`py-2.5 px-2 text-[10px] font-bold uppercase tracking-wider border rounded-lg transition-all text-center ${isActive
+                          ? "bg-[#141211] text-[#E8D198] border-[#C59B27] shadow-sm font-black"
+                          : "bg-stone-50 text-stone-600 border-stone-200 hover:border-[#C59B27]"
+                        }`}
+                    >
+                      {m.label}
+                    </button>
+                  );
+                })}
+              </div>
+            </section>
+
+            {/* 3. Purity Filter */}
+            <section className="pt-6 border-t border-stone-100">
+              <h4 className="font-bold text-[#141211] text-[11px] uppercase tracking-[0.2em] mb-4">
+                Purity
+              </h4>
+              <div className="flex flex-wrap gap-2">
+                {(() => {
+                  const activeMetal = (queryParams.get("metal") || "").toLowerCase();
+                  let options = [
+                    { label: "All", value: "All" },
+                    { label: "925 Sterling Silver", value: "925" },
+                    { label: "24K Gold", value: "24" },
+                    { label: "22K Gold", value: "22" },
+                    { label: "18K Gold", value: "18" },
+                    { label: "14K Gold", value: "14" },
+                  ];
+                  if (activeMetal === "silver") {
+                    options = [
+                      { label: "All", value: "All" },
+                      { label: "925 Sterling Silver", value: "925" },
+                      { label: "Fine Silver", value: "fine" },
+                      { label: "800 Silver", value: "800" },
+                    ];
+                  } else if (activeMetal === "gold") {
+                    options = [
+                      { label: "All", value: "All" },
+                      { label: "24K Gold", value: "24" },
+                      { label: "22K Gold", value: "22" },
+                      { label: "18K Gold", value: "18" },
+                      { label: "14K Gold", value: "14" },
+                    ];
+                  } else if (activeMetal === "diamond") {
+                    options = [
+                      { label: "All", value: "All" },
+                      { label: "18K Setting", value: "18" },
+                      { label: "14K Setting", value: "14" },
+                      { label: "Platinum 950", value: "platinum" },
+                    ];
+                  }
+                  const activePurity = purityQuery || karatQuery || silverTypeQuery || "All";
+                  return options.map((opt) => {
+                    const isActive = activePurity === opt.value;
+                    return (
+                      <button
+                        key={opt.value}
+                        onClick={() => handlePurityChange(opt.value)}
+                        className={`px-3.5 py-2 text-[10px] font-bold uppercase tracking-wider border rounded-full transition-all ${isActive
+                            ? "bg-[#141211] text-[#E8D198] border-[#C59B27] shadow-sm font-black"
+                            : "bg-stone-50 text-stone-600 border-stone-200 hover:border-[#C59B27]"
+                          }`}
+                      >
+                        {opt.label}
+                      </button>
+                    );
+                  });
+                })()}
+              </div>
+            </section>
+
+            {/* 4. Stones Filter */}
+            <section className="pt-6 border-t border-stone-100">
+              <h4 className="font-bold text-[#141211] text-[11px] uppercase tracking-[0.2em] mb-4">
+                Stones
+              </h4>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  { label: "All", value: "All" },
+                  { label: "Plain / No Stone", value: "none" },
+                  { label: "American Diamond (AD)", value: "ad" },
+                  { label: "Natural Diamond", value: "natural" },
+                  { label: "Lab-Grown Diamond", value: "lab_grown" },
+                  { label: "Pearls & Kundan", value: "pearl_kundan" },
+                ].map((s) => {
+                  const activeStone = stoneQuery || diamondTypeQuery || "All";
+                  const isActive = activeStone === s.value;
+                  return (
+                    <button
+                      key={s.value}
+                      onClick={() => handleStonesChange(s.value)}
+                      className={`px-3.5 py-2 text-[10px] font-bold uppercase tracking-wider border rounded-full transition-all ${isActive
+                          ? "bg-[#141211] text-[#E8D198] border-[#C59B27] shadow-sm font-black"
+                          : "bg-stone-50 text-stone-600 border-stone-200 hover:border-[#C59B27]"
+                        }`}
+                    >
+                      {s.label}
+                    </button>
+                  );
+                })}
+              </div>
+            </section>
+
+            {/* 5. Price Range Filter */}
+            <section className="pt-6 border-t border-stone-100">
+              <div className="flex justify-between items-center mb-4">
                 <h4 className="font-bold text-[#141211] text-[11px] uppercase tracking-[0.2em]">
                   Price Range
                 </h4>
@@ -1330,12 +1622,12 @@ const Shop = () => {
                   type="range"
                   min="1000"
                   max="50000"
-                  step="1000"
+                  step="500"
                   value={priceRange}
                   onChange={(e) => handlePriceRangeChange(e.target.value)}
                   className="w-full h-1.5 bg-stone-100 rounded-lg appearance-none cursor-pointer accent-[#C59B27]"
                 />
-                <div className="flex justify-between mt-4">
+                <div className="flex justify-between mt-3">
                   <span className="text-[9px] text-stone-400 font-bold uppercase tracking-widest">
                     ₹1,000
                   </span>
@@ -1346,54 +1638,95 @@ const Shop = () => {
               </div>
             </section>
 
-            {/* 3. Metal Type Filter */}
-            <section className="pt-8 border-t border-stone-100">
-              <h4 className="font-bold text-[#141211] text-[11px] uppercase tracking-[0.2em] mb-5">
-                Metal Type
+            {/* 6. Shop For Filter */}
+            <section className="pt-6 border-t border-stone-100">
+              <h4 className="font-bold text-[#141211] text-[11px] uppercase tracking-[0.2em] mb-4">
+                Shop For
               </h4>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-4 gap-1.5">
                 {[
-                  { id: "silver", label: "Silver" },
-                  { id: "gold", label: "Gold" },
-                ].map((m) => {
-                  const isActive = queryParams.get("metal") === m.id;
+                  { id: "all", label: "All" },
+                  { id: "women", label: "Women" },
+                  { id: "men", label: "Men" },
+                  { id: "family", label: "Family" },
+                ].map((aud) => {
+                  const currentAud = (queryParams.get("source") || "all").toLowerCase();
+                  const isActive = currentAud === aud.id;
                   return (
                     <button
-                      key={m.id}
-                      onClick={() =>
-                        updateShopQuery({ metal: isActive ? null : m.id })
-                      }
-                      className={`px-4 py-3 text-[10px] font-black uppercase tracking-[0.1em] border transition-all rounded-lg ${isActive ? "bg-[#141211] text-[#E8D198] border-[#C59B27] shadow-md scale-[1.02]" : "bg-white text-stone-500 border-stone-200 hover:border-[#C59B27]"}`}
+                      key={aud.id}
+                      onClick={() => handleAudienceChange(aud.id)}
+                      className={`py-2.5 px-2 text-[10px] font-bold uppercase tracking-wider border rounded-lg transition-all text-center ${isActive
+                          ? "bg-[#141211] text-[#E8D198] border-[#C59B27] shadow-sm font-black"
+                          : "bg-stone-50 text-stone-600 border-stone-200 hover:border-[#C59B27]"
+                        }`}
                     >
-                      {m.label}
+                      {aud.label}
                     </button>
                   );
                 })}
               </div>
             </section>
 
-            {/* 4. Purity / Karat Filter */}
-            <section className="pt-8 border-t border-stone-100 pb-4">
-              <h4 className="font-bold text-[#141211] text-[11px] uppercase tracking-[0.2em] mb-5">
-                Purity / Karat
+            {/* 7. Style Filter */}
+            <section className="pt-6 border-t border-stone-100">
+              <h4 className="font-bold text-[#141211] text-[11px] uppercase tracking-[0.2em] mb-4">
+                Style
               </h4>
-              <div className="flex flex-wrap gap-2.5">
-                {["925", "14k", "18k", "22k"].map((k) => {
-                  const currentK =
-                    queryParams.get("karat") || queryParams.get("purity");
-                  const isActive = currentK === k;
+              <div className="flex flex-wrap gap-2">
+                {[
+                  { label: "Trending", value: "isTrending" },
+                  { label: "New Arrival", value: "isNewArrival" },
+                  { label: "Best Selling", value: "isMostGifted" },
+                  { label: "Premium", value: "isPremium" },
+                ].map((tag) => {
+                  const currentTags = queryParams.get("tags")?.split(",").filter(Boolean) || [];
+                  const isActive = currentTags.includes(tag.value);
                   return (
                     <button
-                      key={k}
-                      onClick={() =>
-                        updateShopQuery({
-                          karat: isActive ? null : k,
-                          purity: null,
-                        })
-                      }
-                      className={`px-5 py-2.5 text-[10px] font-black uppercase tracking-widest border transition-all rounded-full ${isActive ? "bg-[#141211] text-[#E8D198] border-[#C59B27] shadow-sm" : "bg-stone-50 text-stone-500 border-stone-200 hover:border-[#C59B27]"}`}
+                      key={tag.value}
+                      onClick={() => handleTagsChange(tag.value)}
+                      className={`px-3.5 py-2 text-[10px] font-bold uppercase tracking-wider border rounded-full transition-all ${isActive
+                          ? "bg-[#141211] text-[#E8D198] border-[#C59B27] shadow-sm font-black"
+                          : "bg-stone-50 text-stone-600 border-stone-200 hover:border-[#C59B27]"
+                        }`}
                     >
-                      {k}
+                      {tag.label}
+                    </button>
+                  );
+                })}
+              </div>
+            </section>
+
+            {/* 8. Availability Filter */}
+            <section className="pt-6 border-t border-stone-100 pb-4">
+              <h4 className="font-bold text-[#141211] text-[11px] uppercase tracking-[0.2em] mb-4">
+                Availability
+              </h4>
+              <div className="grid grid-cols-3 gap-2">
+                {[
+                  { label: "All", value: "All" },
+                  { label: "In Stock", value: "in_stock" },
+                  { label: "Out of Stock", value: "out_of_stock" },
+                ].map((avail) => {
+                  const activeAvail =
+                    availabilityQuery ||
+                    (inStockQuery === "false"
+                      ? "all"
+                      : inStockQuery === "true"
+                        ? "in_stock"
+                        : "All");
+                  const isActive = activeAvail === avail.value;
+                  return (
+                    <button
+                      key={avail.value}
+                      onClick={() => handleAvailabilityChange(avail.value)}
+                      className={`py-2.5 px-2 text-[10px] font-bold uppercase tracking-wider border rounded-lg transition-all text-center ${isActive
+                          ? "bg-[#141211] text-[#E8D198] border-[#C59B27] shadow-sm font-black"
+                          : "bg-stone-50 text-stone-600 border-stone-200 hover:border-[#C59B27]"
+                        }`}
+                    >
+                      {avail.label}
                     </button>
                   );
                 })}
@@ -1435,7 +1768,8 @@ const Shop = () => {
             </h3>
             <div className="space-y-4">
               {[
-                "Newest",
+                "New Arrival",
+                "Discount",
                 "Best Selling",
               ].map((option) => (
                 <button
@@ -1463,28 +1797,28 @@ const Shop = () => {
             </div>
 
             <div className="mt-8 pt-6 border-t border-stone-100">
-                <h3 className="text-lg font-serif font-bold text-[#141211] mb-6">
-                  Filter by Price
-                </h3>
-                <div className="px-2">
-                  <input
-                    type="range"
-                    min="1000"
-                    max="50000"
-                    step="1000"
-                    value={priceRange}
-                    onChange={(e) => handlePriceRangeChange(e.target.value)}
-                    className="w-full h-1.5 bg-stone-100 rounded-lg appearance-none cursor-pointer accent-[#C59B27]"
-                  />
-                  <div className="flex justify-between mt-4">
-                    <span className="text-[9px] text-stone-400 font-bold uppercase tracking-widest">
-                      ₹1,000
-                    </span>
-                    <span className="text-[9px] text-stone-400 font-bold uppercase tracking-widest">
-                      ₹{priceRange.toLocaleString()}{priceRange >= 50000 ? '+' : ''}
-                    </span>
-                  </div>
+              <h3 className="text-lg font-serif font-bold text-[#141211] mb-6">
+                Filter by Price
+              </h3>
+              <div className="px-2">
+                <input
+                  type="range"
+                  min="1000"
+                  max="50000"
+                  step="1000"
+                  value={priceRange}
+                  onChange={(e) => handlePriceRangeChange(e.target.value)}
+                  className="w-full h-1.5 bg-stone-100 rounded-lg appearance-none cursor-pointer accent-[#C59B27]"
+                />
+                <div className="flex justify-between mt-4">
+                  <span className="text-[9px] text-stone-400 font-bold uppercase tracking-widest">
+                    ₹1,000
+                  </span>
+                  <span className="text-[9px] text-stone-400 font-bold uppercase tracking-widest">
+                    ₹{priceRange.toLocaleString()}{priceRange >= 50000 ? '+' : ''}
+                  </span>
                 </div>
+              </div>
             </div>
           </div>
         </>

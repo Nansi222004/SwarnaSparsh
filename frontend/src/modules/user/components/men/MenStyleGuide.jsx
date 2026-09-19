@@ -116,15 +116,15 @@ const MenStyleGuide = ({ sectionData }) => {
                                 {/* Overlay for UI components */}
                                 <div className="absolute inset-0 z-10 p-3 md:p-4 pointer-events-none">
                                     {/* Focus Frame - REMOVED per user request */}
-                                    
+
                                     {/* Small Zoom-in Zoom Circle/Box - COMPACTED and BORDER REMOVED */}
                                     <div className="absolute top-[12%] right-[6%] w-20 h-20 md:w-24 md:h-24 bg-white/5 backdrop-blur-sm rounded-lg overflow-hidden opacity-0 md:group-hover:opacity-100 transition-all duration-500 translate-x-2 md:group-hover:translate-x-0">
                                         <img src={style.image} alt="zoom" className="w-full h-full object-cover scale-[200%]" />
                                     </div>
-                                    
+
                                     {/* Small Corner Tag - BORDER REMOVED */}
                                     <div className="absolute bottom-[18%] left-[8%] px-2 py-0.5 bg-black/40 backdrop-blur-md rounded text-[7px] text-white font-bold uppercase tracking-widest opacity-0 md:group-hover:opacity-100 transition-opacity duration-300">
-                                        Swarna Sparsh Collection
+                                        Alankar Jewellers Collection
                                     </div>
                                 </div>
 

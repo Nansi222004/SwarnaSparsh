@@ -19,7 +19,7 @@ const sendOtpSms = async (phone, otp) => {
       APIKey: process.env.SMS_INDIA_API_KEY,
       msisdn: `91${phone}`,
       sid: process.env.SMS_INDIA_SENDER_ID,
-      msg: `Welcome to the ${process.env.APP_NAME || "Swarna Sparsh"} powered by Appzeto.Your OTP for registration is ${otp}.BGADEC`,
+      msg: `Welcome to the ${process.env.APP_NAME || "Alankar Jewellers"} powered by Appzeto.Your OTP for registration is ${otp}.BGADEC`,
 
       fl: "0",
       gwid: "2",

@@ -87,17 +87,17 @@ const ProductCard = ({ product, isWishlistPage = false, requireLogin = false, lo
                 <img
                     src={primaryImage}
                     alt=""
-                    className={`fixed z-[9999] w-44 h-44 object-cover shadow-2xl pointer-events-none border-2 border-[#C59B27] rounded-xl ${flyingType === 'cart' ? 'animate-fly-cart' : 'animate-fly-heart'}`}
+                    className={`fixed z-[9999] w-44 h-44 object-cover shadow-2xl pointer-events-none border-2 border-[#C6A04A] rounded-xl ${flyingType === 'cart' ? 'animate-fly-cart' : 'animate-fly-heart'}`}
                     style={{ left: '50%', top: '50%' }}
                 />
             )}
 
             <div
-                className="group/card relative w-full flex flex-col bg-white overflow-hidden cursor-pointer border border-[#E8DFD0] hover:border-[#C59B27] rounded-2xl transition-all duration-500 hover:shadow-[0_12px_32px_rgba(20,18,17,0.09)]"
+                className="group/card relative w-full flex flex-col bg-white overflow-hidden cursor-pointer border border-[#E8E0D2] hover:border-[#C6A04A] rounded-2xl transition-all duration-500 hover:shadow-[0_8px_24px_rgba(23,23,23,0.08)]"
                 onClick={handleProductOpen}
             >
                 {/* Visual Area — Editorial ratio & warm surface */}
-                <div className="relative aspect-[4/4] overflow-hidden bg-[#FAF8F5] border-b border-[#E8DFD0]/40">
+                <div className="relative aspect-[4/4] overflow-hidden bg-[#FAF7F0] border-b border-[#E8E0D2]">
                     <img
                         src={getProductCardUrl(primaryImage)}
                         alt={product.name}
@@ -121,17 +121,17 @@ const ProductCard = ({ product, isWishlistPage = false, requireLogin = false, lo
                     {/* Editorial Urgency / Status Badges */}
                     <div className="absolute top-2.5 left-2.5 flex flex-col gap-1 z-10">
                         {(product.isTrending || product.tags?.isTrending) && (
-                            <span className="bg-[#141211] text-[#E8D198] border border-[#C59B27]/40 text-[8px] md:text-[9px] font-bold px-2 py-0.5 uppercase tracking-widest rounded-md shadow-sm">
+                            <span className="bg-[#171717] text-[#E5CC85] border border-[#C6A04A]/40 text-[8px] md:text-[9px] font-bold px-2 py-0.5 uppercase tracking-widest rounded-md shadow-sm">
                                 Bestseller
                             </span>
                         )}
                         {(product.tags?.isNewArrival || product.tags?.isNewLaunch) && (
-                            <span className="bg-[#FAF8F5] text-[#141211] border border-[#C59B27] text-[8px] md:text-[9px] font-bold px-2 py-0.5 uppercase tracking-widest rounded-md shadow-sm">
+                            <span className="bg-[#FAF7F0] text-[#171717] border border-[#C6A04A] text-[8px] md:text-[9px] font-bold px-2 py-0.5 uppercase tracking-widest rounded-md shadow-sm">
                                 New Arrival
                             </span>
                         )}
                         {hasDiscount && discountPercent > 0 && (
-                            <span className="bg-[#C59B27] text-[#141211] text-[8px] md:text-[9px] font-black px-1.5 py-0.5 uppercase tracking-wider rounded-md shadow-sm">
+                            <span className="bg-[#C6A04A] text-[#171717] text-[8px] md:text-[9px] font-black px-1.5 py-0.5 uppercase tracking-wider rounded-md shadow-sm">
                                 {discountPercent}% Off
                             </span>
                         )}
@@ -141,16 +141,16 @@ const ProductCard = ({ product, isWishlistPage = false, requireLogin = false, lo
                     <div className="absolute top-2.5 right-2.5 flex items-center gap-1.5 z-20">
                         <button
                             onClick={handleWishlist}
-                            className={`w-7 h-7 md:w-8 md:h-8 rounded-full bg-white/90 backdrop-blur-md border border-[#E8DFD0] flex items-center justify-center shadow-xs transition-all duration-300 hover:border-[#C59B27] hover:scale-105 ${isWishlisted ? 'text-[#C59B27] bg-[#FAF8F5]' : 'text-stone-500 hover:text-[#C59B27]'}`}
+                            className={`w-7 h-7 md:w-8 md:h-8 rounded-full bg-white/90 backdrop-blur-md border border-[#E8E0D2] flex items-center justify-center shadow-xs transition-all duration-300 hover:border-[#C6A04A] hover:scale-105 ${isWishlisted ? 'text-[#C6A04A] bg-[#FAF7F0]' : 'text-[#77716A] hover:text-[#C6A04A]'}`}
                             title={isWishlisted ? "In your wishlist" : "Add to wishlist"}
                             aria-label="Wishlist"
                         >
-                            <Heart className={`w-3.5 h-3.5 ${isWishlisted ? 'fill-current text-[#C59B27]' : ''}`} />
+                            <Heart className={`w-3.5 h-3.5 ${isWishlisted ? 'fill-current text-[#C6A04A]' : ''}`} />
                         </button>
 
                         <button
                             onClick={handleAddToCart}
-                            className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-white/90 backdrop-blur-md border border-[#E8DFD0] flex items-center justify-center shadow-xs transition-all duration-300 hover:border-[#C59B27] hover:scale-105 text-stone-500 hover:text-[#C59B27]"
+                            className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-white/90 backdrop-blur-md border border-[#E8E0D2] flex items-center justify-center shadow-xs transition-all duration-300 hover:border-[#C6A04A] hover:scale-105 text-[#77716A] hover:text-[#C6A04A]"
                             title="Add to shopping bag"
                             aria-label="Add to cart"
                         >
@@ -163,32 +163,32 @@ const ProductCard = ({ product, isWishlistPage = false, requireLogin = false, lo
                 <div className="flex flex-col p-3 md:p-3.5 flex-1 bg-white">
                     {/* 1. Category micro-eyebrow */}
                     <div className="flex items-center justify-between mb-1">
-                        <span className="text-[9px] md:text-[10px] font-sans font-semibold uppercase tracking-[0.18em] text-[#8C6A12] line-clamp-1">
+                        <span className="text-[9px] md:text-[10px] font-sans font-semibold uppercase tracking-[0.18em] text-[#C6A04A] line-clamp-1">
                             {categoryName || 'Fine Jewellery'}
                         </span>
                         
                         {/* 3. Rating */}
                         <div className="flex items-center gap-1">
-                            <Star className="w-2.5 h-2.5 fill-[#C59B27] text-[#C59B27]" />
-                            <span className="text-[10px] font-bold text-stone-800">{ratingValue}</span>
+                            <Star className="w-2.5 h-2.5 fill-[#C6A04A] text-[#C6A04A]" />
+                            <span className="text-[10px] font-bold text-[#242424]">{ratingValue}</span>
                             {reviewCount > 0 && (
-                                <span className="text-[9px] text-stone-400">({reviewCount})</span>
+                                <span className="text-[9px] text-[#77716A]">({reviewCount})</span>
                             )}
                         </div>
                     </div>
 
                     {/* 2. Product Name in Elegant Serif */}
-                    <h3 className="font-serif text-[12px] md:text-[14px] font-medium text-[#141211] line-clamp-1 group-hover/card:text-[#C59B27] transition-colors leading-snug mb-2">
+                    <h3 className="font-serif text-[12px] md:text-[14px] font-medium text-[#171717] line-clamp-1 group-hover/card:text-[#C6A04A] transition-colors leading-snug mb-2">
                         {product.name}
                     </h3>
 
                     {/* 4 & 5. Price and MRP / Discount */}
                     <div className="flex items-baseline gap-2 mb-3 mt-auto">
-                        <span className="text-[15px] md:text-[17px] font-bold text-[#141211] font-sans tracking-tight">
+                        <span className="text-[15px] md:text-[17px] font-bold text-[#171717] font-sans tracking-tight">
                             {formatCurrency(effectivePrice)}
                         </span>
                         {hasDiscount && (
-                            <span className="text-[11px] md:text-[12px] text-stone-400 line-through font-normal">
+                            <span className="text-[11px] md:text-[12px] text-[#77716A] line-through font-normal">
                                 {formatCurrency(effectiveOriginalPrice)}
                             </span>
                         )}
@@ -197,7 +197,7 @@ const ProductCard = ({ product, isWishlistPage = false, requireLogin = false, lo
                     {/* Editorial CTA */}
                     <button
                         onClick={handleProductOpen}
-                        className="w-full bg-[#141211] text-[#FAF8F5] hover:bg-[#C59B27] hover:text-[#141211] font-sans font-semibold text-[10px] md:text-[11px] py-2 rounded-xl transition-all duration-300 uppercase tracking-[0.14em] active:scale-[0.99] flex items-center justify-center gap-1 shadow-xs border border-[#141211] hover:border-[#C59B27]"
+                        className="w-full bg-[#171717] text-[#FAF7F0] hover:bg-[#C6A04A] hover:text-[#171717] font-sans font-semibold text-[10px] md:text-[11px] py-2 rounded-xl transition-all duration-300 uppercase tracking-[0.14em] active:scale-[0.99] flex items-center justify-center gap-1 shadow-xs border border-[#171717] hover:border-[#C6A04A]"
                     >
                         Explore Piece
                     </button>

@@ -4,7 +4,7 @@ import { ArrowLeft, Printer, FileText, Loader2, ShieldCheck } from 'lucide-react
 import toast from 'react-hot-toast';
 import { adminService } from '../services/adminService';
 import api from '../../../services/api';
-import logo from '@assets/logo.webp';
+import logo from '@/assets/Alankar jewllers.png';
 
 const formatMoney = (val) =>
   `₹${Number(val || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
@@ -50,7 +50,7 @@ const AdminOrderInvoice = () => {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center gap-3 text-gray-500">
         <Loader2 className="w-8 h-8 text-[#8D6E63] animate-spin" />
-        <p className="text-xs font-bold uppercase tracking-widest text-[#3E2723]">Generating Swarna Sparsh Tax Invoice...</p>
+        <p className="text-xs font-bold uppercase tracking-widest text-[#3E2723]">Generating Alankar Jewellers Tax Invoice...</p>
       </div>
     );
   }
@@ -125,7 +125,7 @@ const AdminOrderInvoice = () => {
         {/* Document Header */}
         <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-6 pb-6 border-b border-gray-200">
           <div className="space-y-2">
-            <img src={logo} alt="Swarna Sparsh" className="h-12 w-auto object-contain" />
+            <img src={logo} alt="Alankar Jewellers" className="h-12 w-auto object-contain" />
             <h1 className="text-lg font-black text-[#3E2723] uppercase tracking-tight">{store?.name}</h1>
             <p className="text-[11px] text-[#8D6E63] font-serif italic">{store?.tagline}</p>
             <p className="text-[11px] text-gray-600 max-w-sm leading-relaxed">{store?.address}</p>
@@ -251,7 +251,7 @@ const AdminOrderInvoice = () => {
               <p className="font-bold text-gray-700 uppercase tracking-widest">Declaration & Terms:</p>
               <p>1. Certified that all precious jewelry items comply with BIS hallmarking standards.</p>
               <p>2. We declare that this invoice shows the actual price of the goods described and all particulars are true.</p>
-              <p>3. Standard return and exchange policy applies as per Swarna Sparsh terms.</p>
+              <p>3. Standard return and exchange policy applies as per Alankar Jewellers terms.</p>
             </div>
           </div>
 
@@ -306,7 +306,7 @@ const AdminOrderInvoice = () => {
             This is a computer-generated tax invoice and requires no physical signature under Indian IT Act.
           </div>
           <div className="text-center sm:text-right space-y-1">
-            <p className="text-[10px] uppercase tracking-widest text-gray-400 font-bold">For Swarna Sparsh</p>
+            <p className="text-[10px] uppercase tracking-widest text-gray-400 font-bold">For Alankar Jewellers</p>
             <div className="h-10"></div>
             <p className="text-xs font-bold text-gray-800 border-t border-gray-300 pt-1">Authorized Signatory</p>
           </div>

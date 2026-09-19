@@ -1,7 +1,7 @@
 {
-  "name": "sands-ornaments-backend",
+  "name": "Alankar-jewellers-backend",
   "version": "1.0.0",
-  "description": "Swarna Sparsh - Node.js + Express + MongoDB Backend",
+  "description": "Alankar Jewellers - Node.js + Express + MongoDB Backend",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

@@ -9,8 +9,8 @@ import ShipmentTimeline from '../../shared/components/ShipmentTimeline';
 
 const COURIERS = [
   { id: 'shiprocket', name: 'Shiprocket', desc: 'Smart Courier Selection & Automatic AWB Generation', disabled: false },
-  { id: 'delhivery',  name: 'Delhivery',  desc: 'Direct Integration (Temporarily routed via Shiprocket)', disabled: true },
-  { id: 'bluedart',   name: 'Blue Dart',   desc: 'Direct Integration (Temporarily routed via Shiprocket)', disabled: true },
+  { id: 'delhivery', name: 'Delhivery', desc: 'Direct Integration (Temporarily routed via Shiprocket)', disabled: true },
+  { id: 'bluedart', name: 'Blue Dart', desc: 'Direct Integration (Temporarily routed via Shiprocket)', disabled: true },
 ];
 
 const AdminShipmentPanel = ({ order, onShipmentCreated }) => {
@@ -224,7 +224,7 @@ const AdminShipmentPanel = ({ order, onShipmentCreated }) => {
             <div className="px-6 py-4 border-b border-gray-100 flex flex-wrap items-center justify-between gap-3 bg-[#FDFBF7]">
               <div>
                 <h3 className="text-sm font-black text-[#3E2723] uppercase tracking-wider flex items-center gap-2">
-                  <Truck className="w-4 h-4 text-[#8D6E63]" /> Active Shipment (Swarna Sparsh Fulfillment)
+                  <Truck className="w-4 h-4 text-[#8D6E63]" /> Active Shipment (Alankar Jewellers Fulfillment)
                 </h3>
                 <p className="text-[11px] text-gray-500 font-medium mt-0.5">
                   Handled via {activeShipment.courier?.toUpperCase()}
@@ -376,13 +376,12 @@ const AdminShipmentPanel = ({ order, onShipmentCreated }) => {
                       type="button"
                       disabled={c.disabled}
                       onClick={() => handleCourierSelect(c.id)}
-                      className={`p-3.5 rounded-2xl text-left border transition-all ${
-                        selectedCourier === c.id
+                      className={`p-3.5 rounded-2xl text-left border transition-all ${selectedCourier === c.id
                           ? 'border-[#8D6E63] bg-[#FDFBF7] ring-1 ring-[#8D6E63]'
                           : c.disabled
-                          ? 'border-gray-100 bg-gray-50 opacity-60 cursor-not-allowed'
-                          : 'border-gray-200 hover:border-gray-300 bg-white'
-                      }`}
+                            ? 'border-gray-100 bg-gray-50 opacity-60 cursor-not-allowed'
+                            : 'border-gray-200 hover:border-gray-300 bg-white'
+                        }`}
                     >
                       <div className="flex items-center justify-between">
                         <span className="text-xs font-bold text-gray-900">{c.name}</span>
@@ -497,11 +496,10 @@ const AdminShipmentPanel = ({ order, onShipmentCreated }) => {
 
                 {serviceability && (
                   <div
-                    className={`p-3 rounded-xl text-xs font-medium ${
-                      serviceability.serviceable
+                    className={`p-3 rounded-xl text-xs font-medium ${serviceability.serviceable
                         ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
                         : 'bg-red-50 text-red-700 border border-red-200'
-                    }`}
+                      }`}
                   >
                     <div className="flex items-center gap-2">
                       {serviceability.serviceable ? (

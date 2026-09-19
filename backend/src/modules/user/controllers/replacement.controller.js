@@ -70,14 +70,14 @@ exports.requestReplacement = async (req, res) => {
         link: `/admin/replacements`,
         isRead: false,
       });
-    } catch (_e) {}
+    } catch (_e) { }
 
     // Email customer
     const reqUser = await require("../../../models/User").findById(userId).select("email name");
     if (reqUser && reqUser.email) {
       enqueueEmail({
         to: reqUser.email,
-        subject: `Replacement Request Received - ${replacement.replacementId} | Swarna Sparsh`,
+        subject: `Replacement Request Received - ${replacement.replacementId} | Alankar Jewellers`,
         html: emailTemplates.replacementRequested({
           replacementReq: replacement,
           userName: reqUser.name,

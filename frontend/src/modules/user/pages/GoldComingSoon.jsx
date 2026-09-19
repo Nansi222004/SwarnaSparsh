@@ -13,7 +13,7 @@ const GoldComingSoon = () => {
             <div className="max-w-4xl w-full relative z-10">
                 <div className="text-center space-y-12">
                     {/* Icon Section */}
-                    <motion.div 
+                    <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         className="flex justify-center"
@@ -22,7 +22,7 @@ const GoldComingSoon = () => {
                             <div className="w-24 h-24 bg-gradient-to-br from-[#D4AF37] to-[#AA8C2C] rounded-full flex items-center justify-center shadow-2xl relative z-10">
                                 <span className="text-4xl font-black text-white italic">Au</span>
                             </div>
-                            <motion.div 
+                            <motion.div
                                 animate={{ scale: [1, 1.2, 1], rotate: [0, 90, 0] }}
                                 transition={{ duration: 4, repeat: Infinity }}
                                 className="absolute -top-4 -right-4 text-[#D4AF37]"
@@ -41,11 +41,11 @@ const GoldComingSoon = () => {
                         >
                             <h4 className="text-[#AA8C2C] font-black uppercase tracking-[0.4em] text-xs mb-4">The Grand Unveil</h4>
                             <h1 className="text-5xl md:text-7xl font-display font-bold text-black leading-tight">
-                                SWARNA SPARSH <span className="text-[#D4AF37]">GOLD</span> <br />COLLECTION
+                                Alankar JEWELLERS <span className="text-[#D4AF37]">GOLD</span> <br />COLLECTION
                             </h1>
                         </motion.div>
 
-                        <motion.p 
+                        <motion.p
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             transition={{ delay: 0.3 }}
@@ -56,7 +56,7 @@ const GoldComingSoon = () => {
                     </div>
 
                     {/* Features/Teaser Grid */}
-                    <motion.div 
+                    <motion.div
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.5 }}

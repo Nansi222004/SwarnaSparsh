@@ -9,7 +9,7 @@ import { resolveLegacyCmsAsset } from '../../utils/legacyCmsAssets';
 const defaultSlides = [
     {
         id: 'family-hero-default',
-        tag: 'The Swarna Sparsh Family Boutique',
+        tag: 'The Alankar Jewellers Family Boutique',
         title: 'Masterpiece ',
         titleItalic: 'Gifting',
         subtitle: 'Exquisite delicate treasures designed for those who matter most in your life.',
@@ -85,19 +85,19 @@ const FamilyHeroCarousel = ({ sectionData }) => {
                 {activeSlide.mobileImage && (
                     <div
                         className="absolute inset-0 bg-cover bg-center transition-transform duration-[12000ms] scale-100 animate-slow-zoom block md:hidden"
-                        style={{ 
-                            backgroundImage: `url(${activeSlide.mobileImage})`, 
+                        style={{
+                            backgroundImage: `url(${activeSlide.mobileImage})`,
                             backgroundPosition: 'center',
-                            filter: 'hue-rotate(330deg) brightness(0.85) contrast(1.15) saturate(1.2)' 
+                            filter: 'hue-rotate(330deg) brightness(0.85) contrast(1.15) saturate(1.2)'
                         }}
                     />
                 )}
                 <div
                     className={`absolute inset-0 bg-cover bg-center transition-transform duration-[12000ms] scale-100 animate-slow-zoom ${activeSlide.mobileImage ? 'hidden md:block' : 'block'}`}
-                    style={{ 
-                        backgroundImage: `url(${activeImage})`, 
+                    style={{
+                        backgroundImage: `url(${activeImage})`,
                         backgroundPosition: 'center 40%',
-                        filter: 'hue-rotate(330deg) brightness(0.85) contrast(1.15) saturate(1.2)' 
+                        filter: 'hue-rotate(330deg) brightness(0.85) contrast(1.15) saturate(1.2)'
                     }}
                 />
                 <img
@@ -106,7 +106,7 @@ const FamilyHeroCarousel = ({ sectionData }) => {
                     className="hidden"
                     onError={() => setBrokenSlideIds((prev) => ({ ...prev, [activeSlide.id]: true }))}
                 />
-                
+
                 {/* Dark & Elegant Overlays */}
                 <div className="absolute inset-0 bg-gradient-to-r from-[#141211]/90 via-[#141211]/50 to-transparent" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
@@ -162,11 +162,10 @@ const FamilyHeroCarousel = ({ sectionData }) => {
                             <button
                                 key={index}
                                 onClick={() => setCurrentIndex(index)}
-                                className={`transition-all duration-500 rounded-full ${
-                                    isActive 
-                                        ? 'w-8 md:w-10 h-1 bg-white' 
+                                className={`transition-all duration-500 rounded-full ${isActive
+                                        ? 'w-8 md:w-10 h-1 bg-white'
                                         : 'w-3 md:w-4 h-1 bg-white/30 hover:bg-white/60'
-                                }`}
+                                    }`}
                                 aria-label={`Go to slide ${index + 1}`}
                             />
                         );

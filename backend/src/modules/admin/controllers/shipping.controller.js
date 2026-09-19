@@ -15,11 +15,11 @@ const { isValidInternalStatus, getInternalStatuses } = require("../../../service
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 const buildPickupAddress = (source) => ({
-  name: source.contactPerson || source.fullName || source.shopName || "Swarna Sparsh Dispatch",
+  name: source.contactPerson || source.fullName || source.shopName || "Alankar Jewellers Dispatch",
   phone: source.phone || source.mobileNumber || "+919921128662",
   address: source.addressLine1
     ? [source.addressLine1, source.addressLine2].filter(Boolean).join(", ")
-    : source.shopAddress || source.address || "Swarna Sparsh, Sarafa Lane Gandhi Chowk",
+    : source.shopAddress || source.address || "Alankar Jewellers, Sarafa Lane Gandhi Chowk",
   city: source.city || "Wani",
   state: source.state || "Maharashtra",
   pincode: source.pincode || "445304",
@@ -575,7 +575,7 @@ exports.createShipment = async (req, res) => {
       paymentMode: mode,
       codAmount: mode === "cod" ? codAmount : 0,
       items: shipmentItems,
-      sellerName: "Swarna Sparsh",
+      sellerName: "Alankar Jewellers",
       shiprocketPickupName,
     });
 

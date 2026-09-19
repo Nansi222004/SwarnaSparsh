@@ -13,14 +13,14 @@ const TermsAndConditions = () => {
   const navigate = useNavigate();
   const { settings } = useSettings();
 
-  useEffect(() => {}, []);
+  useEffect(() => { }, []);
 
   const sections = [
     {
       title: "1. Acceptance of Terms",
       icon: <ShieldCheck className="w-6 h-6" />,
       content:
-        "By accessing and using Swarna Sparsh, you agree to be bound by these Terms and Conditions. Our services are provided to you subject to your compliance with these terms.",
+        "By accessing and using Alankar Jewellers, you agree to be bound by these Terms and Conditions. Our services are provided to you subject to your compliance with these terms.",
     },
     {
       title: "2. Product Information",
@@ -69,7 +69,7 @@ const TermsAndConditions = () => {
 
         <div className="bg-white rounded-[2rem] p-6 md:p-12 shadow-sm border border-stone-200">
           <p className="text-stone-600 mb-10 md:mb-16 leading-relaxed text-sm md:text-base text-center max-w-2xl mx-auto">
-            Welcome to Swarna Sparsh. Before you proceed with your purchase,
+            Welcome to Alankar Jewellers. Before you proceed with your purchase,
             please read these terms carefully. They outline our commitment to
             you and your responsibilities as a customer.
           </p>

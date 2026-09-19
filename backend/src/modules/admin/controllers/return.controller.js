@@ -395,13 +395,13 @@ exports.updateReturnStatus = async (req, res) => {
     if (order) {
       const fullOrder = await Order.findById(order._id);
       const totalOrderQty = (fullOrder?.items || []).reduce((sum, item) => sum + (Number(item.quantity) || 0), 0);
-      
+
       const completedReturns = await Return.find({ orderId: order._id, status: "Refunded" });
       const currentRefundTransitioning = (nextStatus === "Refunded" && returnReq.status !== "Refunded");
       const returnedQty = completedReturns.reduce((sum, r) => sum + r.items.reduce((s, it) => s + (Number(it.qty) || 0), 0), 0) +
-                          (currentRefundTransitioning
-                            ? returnReq.items.reduce((sum, item) => sum + (Number(item.qty) || 0), 0)
-                            : 0);
+        (currentRefundTransitioning
+          ? returnReq.items.reduce((sum, item) => sum + (Number(item.qty) || 0), 0)
+          : 0);
 
       const nextOrderStatus = buildOrderStatusFromReturnStatus(
         currentStatus,
@@ -415,7 +415,7 @@ exports.updateReturnStatus = async (req, res) => {
 
       if (nextOrderStatus) {
         let finalOrderStatus = nextOrderStatus;
-        
+
         if (finalOrderStatus === "Delivered") {
           const { hasOtherActiveClaims } = require("../../../utils/activeClaimsHelper");
           const otherActive = await hasOtherActiveClaims(order._id, returnReq._id);
@@ -467,7 +467,7 @@ exports.updateReturnStatus = async (req, res) => {
           nextStatus +
           " - " +
           (refreshed.returnId || "") +
-          " | Swarna Sparsh",
+          " | Alankar Jewellers",
         html: emailTemplates.returnStatusUpdate({
           returnReq: refreshed,
           userName: returnUser.name,

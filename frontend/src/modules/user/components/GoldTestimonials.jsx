@@ -24,7 +24,7 @@ const GOLD_TESTIMONIALS = [
         location: 'Mumbai',
         rating: 5,
         image: customer2,
-        text: 'Most gold rings for men look dated. I wanted to gift him something that matches the wedding ring he got me too. Finally got to know Swarna Sparsh\'s gold made-to-order option.'
+        text: 'Most gold rings for men look dated. I wanted to gift him something that matches the wedding ring he got me too. Finally got to know Alankar Jewellers\'s gold made-to-order option.'
     },
     {
         id: 3,
@@ -124,9 +124,8 @@ const GoldTestimonials = ({ sectionData = null }) => {
                 <div
                     ref={scrollRef}
                     onScroll={checkScroll}
-                    className={`flex overflow-x-auto gap-8 px-6 md:px-12 pb-10 scrollbar-hide snap-x snap-mandatory ${
-                        !showArrows ? 'md:justify-center' : 'justify-start'
-                    }`}
+                    className={`flex overflow-x-auto gap-8 px-6 md:px-12 pb-10 scrollbar-hide snap-x snap-mandatory ${!showArrows ? 'md:justify-center' : 'justify-start'
+                        }`}
                 >
                     {testimonials.map((item, idx) => (
                         <motion.div
@@ -141,10 +140,10 @@ const GoldTestimonials = ({ sectionData = null }) => {
                                 {/* Rating Stars */}
                                 <div className="flex gap-0.5 mb-4">
                                     {[...Array(5)].map((_, i) => (
-                                        <Star 
-                                            key={i} 
-                                            size={14} 
-                                            className={`${i < item.rating ? 'text-[#D4AF37] fill-[#D4AF37]' : 'text-gray-200'}`} 
+                                        <Star
+                                            key={i}
+                                            size={14}
+                                            className={`${i < item.rating ? 'text-[#D4AF37] fill-[#D4AF37]' : 'text-gray-200'}`}
                                         />
                                     ))}
                                 </div>

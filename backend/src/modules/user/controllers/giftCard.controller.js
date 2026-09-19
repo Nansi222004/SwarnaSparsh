@@ -1,11 +1,11 @@
 "use strict";
 
-const GiftCard   = require("../../../models/GiftCard");
-const User       = require("../../../models/User");
+const GiftCard = require("../../../models/GiftCard");
+const User = require("../../../models/User");
 const { success, error } = require("../../../utils/apiResponse");
 const { generateGiftCardCode } = require("../../../utils/generateId");
-const { enqueueEmail }   = require("../../../services/emailService");
-const emailTemplates     = require("../../../services/emailTemplates");
+const { enqueueEmail } = require("../../../services/emailService");
+const emailTemplates = require("../../../services/emailTemplates");
 
 // ── GET /api/user/gift-cards/my-cards ─────────────────────────────────────────
 // Lists all gift cards the authenticated user has PURCHASED
@@ -29,8 +29,8 @@ exports.validateCode = async (req, res) => {
     if (!card) return error(res, "Gift card not found or invalid code", 404);
 
     if (card.status === "disabled") return error(res, "This gift card has been disabled", 400);
-    if (card.status === "used")     return error(res, "This gift card has already been fully redeemed", 400);
-    if (card.status === "expired")  return error(res, "This gift card has expired", 400);
+    if (card.status === "used") return error(res, "This gift card has already been fully redeemed", 400);
+    if (card.status === "expired") return error(res, "This gift card has expired", 400);
     if (card.expiresAt && new Date(card.expiresAt) < new Date()) {
       await GiftCard.updateOne({ _id: card._id }, { status: "expired" });
       return error(res, "This gift card has expired", 400);
@@ -38,10 +38,10 @@ exports.validateCode = async (req, res) => {
     if (card.balance <= 0) return error(res, "This gift card has no remaining balance", 400);
 
     return success(res, {
-      code:    card.code,
+      code: card.code,
       balance: card.balance,
-      value:   card.value,
-      status:  card.status,
+      value: card.value,
+      status: card.status,
       expiresAt: card.expiresAt,
     }, "Gift card is valid");
   } catch (err) { return error(res, err.message); }
@@ -59,9 +59,9 @@ exports.fulfillGiftCardOrder = async (req, res) => {
     } = req.body;
 
     if (!value || Number(value) < 500) return error(res, "Gift card minimum value is ₹500", 400);
-    if (!recipientName?.trim())  return error(res, "Recipient name is required", 400);
+    if (!recipientName?.trim()) return error(res, "Recipient name is required", 400);
     if (!recipientEmail?.trim()) return error(res, "Recipient email is required", 400);
-    if (!senderName?.trim())     return error(res, "Sender name is required", 400);
+    if (!senderName?.trim()) return error(res, "Sender name is required", 400);
 
     const user = await User.findById(req.user.userId).select("name email").lean();
 
@@ -77,34 +77,34 @@ exports.fulfillGiftCardOrder = async (req, res) => {
     const cardValue = Number(value);
     const card = await GiftCard.create({
       code,
-      value:             cardValue,
-      balance:           cardValue,
-      status:            "active",
+      value: cardValue,
+      balance: cardValue,
+      status: "active",
       purchasedByUserId: req.user.userId,
-      purchasedByName:   user?.name || "",
-      purchasedOrderId:  orderId || null,
-      recipientName:     recipientName.trim(),
-      recipientEmail:    recipientEmail.trim().toLowerCase(),
-      senderName:        senderName.trim(),
-      personalMessage:   personalMessage?.trim() || "",
-      expiresAt:         expiresAt ? new Date(expiresAt) : null,
+      purchasedByName: user?.name || "",
+      purchasedOrderId: orderId || null,
+      recipientName: recipientName.trim(),
+      recipientEmail: recipientEmail.trim().toLowerCase(),
+      senderName: senderName.trim(),
+      personalMessage: personalMessage?.trim() || "",
+      expiresAt: expiresAt ? new Date(expiresAt) : null,
     });
 
     // Email to recipient
     enqueueEmail({
-      to:      card.recipientEmail,
-      subject: `${card.senderName} sent you a ₹${cardValue.toLocaleString("en-IN")} Swarna Sparsh Gift Card! 🎁`,
-      html:    emailTemplates.giftCardDelivery({ giftCard: card }),
-      type:    "general",
+      to: card.recipientEmail,
+      subject: `${card.senderName} sent you a ₹${cardValue.toLocaleString("en-IN")} Alankar Jewellers Gift Card! 🎁`,
+      html: emailTemplates.giftCardDelivery({ giftCard: card }),
+      type: "general",
     });
 
     // Purchase confirmation to buyer
     if (user?.email) {
       enqueueEmail({
-        to:      user.email,
-        subject: "Your Swarna Sparsh Gift Card Has Been Sent! ✅",
-        html:    emailTemplates.giftCardPurchaseConfirmation({ giftCard: card, buyerName: user.name }),
-        type:    "general",
+        to: user.email,
+        subject: "Your Alankar Jewellers Gift Card Has Been Sent! ✅",
+        html: emailTemplates.giftCardPurchaseConfirmation({ giftCard: card, buyerName: user.name }),
+        type: "general",
       });
     }
 
@@ -123,9 +123,9 @@ exports.fulfillGiftCardsInOrder = async (order) => {
       if (!item.isGiftCard) continue;
 
       const p = item.personalization || {};
-      const recipientName  = p.recipientName || "Recipient";
+      const recipientName = p.recipientName || "Recipient";
       const recipientEmail = p.recipientEmail || "";
-      const senderName     = p.senderName || order.customerName || "Swarna Sparsh Customer";
+      const senderName = p.senderName || order.customerName || "Alankar Jewellers Customer";
       const personalMessage = p.message || p.personalMessage || "";
 
       if (!recipientEmail) {
@@ -148,34 +148,34 @@ exports.fulfillGiftCardsInOrder = async (order) => {
       const cardValue = Number(item.price);
       const card = await GiftCard.create({
         code,
-        value:             cardValue,
-        balance:           cardValue,
-        status:            "active",
+        value: cardValue,
+        balance: cardValue,
+        status: "active",
         purchasedByUserId: order.userId,
-        purchasedByName:   order.customerName || "",
-        purchasedOrderId:  order._id,
-        recipientName:     recipientName.trim(),
-        recipientEmail:    recipientEmail.trim().toLowerCase(),
-        senderName:        senderName.trim(),
-        personalMessage:   personalMessage.trim(),
-        expiresAt:         null, // Gift cards have lifetime validity
+        purchasedByName: order.customerName || "",
+        purchasedOrderId: order._id,
+        recipientName: recipientName.trim(),
+        recipientEmail: recipientEmail.trim().toLowerCase(),
+        senderName: senderName.trim(),
+        personalMessage: personalMessage.trim(),
+        expiresAt: null, // Gift cards have lifetime validity
       });
 
       // Email to recipient
       enqueueEmail({
-        to:      card.recipientEmail,
-        subject: `${card.senderName} sent you a ₹${cardValue.toLocaleString("en-IN")} Swarna Sparsh Gift Card! 🎁`,
-        html:    emailTemplates.giftCardDelivery({ giftCard: card }),
-        type:    "general",
+        to: card.recipientEmail,
+        subject: `${card.senderName} sent you a ₹${cardValue.toLocaleString("en-IN")} Alankar Jewellers Gift Card! 🎁`,
+        html: emailTemplates.giftCardDelivery({ giftCard: card }),
+        type: "general",
       });
 
       // Purchase confirmation to buyer
       if (order.customerEmail) {
         enqueueEmail({
-          to:      order.customerEmail,
-          subject: "Your Swarna Sparsh Gift Card Has Been Sent! ✅",
-          html:    emailTemplates.giftCardPurchaseConfirmation({ giftCard: card, buyerName: order.customerName }),
-          type:    "general",
+          to: order.customerEmail,
+          subject: "Your Alankar Jewellers Gift Card Has Been Sent! ✅",
+          html: emailTemplates.giftCardPurchaseConfirmation({ giftCard: card, buyerName: order.customerName }),
+          type: "general",
         });
       }
 

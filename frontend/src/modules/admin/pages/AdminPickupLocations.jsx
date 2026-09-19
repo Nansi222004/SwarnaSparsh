@@ -55,18 +55,18 @@ const LocationFormModal = ({ location, onClose, onSaved }) => {
   const [form, setForm] = useState(
     isEdit
       ? {
-          warehouseName: location.warehouseName || '',
-          contactPerson: location.contactPerson || '',
-          phone: location.phone || '',
-          email: location.email || '',
-          addressLine1: location.addressLine1 || '',
-          addressLine2: location.addressLine2 || '',
-          city: location.city || '',
-          state: location.state || '',
-          pincode: location.pincode || '',
-          country: location.country || 'India',
-          isDefault: location.isDefault || location.isStoreDefault || false,
-        }
+        warehouseName: location.warehouseName || '',
+        contactPerson: location.contactPerson || '',
+        phone: location.phone || '',
+        email: location.email || '',
+        addressLine1: location.addressLine1 || '',
+        addressLine2: location.addressLine2 || '',
+        city: location.city || '',
+        state: location.state || '',
+        pincode: location.pincode || '',
+        country: location.country || 'India',
+        isDefault: location.isDefault || location.isStoreDefault || false,
+      }
       : { ...EMPTY_FORM }
   );
   const [saving, setSaving] = useState(false);
@@ -161,7 +161,7 @@ const LocationFormModal = ({ location, onClose, onSaved }) => {
               name="warehouseName"
               value={form.warehouseName}
               onChange={handleChange}
-              placeholder="e.g. Swarna Sparsh Main Vault / Wani Dispatch"
+              placeholder="e.g. Alankar Jewellers Main Vault / Wani Dispatch"
               disabled={isEdit}
               className="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#8D6E63] disabled:bg-gray-100"
             />
@@ -426,9 +426,8 @@ const AdminPickupLocations = () => {
             return (
               <div
                 key={loc._id}
-                className={`bg-white rounded-3xl p-5 border transition-all flex flex-col justify-between shadow-sm hover:shadow-md ${
-                  isPrimary ? 'border-[#8D6E63] ring-1 ring-[#8D6E63]/30 bg-gradient-to-b from-[#FDFBF7] to-white' : 'border-gray-100'
-                }`}
+                className={`bg-white rounded-3xl p-5 border transition-all flex flex-col justify-between shadow-sm hover:shadow-md ${isPrimary ? 'border-[#8D6E63] ring-1 ring-[#8D6E63]/30 bg-gradient-to-b from-[#FDFBF7] to-white' : 'border-gray-100'
+                  }`}
               >
                 <div>
                   <div className="flex items-start justify-between gap-2 mb-3">

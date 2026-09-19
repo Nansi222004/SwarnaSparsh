@@ -67,8 +67,8 @@ export const normalizeProductForCart = (
     variantId: normalizedVariant.id || normalizedVariant._id || null,
     variants: Array.isArray(product.variants)
       ? product.variants.map((variant) =>
-          normalizeVariantForCart(variant, product),
-        )
+        normalizeVariantForCart(variant, product),
+      )
       : [],
   };
 };
@@ -76,16 +76,16 @@ export const normalizeProductForCart = (
 export const resolveAvailableStock = (product = {}, variantId = null) => {
   const selected =
     product.selectedVariant &&
-    (variantId == null ||
-      String(product.selectedVariant.id || product.selectedVariant._id) ===
+      (variantId == null ||
+        String(product.selectedVariant.id || product.selectedVariant._id) ===
         String(variantId))
       ? product.selectedVariant
       : (product.variants || []).find(
-          (variant) => String(variant.id || variant._id) === String(variantId),
-        ) ||
-        product.selectedVariant ||
-        (product.variants || [])[0] ||
-        null;
+        (variant) => String(variant.id || variant._id) === String(variantId),
+      ) ||
+      product.selectedVariant ||
+      (product.variants || [])[0] ||
+      null;
 
   const stock = Number(selected?.stock);
   if (Number.isFinite(stock) && stock >= 0) return stock;
@@ -147,7 +147,7 @@ export const CartProvider = ({ children }) => {
         personalization: item.personalization || null,
       }));
       if (items.length > 0) {
-        api.put("user/cart", { items }).catch(() => {});
+        api.put("user/cart", { items }).catch(() => { });
       }
     }
   }, [cart, user]);
@@ -174,7 +174,7 @@ export const CartProvider = ({ children }) => {
               return {
                 id: item.productId,
                 _id: item.productId,
-                name: item.name || "Swarna Sparsh Gift Card",
+                name: item.name || "Alankar Jewellers Gift Card",
                 price: item.price,
                 image: item.image,
                 isGiftCard: true,
@@ -706,7 +706,7 @@ export const CartProvider = ({ children }) => {
             key: import.meta.env.VITE_RAZORPAY_KEY_ID,
             amount: rpOrder.amount,
             currency: rpOrder.currency,
-            name: "Swarna Sparsh",
+            name: "Alankar Jewellers",
             description: "Order Payment",
             order_id: rpOrder.id,
             handler: async (response) => {
@@ -889,11 +889,11 @@ export const CartProvider = ({ children }) => {
             variantId: isGift
               ? "GIFT_CARD_VAR"
               : item.variantId ||
-                item.packId ||
-                item.selectedVariant?.id ||
-                item.selectedVariant?._id ||
-                item.variants?.[0]?.id ||
-                item.variants?.[0]?._id,
+              item.packId ||
+              item.selectedVariant?.id ||
+              item.selectedVariant?._id ||
+              item.variants?.[0]?.id ||
+              item.variants?.[0]?._id,
             quantity: item.qty || item.quantity,
             isGiftCard: isGift,
             personalization: item.personalization || null,

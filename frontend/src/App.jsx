@@ -94,6 +94,7 @@ const HelpCenter = lazy(() => import('./modules/user/pages/HelpCenter'));
 const Notifications = lazy(() => import('./modules/user/pages/Notifications'));
 const DynamicPage = lazy(() => import('./modules/user/pages/DynamicPage'));
 const GoldJewelleryPage = lazy(() => import('./modules/user/pages/GoldJewelleryPage'));
+const DiamondJewelleryPage = lazy(() => import('./modules/user/pages/DiamondJewelleryPage'));
 const UserReturnsPage = lazy(() => import('./modules/user/pages/ReturnsPage'));
 const UserReturnDetailPage = lazy(() => import('./modules/user/pages/ReturnDetailPage'));
 const UserReturnRequestPage = lazy(() => import('./modules/user/pages/ReturnRequestPage'));
@@ -172,7 +173,7 @@ const AppContent = () => {
 
   const isAdminPath = location.pathname.startsWith('/admin');
   const isLoginPath = location.pathname === '/login' || location.pathname === '/signup';
-  const showMetalToggle = location.pathname === '/' || location.pathname === '/gold-collection';
+  const showMetalToggle = location.pathname === '/' || location.pathname === '/gold-collection' || location.pathname === '/diamond-collection';
 
   return (
     <div className="min-h-screen flex flex-col font-sans text-gray-900 bg-[#FAF8F5]">
@@ -185,10 +186,8 @@ const AppContent = () => {
             <Navbar />
             <CategoryNav showMetalToggle={showMetalToggle} />
           </div>
-          <PincodeModal />
-          <LeadCapturePopup />
-          <CookieConsent />
-          <div className={`${showMetalToggle ? 'h-[160px] md:h-[180px]' : 'h-[126px] md:h-[166px]'} w-full`}></div>
+          {/* Spacer so page content doesn't get hidden under fixed header */}
+          <div className={`${showMetalToggle ? 'h-[148px] md:h-[156px]' : 'h-[110px] md:h-[118px]'}`} />
         </>
       )}
       <main className={`flex-grow ${!isAdminPath && !isLoginPath ? 'pb-16 md:pb-0' : ''}`}>
@@ -236,6 +235,7 @@ const AppContent = () => {
           <Route path="/category/family/collection/:collectionId" element={<FamilyCollectionProductsPage />} />
           <Route path="/category/:category" element={<Shop />} />
           <Route path="/gold-collection" element={<GoldJewelleryPage />} />
+          <Route path="/diamond-collection" element={<DiamondJewelleryPage />} />
           <Route path="/collection/bond/:bondId" element={<BondCollectionPage />} />
           <Route path="/collection/best-styles" element={<BestStylesPage />} />
           <Route path="/collections" element={<JewelleryCollectionsPage />} />

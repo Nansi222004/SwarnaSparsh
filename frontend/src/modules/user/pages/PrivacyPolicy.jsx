@@ -12,7 +12,7 @@ import { useNavigate } from "react-router-dom";
 const PrivacyPolicy = () => {
   const navigate = useNavigate();
 
-  useEffect(() => {}, []);
+  useEffect(() => { }, []);
 
   const policies = [
     {
@@ -25,7 +25,7 @@ const PrivacyPolicy = () => {
       title: "Secure Payments",
       icon: <Lock className="w-6 h-6" />,
       content:
-        "Your payment details are encrypted and processed by Razorpay. Swarna Sparsh does not store your credit card or bank credentials on our servers.",
+        "Your payment details are encrypted and processed by Razorpay. Alankar Jewellers does not store your credit card or bank credentials on our servers.",
     },
     {
       title: "Cookies & Tracking",
@@ -70,7 +70,7 @@ const PrivacyPolicy = () => {
           <div className="flex items-center gap-4 mb-10 md:mb-16 p-6 bg-[#FAF8F5] rounded-2xl border border-[#C59B27]/25">
             <Shield className="w-8 h-8 md:w-10 md:h-10 text-[#C59B27] flex-shrink-0" />
             <p className="text-sm md:text-base text-stone-600 italic">
-              "Swarna Sparsh is committed to ensuring that your privacy is
+              "Alankar Jewellers is committed to ensuring that your privacy is
               protected and your data is used only to enhance your shopping
               experience."
             </p>

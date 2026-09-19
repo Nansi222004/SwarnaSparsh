@@ -124,7 +124,18 @@ const CategoryShowcaseEditor = ({ sectionData, onSave, defaultItems = [] }) => {
     sectionData?.sectionType === "category-showcase";
   const isCategoryGrid =
     sectionId === "category-grid" ||
+    sectionId === "gold-collection-grid" ||
+    sectionId === "silver-collection-grid" ||
+    sectionId === "diamond-collection-grid" ||
     sectionData?.sectionType === "category-grid";
+  const isGoldGrid = sectionId === "gold-collection-grid";
+  const isSilverGrid = sectionId === "silver-collection-grid";
+  const isDiamondGrid = sectionId === "diamond-collection-grid";
+  const isHomeCategoryGrid =
+    sectionId === "category-grid" ||
+    isGoldGrid ||
+    isSilverGrid ||
+    isDiamondGrid;
   const isLuxuryWithinReach =
     sectionId === "luxury-within-reach" || isGoldLuxuryWithinReach;
   const isFamilyLuxuryWithinReach = isLuxuryWithinReach && isShopFamilySection;
@@ -149,535 +160,535 @@ const CategoryShowcaseEditor = ({ sectionData, onSave, defaultItems = [] }) => {
   // Default items to show if new
   const defaultFallbackItems = isGoldCategoryGridSection
     ? [
-        {
-          id: "1",
-          name: "Gold Rings",
-          path: "/shop?metal=gold&category=rings",
-          image: goldRingsGreen,
-          tag: "",
-        },
-        {
-          id: "2",
-          name: "Gold Earrings",
-          path: "/shop?metal=gold&category=earrings",
-          image: goldEarringsGreen,
-          tag: "",
-        },
-        {
-          id: "3",
-          name: "Gold Pendants",
-          path: "/shop?metal=gold&category=necklaces",
-          image: goldPendantsGreen,
-          tag: "",
-        },
-        {
-          id: "4",
-          name: "Gold Bracelets",
-          path: "/shop?metal=gold&category=bracelets",
-          image: goldBraceletsGreen,
-          tag: "",
-        },
-        {
-          id: "5",
-          name: "Gold Nose Pins",
-          path: "/shop?metal=gold&category=nose-pins",
-          image: goldNosepinsGreen,
-          tag: "",
-        },
-        {
-          id: "6",
-          name: "Gold Mangalsutra",
-          path: "/shop?metal=gold&category=mangalsutras",
-          image: goldMangalsutraGreen,
-          tag: "",
-        },
-        {
-          id: "7",
-          name: "Gold Bangles",
-          path: "/shop?metal=gold&category=bangles",
-          image: goldBanglesGreen,
-          tag: "",
-        },
-        {
-          id: "8",
-          name: "Gold Sets",
-          path: "/shop?metal=gold&category=sets",
-          image: goldSetsGreen,
-          tag: "",
-        },
-        {
-          id: "9",
-          name: "New Arrivals",
-          path: "/shop?metal=gold&filter=new",
-          image: goldNewArrivalsGreen,
-          tag: "New",
-        },
-      ]
+      {
+        id: "1",
+        name: "Gold Rings",
+        path: "/shop?metal=gold&category=rings",
+        image: goldRingsGreen,
+        tag: "",
+      },
+      {
+        id: "2",
+        name: "Gold Earrings",
+        path: "/shop?metal=gold&category=earrings",
+        image: goldEarringsGreen,
+        tag: "",
+      },
+      {
+        id: "3",
+        name: "Gold Pendants",
+        path: "/shop?metal=gold&category=necklaces",
+        image: goldPendantsGreen,
+        tag: "",
+      },
+      {
+        id: "4",
+        name: "Gold Bracelets",
+        path: "/shop?metal=gold&category=bracelets",
+        image: goldBraceletsGreen,
+        tag: "",
+      },
+      {
+        id: "5",
+        name: "Gold Nose Pins",
+        path: "/shop?metal=gold&category=nose-pins",
+        image: goldNosepinsGreen,
+        tag: "",
+      },
+      {
+        id: "6",
+        name: "Gold Mangalsutra",
+        path: "/shop?metal=gold&category=mangalsutras",
+        image: goldMangalsutraGreen,
+        tag: "",
+      },
+      {
+        id: "7",
+        name: "Gold Bangles",
+        path: "/shop?metal=gold&category=bangles",
+        image: goldBanglesGreen,
+        tag: "",
+      },
+      {
+        id: "8",
+        name: "Gold Sets",
+        path: "/shop?metal=gold&category=sets",
+        image: goldSetsGreen,
+        tag: "",
+      },
+      {
+        id: "9",
+        name: "New Arrivals",
+        path: "/shop?metal=gold&filter=new",
+        image: goldNewArrivalsGreen,
+        tag: "New",
+      },
+    ]
     : isGoldShopByColourSection
       ? [
+        {
+          id: "gold-colour-1",
+          name: "Yellow Gold",
+          label: "Yellow Gold",
+          image: goldColorYellow,
+          categoryId: "",
+          path: "/shop?metal=gold&search=Yellow Gold",
+          tag: "",
+        },
+        {
+          id: "gold-colour-2",
+          name: "Rose Gold",
+          label: "Rose Gold",
+          image: goldColorRose,
+          categoryId: "",
+          path: "/shop?metal=gold&search=Rose Gold",
+          tag: "",
+        },
+        {
+          id: "gold-colour-3",
+          name: "White Gold",
+          label: "White Gold",
+          image: goldColorWhite,
+          categoryId: "",
+          path: "/shop?metal=gold&search=White Gold",
+          tag: "",
+        },
+        {
+          id: "gold-colour-4",
+          name: "Dual tone Gold",
+          label: "Dual tone Gold",
+          image: goldColorDual,
+          categoryId: "",
+          path: "/shop?metal=gold&search=Dual tone Gold",
+          tag: "",
+        },
+      ]
+      : isGoldCuratedBondSection
+        ? [
           {
-            id: "gold-colour-1",
-            name: "Yellow Gold",
-            label: "Yellow Gold",
-            image: goldColorYellow,
+            id: "gold-bond-1",
+            name: "Wife",
+            label: "Wife",
+            image: giftWifeSilver,
             categoryId: "",
-            path: "/shop?metal=gold&search=Yellow Gold",
+            path: "/shop?metal=gold&search=wife",
             tag: "",
           },
           {
-            id: "gold-colour-2",
-            name: "Rose Gold",
-            label: "Rose Gold",
-            image: goldColorRose,
+            id: "gold-bond-2",
+            name: "Girlfriend",
+            label: "Girlfriend",
+            image: giftGfSilver,
             categoryId: "",
-            path: "/shop?metal=gold&search=Rose Gold",
+            path: "/shop?metal=gold&search=girlfriend",
             tag: "",
           },
           {
-            id: "gold-colour-3",
-            name: "White Gold",
-            label: "White Gold",
-            image: goldColorWhite,
+            id: "gold-bond-3",
+            name: "Mother",
+            label: "Mother",
+            image: giftMotherSilver,
             categoryId: "",
-            path: "/shop?metal=gold&search=White Gold",
+            path: "/shop?metal=gold&search=mother",
             tag: "",
           },
           {
-            id: "gold-colour-4",
-            name: "Dual tone Gold",
-            label: "Dual tone Gold",
-            image: goldColorDual,
+            id: "gold-bond-4",
+            name: "Sister",
+            label: "Sister",
+            image: giftSisterSilver,
             categoryId: "",
-            path: "/shop?metal=gold&search=Dual tone Gold",
+            path: "/shop?metal=gold&search=sister",
             tag: "",
           },
         ]
-      : isGoldCuratedBondSection
-        ? [
+        : isGoldCuratedShowcaseSection
+          ? [
             {
-              id: "gold-bond-1",
-              name: "Wife",
-              label: "Wife",
-              image: giftWifeSilver,
+              id: "gold-curated-showcase-1",
+              name: "The Gold Standards",
+              label: "The Gold Standards",
+              image: goldRingsGreen,
               categoryId: "",
-              path: "/shop?metal=gold&search=wife",
+              path: "/shop?metal=gold&category=rings",
               tag: "",
             },
             {
-              id: "gold-bond-2",
-              name: "Girlfriend",
-              label: "Girlfriend",
-              image: giftGfSilver,
+              id: "gold-curated-showcase-2",
+              name: "Pure Green Favourites",
+              label: "Pure Green Favourites",
+              image: goldRingsGreen,
               categoryId: "",
-              path: "/shop?metal=gold&search=girlfriend",
+              path: "/shop?metal=gold&category=rings",
               tag: "",
             },
             {
-              id: "gold-bond-3",
-              name: "Mother",
-              label: "Mother",
-              image: giftMotherSilver,
+              id: "gold-curated-showcase-3",
+              name: "Shubh Akshaya Tritiya",
+              label: "Shubh Akshaya Tritiya",
+              image: goldRingsGreen,
               categoryId: "",
-              path: "/shop?metal=gold&search=mother",
+              path: "/shop?metal=gold&category=rings",
               tag: "",
             },
             {
-              id: "gold-bond-4",
-              name: "Sister",
-              label: "Sister",
-              image: giftSisterSilver,
+              id: "gold-curated-showcase-4",
+              name: "Alankar Jewellers",
+              label: "Alankar Jewellers",
+              image: goldRingsGreen,
               categoryId: "",
-              path: "/shop?metal=gold&search=sister",
+              path: "/shop?metal=gold&category=rings",
+              tag: "",
+            },
+            {
+              id: "gold-curated-showcase-5",
+              name: "Crafted in Pure Gold",
+              label: "Crafted in Pure Gold",
+              image: goldRingsGreen,
+              categoryId: "",
+              path: "/shop?metal=gold&category=rings",
+              tag: "",
+            },
+            {
+              id: "gold-curated-showcase-6",
+              name: "Luxury Ring Sets",
+              label: "Luxury Ring Sets",
+              image: goldRingsGreen,
+              categoryId: "",
+              path: "/shop?metal=gold&category=rings",
               tag: "",
             },
           ]
-        : isGoldCuratedShowcaseSection
-          ? [
+          : isGoldLifestyleGridSection
+            ? [
               {
-                id: "gold-curated-showcase-1",
-                name: "The Gold Standards",
-                label: "The Gold Standards",
-                image: goldRingsGreen,
+                id: "gold-lifestyle-1",
+                name: "Casual Wear",
+                label: "Casual Wear",
+                image: goldLifestyleCasual,
                 categoryId: "",
-                path: "/shop?metal=gold&category=rings",
+                path: "/shop?metal=gold&search=casual",
                 tag: "",
               },
               {
-                id: "gold-curated-showcase-2",
-                name: "Pure Green Favourites",
-                label: "Pure Green Favourites",
-                image: goldRingsGreen,
+                id: "gold-lifestyle-2",
+                name: "Party Wear",
+                label: "Party Wear",
+                image: goldLifestyleParty,
                 categoryId: "",
-                path: "/shop?metal=gold&category=rings",
+                path: "/shop?metal=gold&search=party",
                 tag: "",
               },
               {
-                id: "gold-curated-showcase-3",
-                name: "Shubh Akshaya Tritiya",
-                label: "Shubh Akshaya Tritiya",
-                image: goldRingsGreen,
+                id: "gold-lifestyle-3",
+                name: "Gold Gift Card",
+                label: "Gold Gift Card",
+                image: goldLifestyleGiftCard,
                 categoryId: "",
-                path: "/shop?metal=gold&category=rings",
+                path: "/shop?metal=gold",
                 tag: "",
               },
               {
-                id: "gold-curated-showcase-4",
-                name: "Swarna Sparsh",
-                label: "Swarna Sparsh",
-                image: goldRingsGreen,
+                id: "gold-lifestyle-4",
+                name: "Twinning",
+                label: "Twinning",
+                image: goldLifestyleTwinning,
                 categoryId: "",
-                path: "/shop?metal=gold&category=rings",
+                path: "/shop?metal=gold",
                 tag: "",
               },
               {
-                id: "gold-curated-showcase-5",
-                name: "Crafted in Pure Gold",
-                label: "Crafted in Pure Gold",
-                image: goldRingsGreen,
+                id: "gold-lifestyle-5",
+                name: "Traditional",
+                label: "Traditional",
+                image: goldLifestyleTraditional,
                 categoryId: "",
-                path: "/shop?metal=gold&category=rings",
+                path: "/shop?metal=gold&search=traditional",
                 tag: "",
               },
               {
-                id: "gold-curated-showcase-6",
-                name: "Luxury Ring Sets",
-                label: "Luxury Ring Sets",
-                image: goldRingsGreen,
+                id: "gold-lifestyle-6",
+                name: "Traditional",
+                label: "Traditional",
+                image: goldLifestyleTraditional,
                 categoryId: "",
-                path: "/shop?metal=gold&category=rings",
+                path: "/shop?metal=gold&search=traditional",
+                tag: "",
+              },
+              {
+                id: "gold-lifestyle-7",
+                name: "Minimalistic",
+                label: "Minimalistic",
+                image: goldLifestyleMinimalistic,
+                categoryId: "",
+                path: "/shop?metal=gold",
+                tag: "",
+              },
+              {
+                id: "gold-lifestyle-8",
+                name: "Date Nights",
+                label: "Date Nights",
+                image: goldLifestyleDateNight,
+                categoryId: "",
+                path: "/shop?metal=gold&search=date-night",
                 tag: "",
               },
             ]
-          : isGoldLifestyleGridSection
-            ? [
-                {
-                  id: "gold-lifestyle-1",
-                  name: "Casual Wear",
-                  label: "Casual Wear",
-                  image: goldLifestyleCasual,
-                  categoryId: "",
-                  path: "/shop?metal=gold&search=casual",
-                  tag: "",
-                },
-                {
-                  id: "gold-lifestyle-2",
-                  name: "Party Wear",
-                  label: "Party Wear",
-                  image: goldLifestyleParty,
-                  categoryId: "",
-                  path: "/shop?metal=gold&search=party",
-                  tag: "",
-                },
-                {
-                  id: "gold-lifestyle-3",
-                  name: "Gold Gift Card",
-                  label: "Gold Gift Card",
-                  image: goldLifestyleGiftCard,
-                  categoryId: "",
-                  path: "/shop?metal=gold",
-                  tag: "",
-                },
-                {
-                  id: "gold-lifestyle-4",
-                  name: "Twinning",
-                  label: "Twinning",
-                  image: goldLifestyleTwinning,
-                  categoryId: "",
-                  path: "/shop?metal=gold",
-                  tag: "",
-                },
-                {
-                  id: "gold-lifestyle-5",
-                  name: "Traditional",
-                  label: "Traditional",
-                  image: goldLifestyleTraditional,
-                  categoryId: "",
-                  path: "/shop?metal=gold&search=traditional",
-                  tag: "",
-                },
-                {
-                  id: "gold-lifestyle-6",
-                  name: "Traditional",
-                  label: "Traditional",
-                  image: goldLifestyleTraditional,
-                  categoryId: "",
-                  path: "/shop?metal=gold&search=traditional",
-                  tag: "",
-                },
-                {
-                  id: "gold-lifestyle-7",
-                  name: "Minimalistic",
-                  label: "Minimalistic",
-                  image: goldLifestyleMinimalistic,
-                  categoryId: "",
-                  path: "/shop?metal=gold",
-                  tag: "",
-                },
-                {
-                  id: "gold-lifestyle-8",
-                  name: "Date Nights",
-                  label: "Date Nights",
-                  image: goldLifestyleDateNight,
-                  categoryId: "",
-                  path: "/shop?metal=gold&search=date-night",
-                  tag: "",
-                },
-              ]
             : isGoldExploreCollectionsSection
               ? [
-                  {
-                    id: "gold-explore-1",
-                    name: "DAILY WEAR",
-                    label: "DAILY WEAR",
-                    subtitle:
-                      "Minimalist gold pieces for your everyday sparkle",
-                    description:
-                      "Minimalist gold pieces for your everyday sparkle",
-                    image: goldDailyWearBanner,
-                    categoryId: "",
-                    path: "/shop?metal=gold",
-                    tag: "EFFORTLESS EVERYDAY",
-                    extraImages: [
-                      goldRingsGreen,
-                      goldEarringsGreen,
-                      goldPendantsGreen,
-                    ],
-                  },
-                  {
-                    id: "gold-explore-2",
-                    name: "OFFICE WEAR",
-                    label: "OFFICE WEAR",
-                    subtitle: "Sophisticated designs for the modern workplace",
-                    description:
-                      "Sophisticated designs for the modern workplace",
-                    image: goldOfficeWearBanner,
-                    categoryId: "",
-                    path: "/shop?metal=gold",
-                    tag: "PROFESSIONAL CHIC",
-                    extraImages: [
-                      goldBraceletsGreen,
-                      goldRingsGreen,
-                      goldEarringsGreen,
-                    ],
-                  },
-                  {
-                    id: "gold-explore-3",
-                    name: "PARTY WEAR",
-                    label: "PARTY WEAR",
-                    subtitle:
-                      "Extravagant gold jewelry for those special moments",
-                    description:
-                      "Extravagant gold jewelry for those special moments",
-                    image: goldDailyWearBanner,
-                    categoryId: "",
-                    path: "/shop?metal=gold",
-                    tag: "CELEBRATION READY",
-                    extraImages: [
-                      goldPendantsGreen,
-                      goldBraceletsGreen,
-                      goldRingsGreen,
-                    ],
-                  },
-                ]
+                {
+                  id: "gold-explore-1",
+                  name: "DAILY WEAR",
+                  label: "DAILY WEAR",
+                  subtitle:
+                    "Minimalist gold pieces for your everyday sparkle",
+                  description:
+                    "Minimalist gold pieces for your everyday sparkle",
+                  image: goldDailyWearBanner,
+                  categoryId: "",
+                  path: "/shop?metal=gold",
+                  tag: "EFFORTLESS EVERYDAY",
+                  extraImages: [
+                    goldRingsGreen,
+                    goldEarringsGreen,
+                    goldPendantsGreen,
+                  ],
+                },
+                {
+                  id: "gold-explore-2",
+                  name: "OFFICE WEAR",
+                  label: "OFFICE WEAR",
+                  subtitle: "Sophisticated designs for the modern workplace",
+                  description:
+                    "Sophisticated designs for the modern workplace",
+                  image: goldOfficeWearBanner,
+                  categoryId: "",
+                  path: "/shop?metal=gold",
+                  tag: "PROFESSIONAL CHIC",
+                  extraImages: [
+                    goldBraceletsGreen,
+                    goldRingsGreen,
+                    goldEarringsGreen,
+                  ],
+                },
+                {
+                  id: "gold-explore-3",
+                  name: "PARTY WEAR",
+                  label: "PARTY WEAR",
+                  subtitle:
+                    "Extravagant gold jewelry for those special moments",
+                  description:
+                    "Extravagant gold jewelry for those special moments",
+                  image: goldDailyWearBanner,
+                  categoryId: "",
+                  path: "/shop?metal=gold",
+                  tag: "CELEBRATION READY",
+                  extraImages: [
+                    goldPendantsGreen,
+                    goldBraceletsGreen,
+                    goldRingsGreen,
+                  ],
+                },
+              ]
               : isGoldNewLaunchBannerSection
                 ? [
+                  {
+                    id: "gold-new-launch-1",
+                    name: "Rings",
+                    label: "Rings",
+                    image: goldRingsGreen,
+                    categoryId: "",
+                    path: "/shop?metal=gold&category=rings",
+                    tag: "",
+                  },
+                  {
+                    id: "gold-new-launch-2",
+                    name: "Pendants",
+                    label: "Pendants",
+                    image: goldPendantsGreen,
+                    categoryId: "",
+                    path: "/shop?metal=gold&category=necklaces",
+                    tag: "",
+                  },
+                  {
+                    id: "gold-new-launch-3",
+                    name: "Earrings",
+                    label: "Earrings",
+                    image: goldEarringsGreen,
+                    categoryId: "",
+                    path: "/shop?metal=gold&category=earrings",
+                    tag: "",
+                  },
+                ]
+                : isGoldExclusiveLaunchSection
+                  ? [
                     {
-                      id: "gold-new-launch-1",
-                      name: "Rings",
-                      label: "Rings",
+                      id: "gold-exclusive-1",
+                      name: "SOULitaire",
+                      label: "SOULitaire",
+                      subtitle: "Solitaire Collection",
+                      description: "Solitaire Collection",
                       image: goldRingsGreen,
                       categoryId: "",
                       path: "/shop?metal=gold&category=rings",
                       tag: "",
                     },
                     {
-                      id: "gold-new-launch-2",
-                      name: "Pendants",
-                      label: "Pendants",
-                      image: goldPendantsGreen,
+                      id: "gold-exclusive-2",
+                      name: "Beyond Bold",
+                      label: "Beyond Bold",
+                      subtitle: "Statement Collection",
+                      description: "Statement Collection",
+                      image: goldSetsGreen,
                       categoryId: "",
-                      path: "/shop?metal=gold&category=necklaces",
-                      tag: "",
-                    },
-                    {
-                      id: "gold-new-launch-3",
-                      name: "Earrings",
-                      label: "Earrings",
-                      image: goldEarringsGreen,
-                      categoryId: "",
-                      path: "/shop?metal=gold&category=earrings",
+                      path: "/shop?metal=gold&category=sets",
                       tag: "",
                     },
                   ]
-                : isGoldExclusiveLaunchSection
-                  ? [
+                  : isGoldRingCarouselSection
+                    ? [
                       {
-                        id: "gold-exclusive-1",
-                        name: "SOULitaire",
-                        label: "SOULitaire",
-                        subtitle: "Solitaire Collection",
-                        description: "Solitaire Collection",
+                        id: "gold-ring-1",
+                        name: "Solitaire Ring",
+                        label: "Solitaire Ring",
                         image: goldRingsGreen,
                         categoryId: "",
                         path: "/shop?metal=gold&category=rings",
                         tag: "",
                       },
                       {
-                        id: "gold-exclusive-2",
-                        name: "Beyond Bold",
-                        label: "Beyond Bold",
-                        subtitle: "Statement Collection",
-                        description: "Statement Collection",
-                        image: goldSetsGreen,
+                        id: "gold-ring-2",
+                        name: "Promise Ring",
+                        label: "Promise Ring",
+                        image: goldRingsGreen,
                         categoryId: "",
-                        path: "/shop?metal=gold&category=sets",
+                        path: "/shop?metal=gold&category=rings",
+                        tag: "",
+                      },
+                      {
+                        id: "gold-ring-3",
+                        name: "9kt Ring",
+                        label: "9kt Ring",
+                        image: goldRingsGreen,
+                        categoryId: "",
+                        path: "/shop?metal=gold&category=rings",
+                        tag: "",
+                      },
+                      {
+                        id: "gold-ring-4",
+                        name: "Vanki Ring",
+                        label: "Vanki Ring",
+                        image: goldRingsGreen,
+                        categoryId: "",
+                        path: "/shop?metal=gold&category=rings",
+                        tag: "",
+                      },
+                      {
+                        id: "gold-ring-5",
+                        name: "Rose Gold Ring",
+                        label: "Rose Gold Ring",
+                        image: goldRingsGreen,
+                        categoryId: "",
+                        path: "/shop?metal=gold&category=rings",
+                        tag: "",
+                      },
+                      {
+                        id: "gold-ring-6",
+                        name: "Classic Ring",
+                        label: "Classic Ring",
+                        image: goldRingsGreen,
+                        categoryId: "",
+                        path: "/shop?metal=gold&category=rings",
                         tag: "",
                       },
                     ]
-                  : isGoldRingCarouselSection
-                    ? [
+                    : isGoldLuxuryWithinReach
+                      ? [
                         {
-                          id: "gold-ring-1",
-                          name: "Solitaire Ring",
-                          label: "Solitaire Ring",
-                          image: goldRingsGreen,
+                          id: "gold-luxury-1",
+                          name: "Under INR 10000",
+                          label: "Under INR 10000",
+                          priceMax: 10000,
+                          image: goldLuxuryRange10k,
                           categoryId: "",
-                          path: "/shop?metal=gold&category=rings",
+                          path: "/shop?metal=gold&price_max=10000",
                           tag: "",
                         },
                         {
-                          id: "gold-ring-2",
-                          name: "Promise Ring",
-                          label: "Promise Ring",
-                          image: goldRingsGreen,
+                          id: "gold-luxury-2",
+                          name: "Under INR 15000",
+                          label: "Under INR 15000",
+                          priceMax: 15000,
+                          image: goldLuxuryRange15k,
                           categoryId: "",
-                          path: "/shop?metal=gold&category=rings",
+                          path: "/shop?metal=gold&price_max=15000",
                           tag: "",
                         },
                         {
-                          id: "gold-ring-3",
-                          name: "9kt Ring",
-                          label: "9kt Ring",
-                          image: goldRingsGreen,
+                          id: "gold-luxury-3",
+                          name: "Under INR 20000",
+                          label: "Under INR 20000",
+                          priceMax: 20000,
+                          image: goldLuxuryRange20k,
                           categoryId: "",
-                          path: "/shop?metal=gold&category=rings",
+                          path: "/shop?metal=gold&price_max=20000",
                           tag: "",
                         },
                         {
-                          id: "gold-ring-4",
-                          name: "Vanki Ring",
-                          label: "Vanki Ring",
-                          image: goldRingsGreen,
+                          id: "gold-luxury-4",
+                          name: "Premium Gifts",
+                          label: "Premium Gifts",
+                          priceMax: 25000,
+                          image: goldLuxuryPremium,
                           categoryId: "",
-                          path: "/shop?metal=gold&category=rings",
-                          tag: "",
-                        },
-                        {
-                          id: "gold-ring-5",
-                          name: "Rose Gold Ring",
-                          label: "Rose Gold Ring",
-                          image: goldRingsGreen,
-                          categoryId: "",
-                          path: "/shop?metal=gold&category=rings",
-                          tag: "",
-                        },
-                        {
-                          id: "gold-ring-6",
-                          name: "Classic Ring",
-                          label: "Classic Ring",
-                          image: goldRingsGreen,
-                          categoryId: "",
-                          path: "/shop?metal=gold&category=rings",
+                          path: "/shop?metal=gold&price_max=25000",
                           tag: "",
                         },
                       ]
-                    : isGoldLuxuryWithinReach
-                      ? [
-                          {
-                            id: "gold-luxury-1",
-                            name: "Under INR 10000",
-                            label: "Under INR 10000",
-                            priceMax: 10000,
-                            image: goldLuxuryRange10k,
-                            categoryId: "",
-                            path: "/shop?metal=gold&price_max=10000",
-                            tag: "",
-                          },
-                          {
-                            id: "gold-luxury-2",
-                            name: "Under INR 15000",
-                            label: "Under INR 15000",
-                            priceMax: 15000,
-                            image: goldLuxuryRange15k,
-                            categoryId: "",
-                            path: "/shop?metal=gold&price_max=15000",
-                            tag: "",
-                          },
-                          {
-                            id: "gold-luxury-3",
-                            name: "Under INR 20000",
-                            label: "Under INR 20000",
-                            priceMax: 20000,
-                            image: goldLuxuryRange20k,
-                            categoryId: "",
-                            path: "/shop?metal=gold&price_max=20000",
-                            tag: "",
-                          },
-                          {
-                            id: "gold-luxury-4",
-                            name: "Premium Gifts",
-                            label: "Premium Gifts",
-                            priceMax: 25000,
-                            image: goldLuxuryPremium,
-                            categoryId: "",
-                            path: "/shop?metal=gold&price_max=25000",
-                            tag: "",
-                          },
-                        ]
                       : [
-                          {
-                            id: "1",
-                            name: "Pendants",
-                            path: "/category/pendants",
-                            image: catPendant,
-                            tag: "",
-                          },
-                          {
-                            id: "2",
-                            name: "Rings",
-                            path: "/category/rings",
-                            image: catRing,
-                            tag: "",
-                          },
-                          {
-                            id: "3",
-                            name: "Earrings",
-                            path: "/category/earrings",
-                            image: catEarrings,
-                            tag: "",
-                          },
-                          {
-                            id: "4",
-                            name: "Bracelets",
-                            path: "/category/bracelets",
-                            image: catBracelet,
-                            tag: "",
-                          },
-                          {
-                            id: "5",
-                            name: "Anklets",
-                            path: "/category/anklets",
-                            image: catAnklet,
-                            tag: "",
-                          },
-                          {
-                            id: "6",
-                            name: "Chains",
-                            path: "/category/chains",
-                            image: catChain,
-                            tag: "",
-                          },
-                        ];
+                        {
+                          id: "1",
+                          name: "Pendants",
+                          path: "/category/pendants",
+                          image: catPendant,
+                          tag: "",
+                        },
+                        {
+                          id: "2",
+                          name: "Rings",
+                          path: "/category/rings",
+                          image: catRing,
+                          tag: "",
+                        },
+                        {
+                          id: "3",
+                          name: "Earrings",
+                          path: "/category/earrings",
+                          image: catEarrings,
+                          tag: "",
+                        },
+                        {
+                          id: "4",
+                          name: "Bracelets",
+                          path: "/category/bracelets",
+                          image: catBracelet,
+                          tag: "",
+                        },
+                        {
+                          id: "5",
+                          name: "Anklets",
+                          path: "/category/anklets",
+                          image: catAnklet,
+                          tag: "",
+                        },
+                        {
+                          id: "6",
+                          name: "Chains",
+                          path: "/category/chains",
+                          image: catChain,
+                          tag: "",
+                        },
+                      ];
 
   const initialItemsFromProps =
     sectionData.items && sectionData.items.length > 0
@@ -959,19 +970,27 @@ const CategoryShowcaseEditor = ({ sectionData, onSave, defaultItems = [] }) => {
           categoryId: resolved._id,
           name:
             isWomenCategoryLinkedSection ||
-            isFamilyCategoryLinkedSection ||
-            isGoldCategoryLinkedSection
-              ? item.name || resolved.name
+              isFamilyCategoryLinkedSection ||
+              isGoldCategoryLinkedSection ||
+              isHomeCategoryGrid
+              ? item.name || item.label || resolved.name
               : resolved.name,
-          path: isWomenCategoryLinkedSection
-            ? buildWomenCategoryPath(resolved._id, item.path)
-            : isFamilyCategoryLinkedSection
-              ? buildFamilyCategoryPath(resolved._id, item.path)
-              : isGoldCategoryLinkedSection
-                ? buildGoldCategoryPath(resolved._id, item.path)
-                : isCategoryGrid
-                  ? `/category/${resolved.slug || normalizeLabel(resolved.name)}`
-                  : `/shop?category=${resolved._id}`,
+          path: item.path || (
+            isWomenCategoryLinkedSection
+              ? buildWomenCategoryPath(resolved._id, item.path)
+              : isFamilyCategoryLinkedSection
+                ? buildFamilyCategoryPath(resolved._id, item.path)
+                : isGoldCategoryLinkedSection
+                  ? buildGoldCategoryPath(resolved._id, item.path)
+                  : isGoldGrid
+                    ? `/shop?metal=gold&category=${resolved.slug || resolved._id}`
+                    : isSilverGrid
+                      ? `/shop?metal=silver&category=${resolved.slug || resolved._id}`
+                      : isDiamondGrid
+                        ? `/shop?metal=diamond&category=${resolved.slug || resolved._id}`
+                        : `/category/${resolved.slug || normalizeLabel(resolved.name)}`
+          ),
+          badge: item.badge || item.tag || "",
           image: item.image || resolved.image || item.image,
           hoverImage: item.hoverImage || "",
         };
@@ -1305,10 +1324,18 @@ const CategoryShowcaseEditor = ({ sectionData, onSave, defaultItems = [] }) => {
       : "";
     const newItem = {
       id: `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
-      name: isCategoryDrivenSection ? "" : "New Item",
-      path: isCategoryDrivenSection ? "" : "/shop",
+      name: isHomeCategoryGrid ? "New Category" : (isCategoryDrivenSection ? "" : "New Item"),
+      label: isHomeCategoryGrid ? "New Category" : (isCategoryDrivenSection ? "" : "New Item"),
+      path: isGoldGrid
+        ? "/shop?metal=gold"
+        : isSilverGrid
+          ? "/shop?metal=silver"
+          : isDiamondGrid
+            ? "/shop?metal=diamond"
+            : (isCategoryDrivenSection ? "" : "/shop"),
       image: "",
       tag: "",
+      badge: "",
       ...(isFamilyCuratedCollections
         ? { categoryId: "", path: "/shop?source=family&filter=family" }
         : {}),
@@ -1322,22 +1349,22 @@ const CategoryShowcaseEditor = ({ sectionData, onSave, defaultItems = [] }) => {
       ...(isWomenCuratedCollections ? { categoryId: "" } : {}),
       ...(isGoldCuratedShowcaseSection
         ? {
-            name: "New Collection",
-            label: "New Collection",
-            categoryId: "",
-            path: "/shop?metal=gold",
-          }
+          name: "New Collection",
+          label: "New Collection",
+          categoryId: "",
+          path: "/shop?metal=gold",
+        }
         : {}),
       ...(isGoldExploreCollectionsSection
         ? {
-            name: "New Collection",
-            label: "New Collection",
-            subtitle: "",
-            description: "",
-            categoryId: defaultCategoryId,
-            path: buildGoldCategoryPath(defaultCategoryId, "/shop?metal=gold"),
-            extraImages: ["", "", ""],
-          }
+          name: "New Collection",
+          label: "New Collection",
+          subtitle: "",
+          description: "",
+          categoryId: defaultCategoryId,
+          path: buildGoldCategoryPath(defaultCategoryId, "/shop?metal=gold"),
+          extraImages: ["", "", ""],
+        }
         : {}),
       ...(sectionId === "curated-for-you" ? { limit: 12, productIds: [] } : {}),
       ...(sectionId === "style-it-your-way"
@@ -1553,12 +1580,14 @@ const CategoryShowcaseEditor = ({ sectionData, onSave, defaultItems = [] }) => {
       typeof item.path === "string" &&
       (path.startsWith("/category/") ||
         path.includes("category=") ||
+        path.includes("metal=") ||
+        path.includes("sort=") ||
         (path.startsWith("/shop?") && path.includes("source=men")) ||
         (path.startsWith("/shop?") && path.includes("source=women")) ||
         (path.startsWith("/shop?") && path.includes("source=family")));
     const hasUsableContent =
       Boolean((item.name || item.label || "").trim()) && Boolean(item.image);
-    return hasLegacyCategoryPath && hasUsableContent;
+    return (hasLegacyCategoryPath || isHomeCategoryGrid) && hasUsableContent;
   };
 
   const validateItems = (nextItems) => {
@@ -1700,8 +1729,8 @@ const CategoryShowcaseEditor = ({ sectionData, onSave, defaultItems = [] }) => {
         : null;
       const editingCategoryId = String(
         currentEditingItem?.categoryId ||
-          getCategoryFromItem(currentEditingItem)?._id ||
-          "",
+        getCategoryFromItem(currentEditingItem)?._id ||
+        "",
       ).trim();
       if (
         currentEditingItem &&
@@ -1781,8 +1810,8 @@ const CategoryShowcaseEditor = ({ sectionData, onSave, defaultItems = [] }) => {
         : null;
       const editingCategoryId = String(
         currentEditingItem?.categoryId ||
-          getCategoryFromItem(currentEditingItem)?._id ||
-          "",
+        getCategoryFromItem(currentEditingItem)?._id ||
+        "",
       ).trim();
       if (
         currentEditingItem &&
@@ -1894,8 +1923,8 @@ const CategoryShowcaseEditor = ({ sectionData, onSave, defaultItems = [] }) => {
         : null;
       const editingCategoryId = String(
         currentEditingItem?.categoryId ||
-          getCategoryFromItem(currentEditingItem)?._id ||
-          "",
+        getCategoryFromItem(currentEditingItem)?._id ||
+        "",
       ).trim();
       if (
         currentEditingItem &&
@@ -1971,9 +2000,9 @@ const CategoryShowcaseEditor = ({ sectionData, onSave, defaultItems = [] }) => {
           if (!resolvedCategoryId) return null;
           const title = String(
             item.name ||
-              item.label ||
-              category?.name ||
-              `Collection ${index + 1}`,
+            item.label ||
+            category?.name ||
+            `Collection ${index + 1}`,
           ).trim();
           const subtitle = String(
             item.subtitle || item.description || "",
@@ -2017,8 +2046,8 @@ const CategoryShowcaseEditor = ({ sectionData, onSave, defaultItems = [] }) => {
         : null;
       const editingCategoryId = String(
         currentEditingItem?.categoryId ||
-          getCategoryFromItem(currentEditingItem)?._id ||
-          "",
+        getCategoryFromItem(currentEditingItem)?._id ||
+        "",
       ).trim();
       if (currentEditingItem && !editingCategoryId) {
         toast.error("Select a category for this card before saving.");
@@ -2034,9 +2063,9 @@ const CategoryShowcaseEditor = ({ sectionData, onSave, defaultItems = [] }) => {
           if (!resolvedCategoryId) return null;
           const title = String(
             item.name ||
-              item.label ||
-              category?.name ||
-              `Collection ${index + 1}`,
+            item.label ||
+            category?.name ||
+            `Collection ${index + 1}`,
           ).trim();
           if (!title || !item.image) return null;
 
@@ -2073,8 +2102,8 @@ const CategoryShowcaseEditor = ({ sectionData, onSave, defaultItems = [] }) => {
         : null;
       const editingCategoryId = String(
         currentEditingItem?.categoryId ||
-          getCategoryFromItem(currentEditingItem)?._id ||
-          "",
+        getCategoryFromItem(currentEditingItem)?._id ||
+        "",
       ).trim();
       if (currentEditingItem && !editingCategoryId) {
         toast.error("Select a category for this card before saving.");
@@ -2090,9 +2119,9 @@ const CategoryShowcaseEditor = ({ sectionData, onSave, defaultItems = [] }) => {
           if (!resolvedCategoryId) return null;
           const title = String(
             item.name ||
-              item.label ||
-              category?.name ||
-              `Lifestyle ${index + 1}`,
+            item.label ||
+            category?.name ||
+            `Lifestyle ${index + 1}`,
           ).trim();
           if (!title || !item.image) return null;
           return {
@@ -2193,8 +2222,8 @@ const CategoryShowcaseEditor = ({ sectionData, onSave, defaultItems = [] }) => {
           : null;
         const editingCategoryId = String(
           currentEditingItem?.categoryId ||
-            getCategoryFromItem(currentEditingItem)?._id ||
-            "",
+          getCategoryFromItem(currentEditingItem)?._id ||
+          "",
         ).trim();
         if (currentEditingItem && !editingCategoryId) {
           toast.error("Select a category for this card before saving.");
@@ -2263,7 +2292,8 @@ const CategoryShowcaseEditor = ({ sectionData, onSave, defaultItems = [] }) => {
             ...item,
             name: item.name || item.label || "",
             label: item.label || item.name || "",
-            path: item.path || "/shop",
+            path: item.path || (isGoldGrid ? "/shop?metal=gold" : isSilverGrid ? "/shop?metal=silver" : isDiamondGrid ? "/shop?metal=diamond" : "/shop"),
+            badge: item.badge || item.tag || "",
           };
         }
         return {
@@ -2271,24 +2301,35 @@ const CategoryShowcaseEditor = ({ sectionData, onSave, defaultItems = [] }) => {
           categoryId: category._id,
           name:
             isWomenCategoryLinkedSection ||
-            isFamilyCategoryLinkedSection ||
-            isGoldCategoryLinkedSection
-              ? item.name || category.name
+              isFamilyCategoryLinkedSection ||
+              isGoldCategoryLinkedSection ||
+              isHomeCategoryGrid
+              ? item.name || item.label || category.name
               : category.name,
           label:
             isWomenCategoryLinkedSection ||
-            isFamilyCategoryLinkedSection ||
-            isGoldCategoryLinkedSection
+              isFamilyCategoryLinkedSection ||
+              isGoldCategoryLinkedSection ||
+              isHomeCategoryGrid
               ? item.label || item.name || category.name
               : category.name,
-          path: isWomenCategoryLinkedSection
-            ? buildWomenCategoryPath(category._id, item.path)
-            : isFamilyCategoryLinkedSection
-              ? buildFamilyCategoryPath(category._id, item.path)
-              : isGoldCategoryLinkedSection
-                ? buildGoldCategoryPath(category._id, item.path)
-                : `/category/${category.slug || normalizeLabel(category.name)}`,
+          path: item.path || (
+            isWomenCategoryLinkedSection
+              ? buildWomenCategoryPath(category._id, item.path)
+              : isFamilyCategoryLinkedSection
+                ? buildFamilyCategoryPath(category._id, item.path)
+                : isGoldCategoryLinkedSection
+                  ? buildGoldCategoryPath(category._id, item.path)
+                  : isGoldGrid
+                    ? `/shop?metal=gold&category=${category.slug || category._id}`
+                    : isSilverGrid
+                      ? `/shop?metal=silver&category=${category.slug || category._id}`
+                      : isDiamondGrid
+                        ? `/shop?metal=diamond&category=${category.slug || category._id}`
+                        : `/category/${category.slug || normalizeLabel(category.name)}`
+          ),
           image: item.image || category.image || item.image,
+          badge: item.badge || item.tag || "",
         };
       });
       if (isWomenTrendingGrid) {
@@ -2300,7 +2341,7 @@ const CategoryShowcaseEditor = ({ sectionData, onSave, defaultItems = [] }) => {
       if (isFamilyTrendingNearYou || isFamilyGiftsToRemember) {
         normalizedItems = normalizedItems.slice(0, 12);
       }
-      await onSave({ items: normalizedItems });
+      await onSave({ items: normalizedItems, settings });
       return;
     }
     if (isWomenCuratedCollections) {
@@ -2352,8 +2393,8 @@ const CategoryShowcaseEditor = ({ sectionData, onSave, defaultItems = [] }) => {
           : null;
         const selectedCategoryId = String(
           currentEditingItem?.categoryId ||
-            getCategoryFromItem(currentEditingItem)?._id ||
-            "",
+          getCategoryFromItem(currentEditingItem)?._id ||
+          "",
         ).trim();
         if (currentEditingItem && !selectedCategoryId) {
           toast.error("Select a category for this card before saving.");
@@ -2404,12 +2445,12 @@ const CategoryShowcaseEditor = ({ sectionData, onSave, defaultItems = [] }) => {
           name:
             isFamilyLuxuryWithinReach || isGoldLuxuryWithinReach
               ? (item.name || item.label || "").trim() ||
-                `Under INR ${priceMax}`
+              `Under INR ${priceMax}`
               : `Under INR ${priceMax}`,
           label:
             isFamilyLuxuryWithinReach || isGoldLuxuryWithinReach
               ? (item.label || item.name || "").trim() ||
-                `Under INR ${priceMax}`
+              `Under INR ${priceMax}`
               : `Under INR ${priceMax}`,
           subtitle: isFamilyLuxuryWithinReach
             ? item.subtitle || item.description || ""
@@ -2469,27 +2510,21 @@ const CategoryShowcaseEditor = ({ sectionData, onSave, defaultItems = [] }) => {
       return;
     }
     if (sectionId === "new-launch") {
-      const missing = nextItems.filter((item) => !getCategoryFromItem(item));
-      if (missing.length > 0) {
-        const labels = missing
-          .map((item) => item.name || item.id || "Item")
-          .join(", ");
-        toast.error(
-          `Select a category for each card before saving. Missing: ${labels}`,
-        );
-        return;
-      }
-      const normalizedItems = nextItems.map((item) => ({
-        ...item,
-        categoryId: getCategoryFromItem(item)?._id || item.categoryId,
-        productIds: [],
-        name: item.name || getCategoryFromItem(item)?.name || "",
-        label: item.label || item.name || getCategoryFromItem(item)?.name || "",
-        path: getCategoryFromItem(item)
-          ? `/shop?category=${getCategoryFromItem(item)._id}`
-          : item.path || "/shop",
-      }));
-      await onSave({ items: normalizedItems });
+      const normalizedItems = nextItems.map((item) => {
+        const cat = getCategoryFromItem(item);
+        const name = item.name || item.label || cat?.name || "Limited Edition";
+        const path = item.path || (cat ? `/shop?category=${cat._id}` : "/shop");
+        return {
+          ...item,
+          categoryId: cat?._id || item.categoryId || null,
+          productIds: Array.isArray(item.productIds) ? item.productIds : [],
+          name,
+          label: item.label || name,
+          path,
+          ctaLabel: item.ctaLabel || item.buttonText || "EXPLORE",
+        };
+      });
+      await onSave({ items: normalizedItems, settings });
       return;
     }
     if (sectionId === "latest-drop") {
@@ -2655,119 +2690,156 @@ const CategoryShowcaseEditor = ({ sectionData, onSave, defaultItems = [] }) => {
     <div className="max-w-4xl mx-auto space-y-6 pb-20">
       {/* Section Settings Block */}
       {(sectionId === "silver-collection" ||
-        sectionId === "silver-curated") && (
-        <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm space-y-6">
-          <div className="flex items-center justify-between border-b border-gray-50 pb-4">
-            <h3 className="font-display text-base font-bold text-gray-800">
-              Section Settings
-            </h3>
-            <span className="text-[10px] font-bold uppercase tracking-widest text-[#B44C63] bg-[#FDF4F6] px-2 py-1 rounded">
-              Visual Config
-            </span>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-4">
-              <Input
-                label="Section Title"
-                value={settings.title || ""}
-                onChange={(e) => handleSettingChange("title", e.target.value)}
-                placeholder="e.g., Curated Highlights"
-              />
-              <Input
-                label="Section Subtitle"
-                value={settings.subtitle || ""}
-                onChange={(e) =>
-                  handleSettingChange("subtitle", e.target.value)
-                }
-                placeholder="e.g., Premium Silver Collections"
-              />
-              {sectionId === "silver-collection" && (
-                <Input
-                  label="Footer Extra Text"
-                  value={settings.footerText || ""}
-                  onChange={(e) =>
-                    handleSettingChange("footerText", e.target.value)
-                  }
-                  placeholder="e.g., Emotion, made real"
-                />
-              )}
+        sectionId === "silver-curated" ||
+        sectionId === "new-launch" ||
+        isHomeCategoryGrid) && (
+          <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm space-y-6">
+            <div className="flex items-center justify-between border-b border-gray-50 pb-4">
+              <h3 className="font-display text-base font-bold text-gray-800">
+                Section Settings
+              </h3>
+              <span className="text-[10px] font-bold uppercase tracking-widest text-[#B44C63] bg-[#FDF4F6] px-2 py-1 rounded">
+                Visual Config
+              </span>
             </div>
 
-            {sectionId === "silver-collection" && (
-              <div className="space-y-2">
-                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block">
-                  Thematic Banner
-                </label>
-                <div className="aspect-[21/9] bg-gray-50 rounded-lg border-2 border-dashed border-gray-200 flex flex-col items-center justify-center overflow-hidden relative group/banner">
-                  {settings.bannerImage ? (
-                    <>
-                      <img
-                        src={settings.bannerImage}
-                        alt="Banner"
-                        className="w-full h-full object-cover"
-                      />
-                      <button
-                        onClick={() => handleSettingChange("bannerImage", "")}
-                        className="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-full opacity-0 group-hover/banner:opacity-100 transition-opacity"
-                      >
-                        <Trash2 size={14} />
-                      </button>
-                    </>
-                  ) : (
-                    <div className="text-center p-4">
-                      <ImageIcon className="w-8 h-8 text-gray-300 mx-auto mb-2" />
-                      <label className="cursor-pointer px-3 py-1.5 bg-[#3E2723] text-white text-xs font-bold rounded-lg block">
-                        Upload Banner
-                        <input
-                          type="file"
-                          accept="image/*"
-                          className="hidden"
-                          onChange={(e) =>
-                            handleSettingsImageUpload(
-                              e.target.files[0],
-                              "bannerImage",
-                            )
-                          }
-                        />
-                        <p className="text-[10px] text-amber-600 font-bold uppercase tracking-widest bg-amber-50 px-2.5 py-1.5 rounded border border-amber-200 mt-2 mb-2 inline-block">✨ Recommended Size: 1080x1080px (1:1 Ratio)</p>
-                      </label>
-                    </div>
-                  )}
-                </div>
-                <p className="text-[11px] leading-4 text-gray-500">
-                  Recommended size: 2100 x 900 px
-                </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-4">
                 <Input
-                  placeholder="Banner URL..."
-                  value={settings.bannerImage || ""}
-                  onChange={(e) =>
-                    handleSettingChange("bannerImage", e.target.value)
+                  label="Section Title"
+                  value={settings.title !== undefined ? settings.title : (sectionData?.label || "")}
+                  onChange={(e) => handleSettingChange("title", e.target.value)}
+                  placeholder={
+                    isGoldGrid
+                      ? "Gold Collection"
+                      : isSilverGrid
+                        ? "Silver Collection"
+                        : isDiamondGrid
+                          ? "Diamond Collection"
+                          : sectionId === "category-grid"
+                            ? "Shop by Category"
+                            : sectionId === "new-launch"
+                              ? "Limited Edition"
+                              : "e.g., Curated Highlights"
                   }
-                  className="text-xs h-8"
                 />
+                <Input
+                  label={sectionId === "new-launch" || isHomeCategoryGrid ? "Badge / Eyebrow Text" : "Section Subtitle"}
+                  value={settings.badge !== undefined ? settings.badge : (settings.subtitle !== undefined ? settings.subtitle : (sectionId === "new-launch" ? "New Launch" : ""))}
+                  onChange={(e) => {
+                    handleSettingChange("subtitle", e.target.value);
+                    handleSettingChange("badge", e.target.value);
+                  }}
+                  placeholder={
+                    isGoldGrid
+                      ? "Pure Radiance"
+                      : isSilverGrid
+                        ? "Sterling Elegance"
+                        : isDiamondGrid
+                          ? "Timeless Sparkle"
+                          : sectionId === "category-grid"
+                            ? "Curated Dimensions"
+                            : sectionId === "new-launch"
+                              ? "New Launch"
+                              : "e.g., Premium Collections"
+                  }
+                />
+                {isHomeCategoryGrid && (
+                  <Input
+                    label="Section Description / Subtitle"
+                    value={settings.description || ""}
+                    onChange={(e) =>
+                      handleSettingChange("description", e.target.value)
+                    }
+                    placeholder="e.g., Thoughtfully curated fine jewellery categories..."
+                  />
+                )}
+                {sectionId === "silver-collection" && (
+                  <Input
+                    label="Footer Extra Text"
+                    value={settings.footerText || ""}
+                    onChange={(e) =>
+                      handleSettingChange("footerText", e.target.value)
+                    }
+                    placeholder="e.g., Emotion, made real"
+                  />
+                )}
               </div>
-            )}
+
+              {sectionId === "silver-collection" && (
+                <div className="space-y-2">
+                  <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block">
+                    Thematic Banner
+                  </label>
+                  <div className="aspect-[21/9] bg-gray-50 rounded-lg border-2 border-dashed border-gray-200 flex flex-col items-center justify-center overflow-hidden relative group/banner">
+                    {settings.bannerImage ? (
+                      <>
+                        <img
+                          src={settings.bannerImage}
+                          alt="Banner"
+                          className="w-full h-full object-cover"
+                        />
+                        <button
+                          onClick={() => handleSettingChange("bannerImage", "")}
+                          className="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-full opacity-0 group-hover/banner:opacity-100 transition-opacity"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </>
+                    ) : (
+                      <div className="text-center p-4">
+                        <ImageIcon className="w-8 h-8 text-gray-300 mx-auto mb-2" />
+                        <label className="cursor-pointer px-3 py-1.5 bg-[#3E2723] text-white text-xs font-bold rounded-lg block">
+                          Upload Banner
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={(e) =>
+                              handleSettingsImageUpload(
+                                e.target.files[0],
+                                "bannerImage",
+                              )
+                            }
+                          />
+                          <p className="text-[10px] text-amber-600 font-bold uppercase tracking-widest bg-amber-50 px-2.5 py-1.5 rounded border border-amber-200 mt-2 mb-2 inline-block">✨ Recommended Size: 1080x1080px (1:1 Ratio)</p>
+                        </label>
+                      </div>
+                    )}
+                  </div>
+                  <p className="text-[11px] leading-4 text-gray-500">
+                    Recommended size: 2100 x 900 px
+                  </p>
+                  <Input
+                    placeholder="Banner URL..."
+                    value={settings.bannerImage || ""}
+                    onChange={(e) =>
+                      handleSettingChange("bannerImage", e.target.value)
+                    }
+                    className="text-xs h-8"
+                  />
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        )}
       {(sectionId === "perfect-gift" ||
         sectionId === "curated-for-you" ||
         sectionId === "style-it-your-way") && (
-        <ProductBrowserModal
-          isOpen={isProductPickerOpen}
-          onClose={() => {
-            setIsProductPickerOpen(false);
-            setProductPickerTarget(null);
-          }}
-          onSelect={handleProductPickerSelect}
-          selectedIds={
-            items.find((item) => item.id === productPickerTarget)?.productIds ||
-            []
-          }
-          maxSelection={50}
-        />
-      )}
+          <ProductBrowserModal
+            isOpen={isProductPickerOpen}
+            onClose={() => {
+              setIsProductPickerOpen(false);
+              setProductPickerTarget(null);
+            }}
+            onSelect={handleProductPickerSelect}
+            selectedIds={
+              items.find((item) => item.id === productPickerTarget)?.productIds ||
+              []
+            }
+            maxSelection={50}
+          />
+        )}
       <div className="flex items-center justify-between bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
         <div>
           <h3 className="font-display text-sm md:text-base font-bold text-gray-800">
@@ -2930,7 +3002,7 @@ const CategoryShowcaseEditor = ({ sectionData, onSave, defaultItems = [] }) => {
                                 }
                               />
                               <p className="text-[10px] text-amber-600 font-bold uppercase tracking-widest bg-amber-50 px-2.5 py-1.5 rounded border border-amber-200 mt-2 mb-2 inline-block">
-                                {isGoldExploreCollectionsSection 
+                                {isGoldExploreCollectionsSection
                                   ? "✨ Recommended Size: 1200x600px (2:1 Ratio)"
                                   : "✨ Recommended Size: 1080x1080px (1:1 Ratio)"}
                               </p>
@@ -3068,27 +3140,33 @@ const CategoryShowcaseEditor = ({ sectionData, onSave, defaultItems = [] }) => {
                                   categoryId: selected._id,
                                   name:
                                     isWomenCategoryLinkedSection ||
-                                    isFamilyCategoryLinkedSection ||
-                                    isGoldCategoryLinkedSection
+                                      isFamilyCategoryLinkedSection ||
+                                      isGoldCategoryLinkedSection
                                       ? entry.name || selected.name
                                       : selected.name,
                                   path: isCategoryGrid
                                     ? isWomenCategoryLinkedSection
                                       ? buildWomenCategoryPath(
+                                        selected._id,
+                                        entry.path,
+                                      )
+                                      : isFamilyCategoryLinkedSection
+                                        ? buildFamilyCategoryPath(
                                           selected._id,
                                           entry.path,
                                         )
-                                      : isFamilyCategoryLinkedSection
-                                        ? buildFamilyCategoryPath(
+                                        : isGoldCategoryLinkedSection
+                                          ? buildGoldCategoryPath(
                                             selected._id,
                                             entry.path,
                                           )
-                                        : isGoldCategoryLinkedSection
-                                          ? buildGoldCategoryPath(
-                                              selected._id,
-                                              entry.path,
-                                            )
-                                          : `/category/${selected.slug || normalizeLabel(selected.name)}`
+                                          : isGoldGrid
+                                            ? `/shop?metal=gold&category=${selected.slug || selected._id}`
+                                            : isSilverGrid
+                                              ? `/shop?metal=silver&category=${selected.slug || selected._id}`
+                                              : isDiamondGrid
+                                                ? `/shop?metal=diamond&category=${selected.slug || selected._id}`
+                                                : `/category/${selected.slug || normalizeLabel(selected.name)}`
                                     : `/shop?category=${selected._id}`,
                                   image:
                                     entry.image ||
@@ -3195,85 +3273,85 @@ const CategoryShowcaseEditor = ({ sectionData, onSave, defaultItems = [] }) => {
                     {(sectionId === "latest-drop" ||
                       sectionId === "proposal-rings" ||
                       (sectionId === "most-gifted" && !isMostGiftedHero)) && (
-                      <div className="space-y-3">
-                        <div>
-                          <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-2">
-                            Category
-                          </label>
-                          <select
-                            value={getCategoryFromItem(item)?._id || ""}
-                            onChange={(e) => {
-                              const sourceCategories = categories;
-                              const selected = sourceCategories.find(
-                                (c) => String(c._id) === String(e.target.value),
-                              );
-                              if (!selected) return;
-                              const limit = getLimitFromItem(item) || 12;
-                              setItems((prev) =>
-                                prev.map((entry) => {
-                                  if (entry.id !== item.id) return entry;
-                                  const nextEntry = {
-                                    ...entry,
-                                    categoryId: selected._id,
-                                    name: entry.name || selected.name,
-                                    path:
-                                      sectionId === "most-gifted"
-                                        ? `/shop?category=${selected._id}&sort=most-sold`
-                                        : sectionId === "proposal-rings"
-                                          ? `/shop?category=${selected._id}`
-                                          : `/shop?category=${selected._id}&limit=${limit}&sort=latest`,
-                                  };
-                                  if (sectionId === "most-gifted") {
-                                    delete nextEntry.limit;
-                                  }
-                                  if (sectionId === "proposal-rings") {
-                                    delete nextEntry.limit;
-                                  }
-                                  return nextEntry;
-                                }),
-                              );
-                            }}
-                            className="w-full bg-white border border-gray-200 rounded-lg py-2 px-3 text-xs focus:outline-none focus:border-[#3E2723] focus:ring-1 focus:ring-[#3E2723]/20"
-                          >
-                            <option value="">Select Category</option>
-                            {categories.map((cat) => (
-                              <option key={cat._id} value={cat._id}>
-                                {cat.name}
-                                {cat.isActive === false ? " (Inactive)" : ""}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                        {sectionId !== "most-gifted" &&
-                          sectionId !== "proposal-rings" && (
-                            <Input
-                              label="Number of Products"
-                              type="number"
-                              min="1"
-                              value={item.limit ?? ""}
+                        <div className="space-y-3">
+                          <div>
+                            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-2">
+                              Category
+                            </label>
+                            <select
+                              value={getCategoryFromItem(item)?._id || ""}
                               onChange={(e) => {
-                                const raw = e.target.value;
-                                const numeric = raw === "" ? "" : Number(raw);
+                                const sourceCategories = categories;
+                                const selected = sourceCategories.find(
+                                  (c) => String(c._id) === String(e.target.value),
+                                );
+                                if (!selected) return;
+                                const limit = getLimitFromItem(item) || 12;
                                 setItems((prev) =>
                                   prev.map((entry) => {
                                     if (entry.id !== item.id) return entry;
-                                    const category = getCategoryFromItem(entry);
-                                    const limit = numeric || 0;
-                                    return {
+                                    const nextEntry = {
                                       ...entry,
-                                      limit: numeric,
-                                      path: category
-                                        ? `/shop?category=${category._id}&limit=${limit}&sort=${sectionId === "most-gifted" ? "most-sold" : "latest"}`
-                                        : entry.path,
+                                      categoryId: selected._id,
+                                      name: entry.name || selected.name,
+                                      path:
+                                        sectionId === "most-gifted"
+                                          ? `/shop?category=${selected._id}&sort=most-sold`
+                                          : sectionId === "proposal-rings"
+                                            ? `/shop?category=${selected._id}`
+                                            : `/shop?category=${selected._id}&limit=${limit}&sort=latest`,
                                     };
+                                    if (sectionId === "most-gifted") {
+                                      delete nextEntry.limit;
+                                    }
+                                    if (sectionId === "proposal-rings") {
+                                      delete nextEntry.limit;
+                                    }
+                                    return nextEntry;
                                   }),
                                 );
                               }}
-                              placeholder="12"
-                            />
-                          )}
-                      </div>
-                    )}
+                              className="w-full bg-white border border-gray-200 rounded-lg py-2 px-3 text-xs focus:outline-none focus:border-[#3E2723] focus:ring-1 focus:ring-[#3E2723]/20"
+                            >
+                              <option value="">Select Category</option>
+                              {categories.map((cat) => (
+                                <option key={cat._id} value={cat._id}>
+                                  {cat.name}
+                                  {cat.isActive === false ? " (Inactive)" : ""}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+                          {sectionId !== "most-gifted" &&
+                            sectionId !== "proposal-rings" && (
+                              <Input
+                                label="Number of Products"
+                                type="number"
+                                min="1"
+                                value={item.limit ?? ""}
+                                onChange={(e) => {
+                                  const raw = e.target.value;
+                                  const numeric = raw === "" ? "" : Number(raw);
+                                  setItems((prev) =>
+                                    prev.map((entry) => {
+                                      if (entry.id !== item.id) return entry;
+                                      const category = getCategoryFromItem(entry);
+                                      const limit = numeric || 0;
+                                      return {
+                                        ...entry,
+                                        limit: numeric,
+                                        path: category
+                                          ? `/shop?category=${category._id}&limit=${limit}&sort=${sectionId === "most-gifted" ? "most-sold" : "latest"}`
+                                          : entry.path,
+                                      };
+                                    }),
+                                  );
+                                }}
+                                placeholder="12"
+                              />
+                            )}
+                        </div>
+                      )}
                     {sectionId === "curated-for-you" && (
                       <div className="space-y-3">
                         <div>
@@ -3285,7 +3363,7 @@ const CategoryShowcaseEditor = ({ sectionData, onSave, defaultItems = [] }) => {
                             className="w-full py-2 bg-gray-50 text-gray-700 text-[10px] font-bold rounded-lg border border-gray-200 hover:bg-gray-100 uppercase tracking-widest"
                           >
                             {Array.isArray(item.productIds) &&
-                            item.productIds.length > 0
+                              item.productIds.length > 0
                               ? `Selected ${item.productIds.length} Products`
                               : "Select Products"}
                           </button>
@@ -3334,7 +3412,7 @@ const CategoryShowcaseEditor = ({ sectionData, onSave, defaultItems = [] }) => {
                             className="w-full py-2 bg-gray-50 text-gray-700 text-[10px] font-bold rounded-lg border border-gray-200 hover:bg-gray-100 uppercase tracking-widest"
                           >
                             {Array.isArray(item.productIds) &&
-                            item.productIds.length > 0
+                              item.productIds.length > 0
                               ? `Selected ${item.productIds.length} Products`
                               : "Select Products"}
                           </button>
@@ -3394,7 +3472,7 @@ const CategoryShowcaseEditor = ({ sectionData, onSave, defaultItems = [] }) => {
                               : sectionId === "style-it-your-way"
                                 ? "Title"
                                 : isWomenCuratedCollections ||
-                                    isFamilyCuratedCollections
+                                  isFamilyCuratedCollections
                                   ? "Card Title"
                                   : "Name"
                           }
@@ -3406,7 +3484,7 @@ const CategoryShowcaseEditor = ({ sectionData, onSave, defaultItems = [] }) => {
                             isMostGiftedHero
                               ? "Most Gifted Items"
                               : isWomenCuratedCollections ||
-                                  isFamilyCuratedCollections
+                                isFamilyCuratedCollections
                                 ? "Boho Anklets"
                                 : "Name"
                           }
@@ -3422,10 +3500,10 @@ const CategoryShowcaseEditor = ({ sectionData, onSave, defaultItems = [] }) => {
                             prev.map((entry) =>
                               entry.id === item.id
                                 ? {
-                                    ...entry,
-                                    subtitle: value,
-                                    description: value,
-                                  }
+                                  ...entry,
+                                  subtitle: value,
+                                  description: value,
+                                }
                                 : entry,
                             ),
                           );
@@ -3443,10 +3521,10 @@ const CategoryShowcaseEditor = ({ sectionData, onSave, defaultItems = [] }) => {
                             prev.map((entry) =>
                               entry.id === item.id
                                 ? {
-                                    ...entry,
-                                    subtitle: value,
-                                    description: value,
-                                  }
+                                  ...entry,
+                                  subtitle: value,
+                                  description: value,
+                                }
                                 : entry,
                             ),
                           );
@@ -3464,10 +3542,10 @@ const CategoryShowcaseEditor = ({ sectionData, onSave, defaultItems = [] }) => {
                             prev.map((entry) =>
                               entry.id === item.id
                                 ? {
-                                    ...entry,
-                                    subtitle: value,
-                                    description: value,
-                                  }
+                                  ...entry,
+                                  subtitle: value,
+                                  description: value,
+                                }
                                 : entry,
                             ),
                           );
@@ -3581,64 +3659,64 @@ const CategoryShowcaseEditor = ({ sectionData, onSave, defaultItems = [] }) => {
                       isGoldCuratedShowcaseSection ||
                       isGoldNewLaunchBannerSection ||
                       isGoldExclusiveLaunchSection) && (
-                      <div>
-                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-2">
-                          Category
-                        </label>
-                        <select
-                          value={String(
-                            item.categoryId ||
+                        <div>
+                          <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-2">
+                            Category
+                          </label>
+                          <select
+                            value={String(
+                              item.categoryId ||
                               getCategoryFromItem(item)?._id ||
                               "",
-                          )}
-                          onChange={(e) => {
-                            const selectedId = String(
-                              e.target.value || "",
-                            ).trim();
-                            if (!selectedId) {
+                            )}
+                            onChange={(e) => {
+                              const selectedId = String(
+                                e.target.value || "",
+                              ).trim();
+                              if (!selectedId) {
+                                setItems((prev) =>
+                                  prev.map((entry) => {
+                                    if (entry.id !== item.id) return entry;
+                                    return {
+                                      ...entry,
+                                      categoryId: "",
+                                      path: buildGoldCategoryPath("", entry.path),
+                                    };
+                                  }),
+                                );
+                                return;
+                              }
+                              const selected = categories.find(
+                                (c) => String(c._id) === selectedId,
+                              );
+                              if (!selected) return;
                               setItems((prev) =>
                                 prev.map((entry) => {
                                   if (entry.id !== item.id) return entry;
                                   return {
                                     ...entry,
-                                    categoryId: "",
-                                    path: buildGoldCategoryPath("", entry.path),
+                                    categoryId: selected._id,
+                                    name: entry.name || selected.name,
+                                    path: buildGoldCategoryPath(
+                                      selected._id,
+                                      entry.path,
+                                    ),
                                   };
                                 }),
                               );
-                              return;
-                            }
-                            const selected = categories.find(
-                              (c) => String(c._id) === selectedId,
-                            );
-                            if (!selected) return;
-                            setItems((prev) =>
-                              prev.map((entry) => {
-                                if (entry.id !== item.id) return entry;
-                                return {
-                                  ...entry,
-                                  categoryId: selected._id,
-                                  name: entry.name || selected.name,
-                                  path: buildGoldCategoryPath(
-                                    selected._id,
-                                    entry.path,
-                                  ),
-                                };
-                              }),
-                            );
-                          }}
-                          className="w-full bg-white border border-gray-200 rounded-lg py-2 px-3 text-xs focus:outline-none focus:border-[#3E2723] focus:ring-1 focus:ring-[#3E2723]/20"
-                        >
-                          <option value="">Select Category</option>
-                          {categories.map((cat) => (
-                            <option key={cat._id} value={cat._id}>
-                              {cat.name}
-                              {cat.isActive === false ? " (Inactive)" : ""}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                    )}
+                            }}
+                            className="w-full bg-white border border-gray-200 rounded-lg py-2 px-3 text-xs focus:outline-none focus:border-[#3E2723] focus:ring-1 focus:ring-[#3E2723]/20"
+                          >
+                            <option value="">Select Category</option>
+                            {categories.map((cat) => (
+                              <option key={cat._id} value={cat._id}>
+                                {cat.name}
+                                {cat.isActive === false ? " (Inactive)" : ""}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      )}
                     {isGoldLuxuryWithinReach && (
                       <div>
                         <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-2">
@@ -3647,8 +3725,8 @@ const CategoryShowcaseEditor = ({ sectionData, onSave, defaultItems = [] }) => {
                         <select
                           value={String(
                             item.categoryId ||
-                              getCategoryFromItem(item)?._id ||
-                              "",
+                            getCategoryFromItem(item)?._id ||
+                            "",
                           )}
                           onChange={(e) => {
                             const selectedId = String(
@@ -3690,7 +3768,8 @@ const CategoryShowcaseEditor = ({ sectionData, onSave, defaultItems = [] }) => {
                       !isWomenCategoryLinkedSection &&
                       !isFamilyCategoryLinkedSection &&
                       !isGoldCategoryLinkedSection &&
-                      !isGoldExploreCollectionsSection && (
+                      !isGoldExploreCollectionsSection &&
+                      !isHomeCategoryGrid && (
                         <Input
                           label="Category Name"
                           value={item.name}
@@ -3699,91 +3778,193 @@ const CategoryShowcaseEditor = ({ sectionData, onSave, defaultItems = [] }) => {
                           className="bg-gray-50 text-gray-500 cursor-not-allowed"
                         />
                       )}
-                    {(sectionId === "price-range-showcase" ||
-                      isLuxuryWithinReach) && (
-                      <div className="space-y-2">
+                    {isHomeCategoryGrid && (
+                      <div className="space-y-3">
                         <Input
-                          label="Max Price (INR)"
-                          type="number"
-                          min="0"
-                          value={item.priceMax ?? ""}
+                          label="Card Title"
+                          value={item.name || item.label || ""}
                           onChange={(e) => {
-                            const raw = e.target.value;
-                            const numeric = raw === "" ? "" : Number(raw);
+                            const val = e.target.value;
                             setItems((prev) =>
-                              prev.map((entry) => {
-                                if (entry.id !== item.id) return entry;
-                                return {
-                                  ...entry,
-                                  priceMax: numeric,
-                                  name:
-                                    isFamilyLuxuryWithinReach ||
-                                    isGoldLuxuryWithinReach
-                                      ? entry.name
-                                      : numeric
-                                        ? `Under INR ${numeric}`
-                                        : entry.name,
-                                  path: isGoldLuxuryWithinReach
-                                    ? buildGoldPriceRangePath(
-                                        numeric,
-                                        entry.categoryId ||
-                                          getCategoryFromItem(entry)?._id ||
-                                          "",
-                                        entry.path,
-                                      )
-                                    : entry.path,
-                                };
-                              }),
+                              prev.map((entry) =>
+                                entry.id === item.id
+                                  ? { ...entry, name: val, label: val }
+                                  : entry
+                              )
                             );
                           }}
-                          placeholder={isLuxuryWithinReach ? "1499" : "999"}
+                          placeholder="e.g., Gold Rings"
                         />
-                        {!isFamilyLuxuryWithinReach &&
-                          !isGoldLuxuryWithinReach && (
-                            <Input
-                              label="Display Label"
-                              value={item.name || ""}
-                              readOnly
-                              placeholder="Under INR 999"
-                              className="bg-gray-50 text-gray-500 cursor-not-allowed"
-                            />
-                          )}
+                        <Input
+                          label="Destination URL / Path"
+                          value={item.path || ""}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            setItems((prev) =>
+                              prev.map((entry) =>
+                                entry.id === item.id
+                                  ? { ...entry, path: val }
+                                  : entry
+                              )
+                            );
+                          }}
+                          placeholder="/shop?metal=gold&category=..."
+                        />
+                        <Input
+                          label="Card Badge / Tag (Optional)"
+                          value={item.badge || item.tag || ""}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            setItems((prev) =>
+                              prev.map((entry) =>
+                                entry.id === item.id
+                                  ? { ...entry, badge: val, tag: val }
+                                  : entry
+                              )
+                            );
+                          }}
+                          placeholder="e.g., Signature, Spotlight"
+                        />
                       </div>
                     )}
+                    {(sectionId === "price-range-showcase" ||
+                      isLuxuryWithinReach) && (
+                        <div className="space-y-2">
+                          <Input
+                            label="Max Price (INR)"
+                            type="number"
+                            min="0"
+                            value={item.priceMax ?? ""}
+                            onChange={(e) => {
+                              const raw = e.target.value;
+                              const numeric = raw === "" ? "" : Number(raw);
+                              setItems((prev) =>
+                                prev.map((entry) => {
+                                  if (entry.id !== item.id) return entry;
+                                  return {
+                                    ...entry,
+                                    priceMax: numeric,
+                                    name:
+                                      isFamilyLuxuryWithinReach ||
+                                        isGoldLuxuryWithinReach
+                                        ? entry.name
+                                        : numeric
+                                          ? `Under INR ${numeric}`
+                                          : entry.name,
+                                    path: isGoldLuxuryWithinReach
+                                      ? buildGoldPriceRangePath(
+                                        numeric,
+                                        entry.categoryId ||
+                                        getCategoryFromItem(entry)?._id ||
+                                        "",
+                                        entry.path,
+                                      )
+                                      : entry.path,
+                                  };
+                                }),
+                              );
+                            }}
+                            placeholder={isLuxuryWithinReach ? "1499" : "999"}
+                          />
+                          {!isFamilyLuxuryWithinReach &&
+                            !isGoldLuxuryWithinReach && (
+                              <Input
+                                label="Display Label"
+                                value={item.name || ""}
+                                readOnly
+                                placeholder="Under INR 999"
+                                className="bg-gray-50 text-gray-500 cursor-not-allowed"
+                              />
+                            )}
+                        </div>
+                      )}
                     {sectionId === "new-launch" && (
-                      <div>
-                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-2">
-                          Category
-                        </label>
-                        <select
-                          value={getCategoryFromItem(item)?._id || ""}
+                      <div className="space-y-3">
+                        <Input
+                          label="Card Title"
+                          value={item.name || item.label || ""}
                           onChange={(e) => {
-                            const selected = categories.find(
-                              (c) => String(c._id) === String(e.target.value),
-                            );
-                            if (!selected) return;
+                            const val = e.target.value;
                             setItems((prev) =>
-                              prev.map((entry) => {
-                                if (entry.id !== item.id) return entry;
-                                return {
-                                  ...entry,
-                                  categoryId: selected._id,
-                                  name: selected.name,
-                                  path: `/shop?category=${selected._id}`,
-                                };
-                              }),
+                              prev.map((entry) =>
+                                entry.id === item.id
+                                  ? { ...entry, name: val, label: val }
+                                  : entry
+                              )
                             );
                           }}
-                          className="w-full bg-white border border-gray-200 rounded-lg py-2 px-3 text-xs focus:outline-none focus:border-[#3E2723] focus:ring-1 focus:ring-[#3E2723]/20"
-                        >
-                          <option value="">Select Category</option>
-                          {categories.map((cat) => (
-                            <option key={cat._id} value={cat._id}>
-                              {cat.name}
-                              {cat.isActive === false ? " (Inactive)" : ""}
-                            </option>
-                          ))}
-                        </select>
+                          placeholder="e.g., Earrings"
+                        />
+                        <div>
+                          <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-2">
+                            Category Link (Optional)
+                          </label>
+                          <select
+                            value={getCategoryFromItem(item)?._id || item.categoryId || ""}
+                            onChange={(e) => {
+                              const selected = categories.find(
+                                (c) => String(c._id) === String(e.target.value),
+                              );
+                              setItems((prev) =>
+                                prev.map((entry) => {
+                                  if (entry.id !== item.id) return entry;
+                                  if (!selected) {
+                                    return {
+                                      ...entry,
+                                      categoryId: null,
+                                    };
+                                  }
+                                  return {
+                                    ...entry,
+                                    categoryId: selected._id,
+                                    name: entry.name || selected.name,
+                                    label: entry.label || entry.name || selected.name,
+                                    path: `/shop?category=${selected._id}`,
+                                  };
+                                }),
+                              );
+                            }}
+                            className="w-full bg-white border border-gray-200 rounded-lg py-2 px-3 text-xs focus:outline-none focus:border-[#3E2723] focus:ring-1 focus:ring-[#3E2723]/20"
+                          >
+                            <option value="">Custom / Direct Link</option>
+                            {categories.map((cat) => (
+                              <option key={cat._id} value={cat._id}>
+                                {cat.name}
+                                {cat.isActive === false ? " (Inactive)" : ""}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                        <Input
+                          label="Destination URL / Path"
+                          value={item.path || ""}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            setItems((prev) =>
+                              prev.map((entry) =>
+                                entry.id === item.id
+                                  ? { ...entry, path: val }
+                                  : entry
+                              )
+                            );
+                          }}
+                          placeholder="/shop or /shop?category=..."
+                        />
+                        <Input
+                          label="Explore Button Label"
+                          value={item.ctaLabel || item.buttonText || ""}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            setItems((prev) =>
+                              prev.map((entry) =>
+                                entry.id === item.id
+                                  ? { ...entry, ctaLabel: val, buttonText: val }
+                                  : entry
+                              )
+                            );
+                          }}
+                          placeholder="EXPLORE"
+                        />
                       </div>
                     )}
                     {sectionId === "perfect-gift" && (
@@ -3796,7 +3977,7 @@ const CategoryShowcaseEditor = ({ sectionData, onSave, defaultItems = [] }) => {
                           className="w-full py-2 bg-gray-50 text-gray-700 text-[10px] font-bold rounded-lg border border-gray-200 hover:bg-gray-100 uppercase tracking-widest"
                         >
                           {Array.isArray(item.productIds) &&
-                          item.productIds.length > 0
+                            item.productIds.length > 0
                             ? `Selected ${item.productIds.length} Products`
                             : "Select Products"}
                         </button>
@@ -3846,77 +4027,77 @@ const CategoryShowcaseEditor = ({ sectionData, onSave, defaultItems = [] }) => {
 
                     {(sectionId === "style-it-your-way" ||
                       isGoldExploreCollectionsSection) && (
-                      <div className="pt-2">
-                        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-2">
-                          3 Mini Photos
-                        </label>
-                        <div className="flex gap-2">
-                          {[0, 1, 2].map((i) => (
-                            <div
-                              key={i}
-                              className="flex-1 aspect-square rounded-lg border border-dashed border-gray-300 relative group/mini overflow-hidden bg-gray-50"
-                            >
-                              {item.extraImages?.[i] ? (
-                                <>
-                                  <img
-                                    src={resolveLegacyCmsAsset(
-                                      item.extraImages[i],
-                                      item.extraImages[i],
-                                    )}
-                                    className="w-full h-full object-cover"
-                                    alt=""
-                                  />
-                                  <button
-                                    onClick={() =>
-                                      handleItemChange(
-                                        item.id,
-                                        `extraImage_${i}`,
-                                        "",
-                                      )
-                                    }
-                                    className="absolute inset-0 bg-red-500/20 opacity-0 group-hover/mini:opacity-100 flex items-center justify-center"
-                                  >
-                                    <Trash2
-                                      size={12}
-                                      className="text-white bg-red-500 p-1 rounded-full shadow-lg"
+                        <div className="pt-2">
+                          <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-2">
+                            3 Mini Photos
+                          </label>
+                          <div className="flex gap-2">
+                            {[0, 1, 2].map((i) => (
+                              <div
+                                key={i}
+                                className="flex-1 aspect-square rounded-lg border border-dashed border-gray-300 relative group/mini overflow-hidden bg-gray-50"
+                              >
+                                {item.extraImages?.[i] ? (
+                                  <>
+                                    <img
+                                      src={resolveLegacyCmsAsset(
+                                        item.extraImages[i],
+                                        item.extraImages[i],
+                                      )}
+                                      className="w-full h-full object-cover"
+                                      alt=""
                                     />
-                                  </button>
-                                  <button
-                                    onClick={() =>
-                                      handleItemChange(
-                                        item.id,
-                                        `extraImage_${i}`,
-                                        "",
-                                      )
-                                    }
-                                    className="absolute bottom-1 left-1 right-1 bg-white/95 text-[9px] font-bold text-red-600 rounded py-0.5 border border-red-100"
-                                  >
-                                    Remove
-                                  </button>
-                                </>
-                              ) : (
-                                <label className="absolute inset-0 flex items-center justify-center cursor-pointer hover:bg-gray-100">
-                                  <Plus size={14} className="text-gray-400" />
-                                  <input
-                                    type="file"
-                                    accept="image/*"
-                                    className="hidden"
-                                    onChange={(e) =>
-                                      handleImageUpload(
-                                        item.id,
-                                        e.target.files[0],
-                                        `extraImage_${i}`,
-                                      )
-                                    }
-                                  />
-                                  <p className="text-[10px] text-amber-600 font-bold uppercase tracking-widest bg-amber-50 px-2.5 py-1.5 rounded border border-amber-200 mt-2 mb-2 inline-block">✨ Recommended Size: 1080x1080px (1:1 Ratio)</p>
-                                </label>
-                              )}
-                            </div>
-                          ))}
+                                    <button
+                                      onClick={() =>
+                                        handleItemChange(
+                                          item.id,
+                                          `extraImage_${i}`,
+                                          "",
+                                        )
+                                      }
+                                      className="absolute inset-0 bg-red-500/20 opacity-0 group-hover/mini:opacity-100 flex items-center justify-center"
+                                    >
+                                      <Trash2
+                                        size={12}
+                                        className="text-white bg-red-500 p-1 rounded-full shadow-lg"
+                                      />
+                                    </button>
+                                    <button
+                                      onClick={() =>
+                                        handleItemChange(
+                                          item.id,
+                                          `extraImage_${i}`,
+                                          "",
+                                        )
+                                      }
+                                      className="absolute bottom-1 left-1 right-1 bg-white/95 text-[9px] font-bold text-red-600 rounded py-0.5 border border-red-100"
+                                    >
+                                      Remove
+                                    </button>
+                                  </>
+                                ) : (
+                                  <label className="absolute inset-0 flex items-center justify-center cursor-pointer hover:bg-gray-100">
+                                    <Plus size={14} className="text-gray-400" />
+                                    <input
+                                      type="file"
+                                      accept="image/*"
+                                      className="hidden"
+                                      onChange={(e) =>
+                                        handleImageUpload(
+                                          item.id,
+                                          e.target.files[0],
+                                          `extraImage_${i}`,
+                                        )
+                                      }
+                                    />
+                                    <p className="text-[10px] text-amber-600 font-bold uppercase tracking-widest bg-amber-50 px-2.5 py-1.5 rounded border border-amber-200 mt-2 mb-2 inline-block">✨ Recommended Size: 1080x1080px (1:1 Ratio)</p>
+                                  </label>
+                                )}
+                              </div>
+                            ))}
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      )}
                   </div>
                 </div>
               ) : (

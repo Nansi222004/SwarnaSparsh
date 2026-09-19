@@ -27,7 +27,7 @@ const ShopForWomen = () => {
   } = usePublicCmsPage("shop-women");
 
   useEffect(() => {
-    document.title = "Shop Women's Jewellery | Swarna Sparsh";
+    document.title = "Shop Women's Jewellery | Alankar Jewellers";
   }, []);
 
   const sectionMap = useMemo(
@@ -74,27 +74,27 @@ const ShopForWomen = () => {
       <WomenPriceRange sectionData={sectionMap["price-range-showcase"]} />
       <WomenProductCategories sectionData={sectionMap["product-categories"]} />
       <WomenCategoriesGrid sectionData={sectionMap["categories-grid"]} />
-      
+
       <WomenCuratedCollections sectionData={sectionMap["curated-collections"]} />
-        
-          <WomenOccasionCarousel sectionData={sectionMap["occasion-carousel"]} />
-        
-        
-          <WomenPersonalisedBanner sectionData={sectionMap["personalized-banner"]} />
-        
-        
-          <WomenDiscoverHue sectionData={sectionMap["discover-hue"]} />
-        
-        
-          <WomenPromoBanners sectionData={sectionMap["promo-banners"]} />
-        
-        
-          <WomenFeatureBanner />
-        
-        
-          <WomenProductsListing sectionData={sectionMap["products-listing"]} />
-        
-      
+
+      <WomenOccasionCarousel sectionData={sectionMap["occasion-carousel"]} />
+
+
+      <WomenPersonalisedBanner sectionData={sectionMap["personalized-banner"]} />
+
+
+      <WomenDiscoverHue sectionData={sectionMap["discover-hue"]} />
+
+
+      <WomenPromoBanners sectionData={sectionMap["promo-banners"]} />
+
+
+      <WomenFeatureBanner />
+
+
+      <WomenProductsListing sectionData={sectionMap["products-listing"]} />
+
+
     </div>
   );
 };

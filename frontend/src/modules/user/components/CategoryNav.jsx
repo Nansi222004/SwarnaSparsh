@@ -14,14 +14,16 @@ const CategoryNav = ({ showMetalToggle = true }) => {
     const [hoveredItem, setHoveredItem] = useState(null);
 
     const navItems = [
+        { id: 'gold', name: 'Gold Jewellery', path: '/gold-collection', hasChevron: false },
+        { id: 'silver', name: 'Silver Jewellery', path: '/', hasChevron: false },
+        { id: 'diamond', name: 'Diamond Jewellery', path: '/diamond-collection', hasChevron: false },
         { id: 'cat', name: 'Shop by Category', path: '/collections', hasChevron: true },
-        { id: 'all', name: 'ALL TYPE', path: '/collections', hasChevron: true },
+        { id: 'all', name: 'All Jewellery', path: '/shop', hasChevron: true },
         { id: 'him', name: 'Gifts for Him', path: '/category/men', hasChevron: false },
         { id: 'her', name: 'Gifts for Her', path: '/category/women', hasChevron: false },
         { id: 'family', name: 'Gifts for Family', path: '/category/family', hasChevron: false },
-        { id: 'card', name: 'Gift Cards', path: '/gift-cards', hasChevron: false },
         { id: 'exclusive', name: 'Exclusive', fullSuffix: ' Collections', path: '/shop?search=exclusive', hasChevron: false },
-        { id: 'more', name: 'More', fullSuffix: ' at Swarna Sparsh', path: '/about', hasChevron: false },
+        { id: 'more', name: 'More', fullSuffix: ' at Alankar Jewellers', path: '/about', hasChevron: false },
     ];
 
     const resetMenu = () => {
@@ -29,21 +31,15 @@ const CategoryNav = ({ showMetalToggle = true }) => {
     };
 
     // Keep the metal toggle consistent with the current route/query.
-    // This prevents confusing UI states when a user lands directly on a gold page or a gold-filtered shop URL.
+    // Silver remains the default landing selection.
     useEffect(() => {
         const params = new URLSearchParams(location.search);
         const metalParam = String(params.get('metal') || '').trim().toLowerCase();
         const karatParam = String(params.get('karat') || params.get('purity') || '').trim();
-        const silverTypeParam = String(params.get('silver_type') || '').trim();
-        const isGoldRoute = location.pathname.startsWith('/gold');
-        const desiredMetal = (
-            metalParam === 'gold'
-            || isGoldRoute
-            || (!metalParam && Boolean(karatParam))
-        ) ? 'gold' : (
-            metalParam === 'silver'
-            || (!metalParam && Boolean(silverTypeParam))
-        ) ? 'silver' : 'silver';
+        const isDiamondRoute = location.pathname.startsWith('/diamond') || metalParam === 'diamond';
+        const isGoldRoute = location.pathname.startsWith('/gold') || metalParam === 'gold' || (!metalParam && Boolean(karatParam));
+
+        const desiredMetal = isDiamondRoute ? 'diamond' : (isGoldRoute ? 'gold' : 'silver');
 
         if (desiredMetal && desiredMetal !== activeMetal) {
             updateActiveMetal(desiredMetal);
@@ -59,7 +55,7 @@ const CategoryNav = ({ showMetalToggle = true }) => {
             <div className="w-full max-w-[1600px] mx-auto px-2 sm:px-4 md:px-6 lg:px-8 relative" onMouseLeave={resetMenu}>
                 {/* Navigation Links - Responsive without left-clipping on any screen */}
                 <div className="w-full overflow-x-auto lg:overflow-visible category-nav-scroll scroll-smooth py-1 flex items-center">
-                    <ul 
+                    <ul
                         className="flex items-center w-max min-w-full justify-start lg:justify-center gap-2 sm:gap-2.5 md:gap-3 lg:gap-4 xl:gap-5 2xl:gap-7 flex-nowrap py-1 px-1 sm:px-2"
                         style={{ justifyContent: 'safe center' }}
                     >
@@ -67,7 +63,7 @@ const CategoryNav = ({ showMetalToggle = true }) => {
                             <li
                                 key={item.id}
                                 onMouseEnter={() => {
-                                    // Only 'Shop by Category' and 'ALL TYPE' show dropdowns on hover
+                                    // Only 'Shop by Category' and 'All Jewellery' show dropdowns on hover
                                     if (item.id === 'cat' || item.id === 'all') {
                                         setHoveredItem(item.id);
                                     } else {
@@ -79,11 +75,11 @@ const CategoryNav = ({ showMetalToggle = true }) => {
                             >
                                 <Link
                                     to={item.path}
-                                    className="text-[10px] sm:text-[10.5px] md:text-[11px] lg:text-[11.5px] xl:text-[12px] 2xl:text-[12.5px] font-bold uppercase tracking-tight sm:tracking-normal xl:tracking-[0.05em] font-sans text-gray-800 hover:text-[#C59B27] flex items-center gap-0.5 sm:gap-1 transition-all duration-200 whitespace-nowrap"
+                                    className="text-[10px] sm:text-[10.5px] md:text-[11px] lg:text-[11.5px] xl:text-[12px] 2xl:text-[12.5px] font-bold uppercase tracking-tight sm:tracking-normal xl:tracking-[0.05em] font-sans text-[#242424] hover:text-[#C6A04A] flex items-center gap-0.5 sm:gap-1 transition-all duration-200 whitespace-nowrap"
                                 >
                                     <span>{item.name}</span>
                                     {item.fullSuffix && <span className="hidden 2xl:inline">{item.fullSuffix}</span>}
-                                    {item.hasChevron && <ChevronDown className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-gray-500 shrink-0" />}
+                                    {item.hasChevron && <ChevronDown className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#77716A] shrink-0" />}
                                 </Link>
 
                                 {/* Dropdowns Mapping */}
@@ -94,7 +90,7 @@ const CategoryNav = ({ showMetalToggle = true }) => {
                                                 initial={{ opacity: 0, y: 10 }}
                                                 animate={{ opacity: 1, y: 0 }}
                                                 exit={{ opacity: 0, y: 5 }}
-                                                className="bg-white shadow-[0_30px_60px_rgba(0,0,0,0.15)] border border-gray-100 overflow-hidden rounded-b-2xl max-w-[calc(100vw-1.5rem)]"
+                                                className="bg-white shadow-[0_20px_45px_rgba(23,23,23,0.12)] border border-[#E8E0D2] overflow-hidden rounded-b-2xl max-w-[calc(100vw-1.5rem)]"
                                             >
                                                 {item.id === 'cat' && <AllJewelleryMenu resetMenu={resetMenu} />}
                                                 {item.id === 'all' && <AllJewelleryMegaMenu resetMenu={resetMenu} />}
@@ -108,46 +104,60 @@ const CategoryNav = ({ showMetalToggle = true }) => {
                     </ul>
                 </div>
 
-                {/* Silver / Gold Toggle - Precise Swarna Sparsh Polish with Navigation logic */}
+                {/* Gold / Silver / Diamond 3-Option Selector — Balanced, Aligned & Responsive */}
                 {showMetalToggle && (
-                    <div className="flex justify-center pb-1 pt-0.5 px-2 relative">
-                        <div className="p-0.5 md:p-1 w-[560px] max-w-full rounded-full border border-[#D4B390]/40 flex items-center bg-white shadow-[0_4px_25px_rgba(212,179,144,0.15)] relative">
+                    <div className="flex justify-center pb-1.5 pt-0.5 px-2 relative">
+                        <div className="p-0.5 md:p-1 w-[600px] max-w-full rounded-full border border-[#E8E0D2] flex items-center bg-white shadow-[0_2px_12px_rgba(23,23,23,0.06)] relative">
                             {/* Animated Background Pill */}
                             <div className="absolute inset-0.5 md:inset-1 flex" style={{ zIndex: 0 }}>
                                 <motion.div
                                     layout
                                     initial={false}
                                     animate={{
-                                        x: activeMetal === 'gold' ? '100%' : '0%',
-                                        background: activeMetal === 'gold' 
-                                            ? 'linear-gradient(to right, #BF953F, #FCF6BA, #B38728)' 
-                                            : 'linear-gradient(to right, #4B5563, #374151, #1F2937)',
+                                        x: activeMetal === 'gold' ? '0%' : (activeMetal === 'silver' ? '100%' : '200%'),
+                                        background: activeMetal === 'gold'
+                                            ? 'linear-gradient(135deg, #C6A04A, #E5CC85)'
+                                            : (activeMetal === 'silver' ? '#171717' : 'linear-gradient(135deg, #171717, #2A3644, #C6A04A)'),
                                         boxShadow: activeMetal === 'gold'
-                                            ? '0 8px 20px rgba(191,149,63,0.35)'
-                                            : '0 8px 20px rgba(0,0,0,0.25)'
+                                            ? '0 4px 14px rgba(198,160,74,0.3)'
+                                            : '0 4px 14px rgba(23,23,23,0.25)'
                                     }}
                                     transition={{ type: 'spring', stiffness: 350, damping: 28 }}
-                                    className="w-1/2 h-full rounded-full"
+                                    className="w-1/3 h-full rounded-full"
                                 />
                             </div>
 
-                            <button
-                                onClick={() => {
-                                    updateActiveMetal('silver');
-                                    navigate('/');
-                                }}
-                                className={`relative flex-1 py-1 px-4 md:px-8 rounded-full text-[11px] md:text-[13px] font-bold uppercase tracking-wider md:tracking-widest transition-colors duration-300 z-10 ${activeMetal === 'silver' ? 'text-white' : 'text-[#4A4A4A] hover:text-black'}`}
-                            >
-                                Silver
-                            </button>
+                            {/* Option 1: Gold */}
                             <button
                                 onClick={() => {
                                     updateActiveMetal('gold');
                                     navigate('/gold-collection');
                                 }}
-                                className={`relative flex-1 py-1 px-4 md:px-8 rounded-full text-[11px] md:text-[13px] font-bold uppercase tracking-wider md:tracking-widest transition-colors duration-300 z-10 ${activeMetal === 'gold' ? 'text-[#3D2B1F]' : 'text-[#4A4A4A] hover:text-black'}`}
+                                className={`relative flex-1 py-1.5 md:py-2 px-2 sm:px-4 md:px-6 rounded-full text-[10.5px] sm:text-[11px] md:text-[12.5px] font-bold uppercase tracking-wider md:tracking-widest transition-colors duration-300 z-10 text-center ${activeMetal === 'gold' ? 'text-[#171717]' : 'text-[#77716A] hover:text-[#171717]'}`}
                             >
                                 Gold
+                            </button>
+
+                            {/* Option 2: Silver */}
+                            <button
+                                onClick={() => {
+                                    updateActiveMetal('silver');
+                                    navigate('/');
+                                }}
+                                className={`relative flex-1 py-1.5 md:py-2 px-2 sm:px-4 md:px-6 rounded-full text-[10.5px] sm:text-[11px] md:text-[12.5px] font-bold uppercase tracking-wider md:tracking-widest transition-colors duration-300 z-10 text-center ${activeMetal === 'silver' ? 'text-white' : 'text-[#77716A] hover:text-[#171717]'}`}
+                            >
+                                Silver
+                            </button>
+
+                            {/* Option 3: Diamond */}
+                            <button
+                                onClick={() => {
+                                    updateActiveMetal('diamond');
+                                    navigate('/diamond-collection');
+                                }}
+                                className={`relative flex-1 py-1.5 md:py-2 px-2 sm:px-4 md:px-6 rounded-full text-[10.5px] sm:text-[11px] md:text-[12.5px] font-bold uppercase tracking-wider md:tracking-widest transition-colors duration-300 z-10 text-center ${activeMetal === 'diamond' ? 'text-white' : 'text-[#77716A] hover:text-[#171717]'}`}
+                            >
+                                Diamond
                             </button>
                         </div>
                     </div>

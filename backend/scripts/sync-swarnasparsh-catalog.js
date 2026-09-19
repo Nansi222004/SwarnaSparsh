@@ -116,7 +116,7 @@ async function syncSwarnaSparshCatalog() {
         $set: {
           name: finalName,
           slug: cleanSlug,
-          description: rawCat.description ? decodeHtml(rawCat.description) : `Exclusive collection of ${finalName} from Swarna Sparsh.`,
+          description: rawCat.description ? decodeHtml(rawCat.description) : `Exclusive collection of ${finalName} from Alankar Jewellers.`,
           image: imgUrl,
           bannerTitle: finalName,
           bannerSubtitle: `Handcrafted ${finalName} with Golden Touch`,
@@ -174,7 +174,7 @@ async function syncSwarnaSparshCatalog() {
     const discount = mrp > price ? Math.round(((mrp - price) / mrp) * 100) : 0;
 
     const images = (rawProd.images || []).map((img) => img.src).filter(Boolean);
-    const description = rawProd.description ? decodeHtml(rawProd.description) : `<p>${cleanName} by Swarna Sparsh.</p>`;
+    const description = rawProd.description ? decodeHtml(rawProd.description) : `<p>${cleanName} by Alankar Jewellers.</p>`;
     const audience = detectAudience(cleanName, matchedCatDoc?.slug || '');
 
     // Extract material or fallback
@@ -212,7 +212,7 @@ async function syncSwarnaSparshCatalog() {
       slug: cleanSlug,
       productCode: productCode,
       sku: sku,
-      brand: 'Swarna Sparsh',
+      brand: 'Alankar Jewellers',
       category: matchedCatDoc ? matchedCatDoc.name : 'Jewellery',
       categorySlug: matchedCatDoc ? matchedCatDoc.slug : 'jewellery',
       categoryId: matchedCatDoc ? matchedCatDoc._id : null,

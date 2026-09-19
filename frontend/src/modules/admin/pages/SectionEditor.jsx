@@ -5,6 +5,8 @@ import AllJewellerySectionEditor from '../components/editors/AllJewellerySection
 import BestStylesSectionEditor from '../components/editors/BestStylesSectionEditor';
 import ShopByBondEditor from '../components/editors/ShopByBondEditor';
 import ShopByColourEditor from '../components/editors/ShopByColourEditor';
+import ShopBySilverEditor from '../components/editors/ShopBySilverEditor';
+import ShopByDiamondEditor from '../components/editors/ShopByDiamondEditor';
 import SilverNewLaunchGridEditor from '../components/editors/SilverNewLaunchGridEditor';
 import MenLuxurySectionEditor from '../components/editors/MenLuxurySectionEditor';
 import CelebrateMenEditor from '../components/editors/CelebrateMenEditor';
@@ -39,6 +41,11 @@ const SectionEditor = () => {
     const pageConfig = getPageConfig(pageKey);
     const requestSeqRef = useRef(0);
 
+    const defaultSection = getSectionDefaultsForPage(pageKey).find((section) => (
+        section.sectionKey === id || section.sectionId === id
+    ));
+    const defaultItems = defaultSection?.items || [];
+
     const hydrateSection = (data) => {
         if (!data) return null;
         const items = (data.items || []).map((item) => ({
@@ -51,6 +58,8 @@ const SectionEditor = () => {
             pageKey: data.pageKey || pageKey,
             sectionType: data.sectionType || 'rich-content',
             label: data.label,
+            isActive: data.isActive !== false,
+            sortOrder: data.sortOrder ?? defaultSection?.sortOrder ?? 0,
             items,
             settings: data.settings || {}
         };
@@ -75,6 +84,27 @@ const SectionEditor = () => {
         loadSection('initial');
     }, [id, pageKey]);
 
+    const toggleActive = async () => {
+        if (!sectionData) return;
+        const nextActive = sectionData.isActive === false ? true : false;
+        setSectionData(prev => ({ ...prev, isActive: nextActive }));
+        try {
+            await adminService.updateSection(id, {
+                pageKey,
+                sectionKey: sectionData.sectionKey || id,
+                sectionType: sectionData.sectionType || 'rich-content',
+                label: sectionData.label,
+                isActive: nextActive,
+                sortOrder: sectionData.sortOrder ?? defaultSection?.sortOrder ?? 0,
+                settings: sectionData.settings || {},
+                items: sectionData.items || []
+            }, pageKey);
+            toast.success(`Section ${nextActive ? 'Enabled' : 'Disabled'}`);
+        } catch (e) {
+            toast.error("Failed to update section visibility");
+        }
+    };
+
     if (!sectionData) {
         return <div className="p-10 text-center">Loading Section Editor...</div>;
     }
@@ -87,7 +117,9 @@ const SectionEditor = () => {
                 pageKey,
                 sectionKey: sectionData.sectionKey || id,
                 sectionType: sectionData.sectionType || 'rich-content',
-                label: sectionData.label,
+                label: newData.label || newData.settings?.title || sectionData.label,
+                isActive: newData.isActive !== undefined ? newData.isActive : (sectionData.isActive !== false),
+                sortOrder: newData.sortOrder !== undefined ? Number(newData.sortOrder) : (sectionData.sortOrder ?? defaultSection?.sortOrder ?? 0),
                 settings: newData.settings || sectionData.settings || {},
                 items: newData.items || []
             };
@@ -109,6 +141,9 @@ const SectionEditor = () => {
                 if (seq === requestSeqRef.current) {
                     setSectionData((prev) => ({
                         ...prev,
+                        label: payload.label,
+                        isActive: payload.isActive,
+                        sortOrder: payload.sortOrder,
                         settings: newData.settings || prev.settings || {},
                         items: (newData.items || []).map((item) => ({
                             id: item.itemId || item.id || item._id || `${Date.now()}_${Math.random()}`,
@@ -126,11 +161,6 @@ const SectionEditor = () => {
             if (seq === requestSeqRef.current) setSaving(false);
         }
     };
-
-    const defaultSection = getSectionDefaultsForPage(pageKey).find((section) => (
-        section.sectionKey === id || section.sectionId === id
-    ));
-    const defaultItems = defaultSection?.items || [];
 
     // Render appropriate editor based on section ID or type
     const renderEditor = () => {
@@ -164,6 +194,14 @@ const SectionEditor = () => {
 
         if ((sectionData.sectionKey || id) === 'shop-by-colour') {
             return <ShopByColourEditor sectionData={sectionData} onSave={handleSave} defaultSection={defaultSection} />;
+        }
+
+        if ((sectionData.sectionKey || id) === 'shop-by-silver') {
+            return <ShopBySilverEditor sectionData={sectionData} onSave={handleSave} defaultSection={defaultSection} />;
+        }
+
+        if ((sectionData.sectionKey || id) === 'shop-by-diamond') {
+            return <ShopByDiamondEditor sectionData={sectionData} onSave={handleSave} defaultSection={defaultSection} />;
         }
 
         if ((sectionData.sectionKey || id) === 'shop-by-bond') {
@@ -239,6 +277,9 @@ const SectionEditor = () => {
             'silver-curated',
             'luxury-within-reach',
             'category-grid',
+            'gold-collection-grid',
+            'silver-collection-grid',
+            'diamond-collection-grid',
             'collections',
             'categories-grid',
             'trending-near-you',
@@ -270,7 +311,12 @@ const SectionEditor = () => {
             'gold-curated-bond',
             'gold-curated-showcase',
             'gold-lifestyle-grid',
-            'gold-products-listing'
+            'gold-products-listing',
+            'hero-banners-diamond',
+            'diamond-category-grid',
+            'diamond-featured-creations',
+            'diamond-trust-markers',
+            'diamond-products-listing'
         ];
 
         if (supportedSections.includes(sectionData.sectionKey || id)) {
@@ -294,6 +340,36 @@ const SectionEditor = () => {
                         onClick: () => loadSection('reload')
                     }}
                 />
+
+                {/* Section Overview & Status Bar */}
+                <div className="mb-6 bg-white border border-gray-200 rounded-xl p-4 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div className="flex items-center gap-3">
+                        <span className="text-xs font-bold uppercase tracking-widest text-gray-500">Status:</span>
+                        <button
+                            type="button"
+                            onClick={toggleActive}
+                            className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-widest transition-all flex items-center gap-2 cursor-pointer shadow-sm ${
+                                sectionData.isActive !== false
+                                    ? 'bg-green-100 text-green-800 hover:bg-green-200 border border-green-300'
+                                    : 'bg-red-100 text-red-800 hover:bg-red-200 border border-red-300'
+                            }`}
+                        >
+                            <span className={`w-2.5 h-2.5 rounded-full ${sectionData.isActive !== false ? 'bg-green-600' : 'bg-red-600'}`} />
+                            {sectionData.isActive !== false ? 'Active (Visible on Storefront)' : 'Inactive (Hidden on Storefront)'}
+                        </button>
+                    </div>
+
+                    <div className="flex items-center gap-4 text-xs text-gray-600">
+                        <div>
+                            <span className="font-bold uppercase tracking-widest text-gray-400 mr-2">Section Key:</span>
+                            <code className="bg-gray-100 px-2 py-1 rounded text-gray-800 font-mono text-[11px] border border-gray-200">{sectionData.sectionKey || id}</code>
+                        </div>
+                        <div>
+                            <span className="font-bold uppercase tracking-widest text-gray-400 mr-2">Display Order:</span>
+                            <span className="bg-gray-100 px-2.5 py-1 rounded font-bold text-gray-800 border border-gray-200">{sectionData.sortOrder ?? defaultSection?.sortOrder ?? 0}</span>
+                        </div>
+                    </div>
+                </div>
 
                 {renderEditor()}
             </div>
