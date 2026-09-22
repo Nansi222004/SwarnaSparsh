@@ -52,7 +52,7 @@ const ProductCard = ({ product, isWishlistPage = false, requireLogin = false, lo
         if (product?.goldCategory) return `${product.goldCategory}K Gold`;
         if (product?.silverCategory) return `${product.silverCategory} Silver`;
         if (product?.settingPurity) return product.settingPurity;
-        if (product?.material && product.material !== 'Silver') return product.material;
+        if (product?.material) return product.material;
         return null;
     })();
 

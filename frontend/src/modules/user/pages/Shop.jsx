@@ -15,6 +15,7 @@ import {
   SlidersHorizontal,
   ArrowLeft,
   ArrowUpDown,
+  Search,
 } from "lucide-react";
 import HorizontalFilters from "../components/HorizontalFilters";
 import CategoryHeroBanner from "../components/CategoryHeroBanner";
@@ -450,7 +451,9 @@ const Shop = () => {
     }
 
     const qp = new URLSearchParams(location.search);
+    const hasSearch = Boolean(qp.get("search")?.trim());
     const isExplicitMala = Boolean(
+      hasSearch ||
       qp.get("category") === "malas" ||
       category === "malas" ||
       activeCategory?.slug === "malas" ||
@@ -481,6 +484,14 @@ const Shop = () => {
     activeCategory,
     selectedCategory,
   ]);
+
+  const trendingRecommendations = useMemo(() => {
+    if (!Array.isArray(products)) return [];
+    return products
+      .filter((p) => p && !isUnrelatedProduct(p))
+      .sort((a, b) => (b.rating || 0) - (a.rating || 0))
+      .slice(0, 4);
+  }, [products]);
 
   useEffect(() => {
     // Use a local flag to avoid multiple updates in the same cycle
@@ -865,7 +876,9 @@ const Shop = () => {
 
     baseProducts = baseProducts.filter((p) => !isUnrelatedProduct(p));
 
+    const hasSearchQuery = Boolean(searchQuery?.trim());
     const isMalaExplicitContext = Boolean(
+      hasSearchQuery ||
       categoryQuery === "malas" ||
       category === "malas" ||
       activeCategory?.slug === "malas" ||
@@ -948,10 +961,7 @@ const Shop = () => {
     }
     if (searchQuery) {
       title = `Search: ${searchQuery}`;
-    }
-
-    // Apply Title overrides from Local Filters
-    if (selectedCategory !== "All") {
+    } else if (selectedCategory !== "All") {
       title = selectedCategory;
     } else if (filterNewArrivals && path === "/shop") {
       title = "Just Arrived";
@@ -997,6 +1007,15 @@ const Shop = () => {
     if (searchQuery) {
       const normalizedSearch = String(searchQuery).trim().toLowerCase();
       result = result.filter((product) => {
+        const tagsList = Array.isArray(product.tags)
+          ? product.tags
+          : typeof product.tags === "object" && product.tags !== null
+          ? Object.keys(product.tags).filter((k) => product.tags[k])
+          : [];
+        const variantNames = Array.isArray(product.variants)
+          ? product.variants.map((variant) => variant?.name || "")
+          : [];
+
         const haystack = [
           product.name,
           product.description,
@@ -1005,8 +1024,8 @@ const Shop = () => {
           product.categorySlug,
           product.settingMetal,
           product.material,
-          ...(product.tags || []),
-          ...(product.variants || []).map((variant) => variant.name),
+          ...tagsList,
+          ...variantNames,
         ]
           .filter(Boolean)
           .join(" ")
@@ -1358,6 +1377,19 @@ const Shop = () => {
               <h1 className="text-base md:text-xl font-serif font-bold text-[#141211] leading-tight truncate tracking-wide">
                 {pageTitle}
               </h1>
+              {searchQuery && (
+                <p className="text-[11px] md:text-xs text-stone-500 font-medium tracking-wide mt-0.5">
+                  {isServerProductsLoading ? (
+                    "Searching designs..."
+                  ) : (
+                    `${serverPagination?.total ?? productsToRender.length} ${
+                      (serverPagination?.total ?? productsToRender.length) === 1
+                        ? "Design"
+                        : "Designs"
+                    } Found`
+                  )}
+                </p>
+              )}
             </div>
 
 
@@ -1482,6 +1514,80 @@ const Shop = () => {
                         </button>
                       </div>
                     )}
+                </div>
+              );
+            }
+
+            if (searchQuery) {
+              return (
+                <div className="py-12 md:py-16 text-center">
+                  <div className="max-w-md mx-auto px-4">
+                    <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[#FAF8F5] border border-[#C59B27]/30 flex items-center justify-center text-[#C59B27]">
+                      <Search className="w-7 h-7" />
+                    </div>
+                    <h3 className="text-xl md:text-2xl font-serif font-bold text-[#141211] mb-2">
+                      No results for "{searchQuery}"
+                    </h3>
+                    <p className="text-stone-500 text-xs md:text-sm mb-6 leading-relaxed">
+                      We couldn't find any designs matching your search. Try checking for typos, searching broader terms, or explore our top categories.
+                    </p>
+                    <div className="flex flex-wrap items-center justify-center gap-2 mb-8">
+                      {[
+                        { label: "Necklaces", query: "necklace" },
+                        { label: "Rings", query: "finger-ring" },
+                        { label: "Bangles", query: "bangles" },
+                        { label: "Earrings", query: "earrings" },
+                      ].map((item) => (
+                        <button
+                          key={item.label}
+                          type="button"
+                          onClick={() => {
+                            navigate(`/shop?category=${item.query}`);
+                          }}
+                          className="px-4 py-1.5 rounded-full border border-stone-300 text-xs font-medium text-stone-700 hover:border-[#C59B27] hover:text-[#C59B27] hover:bg-[#FAF8F5] transition-all"
+                        >
+                          {item.label}
+                        </button>
+                      ))}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={clearAllFilters}
+                      className="inline-flex items-center gap-2 bg-[#141211] text-[#E8D198] border border-[#C59B27]/40 px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider hover:bg-[#1C1917] transition-all shadow-md"
+                    >
+                      Clear Search & View All
+                    </button>
+                  </div>
+
+                  {trendingRecommendations.length > 0 && (
+                    <div className="mt-16 pt-12 border-t border-stone-200 text-left">
+                      <div className="flex items-center justify-between mb-6">
+                        <div>
+                          <span className="text-[10px] uppercase font-bold tracking-widest text-[#C59B27]">
+                            Curated Selection
+                          </span>
+                          <h4 className="text-lg md:text-xl font-serif font-bold text-[#141211]">
+                            You May Also Like
+                          </h4>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => navigate("/shop")}
+                          className="text-xs font-bold text-[#C59B27] hover:underline"
+                        >
+                          View All Designs &rarr;
+                        </button>
+                      </div>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-3.5 md:gap-6">
+                        {trendingRecommendations.map((product) => (
+                          <ProductCard
+                            key={product.id || product._id}
+                            product={product}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               );
             }

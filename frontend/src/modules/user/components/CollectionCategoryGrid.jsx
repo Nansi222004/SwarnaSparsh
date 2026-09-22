@@ -79,6 +79,13 @@ const CollectionCategoryGrid = ({
     const sectionData = externalSectionData !== null ? externalSectionData : homepageSections?.[sectionKey];
     const [activeIndex, setActiveIndex] = useState(0);
 
+    const categories = useMemo(() => {
+        const rawItems = Array.isArray(sectionData?.items) && sectionData.items.length > 0
+            ? sectionData.items
+            : defaultItems;
+        return normalizeItems(rawItems, liveCategories, defaultItems);
+    }, [sectionData?.items, liveCategories, defaultItems]);
+
     // 1. Independent visibility check: respect isActive toggle from Admin CMS
     if (sectionData && sectionData.isActive === false) {
         return null;
@@ -87,13 +94,6 @@ const CollectionCategoryGrid = ({
     if (externalSectionData === null && isSuccess && Object.keys(homepageSections).length > 0 && !sectionData) {
         return null;
     }
-
-    const categories = useMemo(() => {
-        const rawItems = Array.isArray(sectionData?.items) && sectionData.items.length > 0
-            ? sectionData.items
-            : defaultItems;
-        return normalizeItems(rawItems, liveCategories, defaultItems);
-    }, [sectionData?.items, liveCategories, defaultItems]);
 
     const leadCategory = categories[0] || null;
     const supportingCategories = categories.slice(1);

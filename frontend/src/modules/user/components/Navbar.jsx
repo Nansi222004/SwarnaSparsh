@@ -10,6 +10,7 @@ import api from '../../../services/api';
 import { motion, AnimatePresence } from 'framer-motion';
 import { getProductPrice, formatCurrency } from '../utils/price';
 import { getSearchThumbUrl } from '../../../utils/imageUtils';
+import { handleImageError } from '../../../utils/imageFallbacks';
 
 const Navbar = () => {
     const {
@@ -105,25 +106,30 @@ const Navbar = () => {
         return () => clearInterval(interval);
     }, [placeholders]);
 
-    // Predictive Search Logic
+    // Predictive Search Logic with Debounce and Suggestion API
     useEffect(() => {
-        const fetchResults = async () => {
-            if (searchTerm.trim().length < 2) {
-                setSearchResults([]);
-                return;
-            }
-            setIsSearching(true);
+        const trimmed = searchTerm.trim();
+        if (trimmed.length < 2) {
+            setSearchResults([]);
+            setIsSearching(false);
+            return;
+        }
+        setIsSearching(true);
+        const timer = setTimeout(async () => {
             try {
-                const response = await api.get(`/public/products?search=${searchTerm}&limit=6`);
-                setSearchResults(response.data.products || []);
+                const response = await api.get('/public/products/search', {
+                    params: { q: trimmed }
+                });
+                const suggestions = response.data?.data?.suggestions || response.data?.suggestions || [];
+                setSearchResults(suggestions);
             } catch (err) {
-                console.error("Search failed:", err);
+                console.error("Search suggestions failed:", err);
+                setSearchResults([]);
             } finally {
                 setIsSearching(false);
             }
-        };
+        }, 250);
 
-        const timer = setTimeout(fetchResults, 300);
         return () => clearTimeout(timer);
     }, [searchTerm]);
 
@@ -140,6 +146,9 @@ const Navbar = () => {
         if (event.key === 'Enter') {
             event.preventDefault();
             submitSearch();
+        } else if (event.key === 'Escape') {
+            event.preventDefault();
+            setShowResults(false);
         }
     };
 
@@ -149,6 +158,98 @@ const Navbar = () => {
             [sectionId]: !prev[sectionId]
         }));
     };
+
+    const renderSearchDropdown = (isMobile = false) => (
+        <AnimatePresence>
+            {showResults && searchTerm.trim().length >= 2 && (
+                <motion.div
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 8 }}
+                    transition={{ duration: 0.18 }}
+                    onMouseDown={(e) => e.preventDefault()}
+                    className={`absolute top-full left-0 right-0 mt-2 bg-white border border-[#E8DFD0] rounded-2xl shadow-2xl z-[300] overflow-hidden max-h-[440px] flex flex-col ${isMobile ? 'mx-3' : ''}`}
+                >
+                    {isSearching ? (
+                        <div className="p-8 text-center flex flex-col items-center justify-center">
+                            <div className="w-6 h-6 border-2 border-[#C59B27] border-t-transparent rounded-full animate-spin mb-2" />
+                            <span className="text-[10px] font-bold text-[#706760] uppercase tracking-widest">Searching products...</span>
+                        </div>
+                    ) : searchResults.length > 0 ? (
+                        <div className="p-2 flex flex-col overflow-y-auto">
+                            <div className="px-3 py-1.5 flex items-center justify-between border-b border-stone-100 mb-1">
+                                <span className="text-[9px] font-bold text-[#8C6A12] uppercase tracking-[0.2em]">Suggested Products</span>
+                                <span className="text-[10px] text-stone-400 font-sans">{searchResults.length} matches</span>
+                            </div>
+                            <div className="flex flex-col divide-y divide-stone-100">
+                                {searchResults.map((product) => {
+                                    const prodPrice = Number(product.price || getProductPrice(product) || 0);
+                                    const prodCat = product.category || product.categorySlug || "";
+                                    const prodMat = product.material || "";
+                                    const prodThumb = getSearchThumbUrl(product.primaryImage || product.images?.[0]);
+                                    const prodId = product.id || product._id;
+
+                                    return (
+                                        <div
+                                            key={prodId}
+                                            onClick={() => {
+                                                navigate(`/product/${prodId}`);
+                                                setSearchTerm('');
+                                                setShowResults(false);
+                                                setShowMobileSearch(false);
+                                            }}
+                                            className="flex items-center gap-3.5 p-2.5 hover:bg-[#FAF8F5] rounded-xl cursor-pointer transition-colors group"
+                                        >
+                                            <div className="w-12 h-12 rounded-lg overflow-hidden bg-stone-50 border border-stone-100 flex-shrink-0">
+                                                <img
+                                                    src={prodThumb}
+                                                    alt={product.name}
+                                                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                                                    onError={(e) => handleImageError(e, product, prodCat)}
+                                                />
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <h4 className="text-[12px] font-serif font-medium text-stone-900 group-hover:text-[#C59B27] truncate transition-colors leading-snug">
+                                                    {product.name}
+                                                </h4>
+                                                <div className="flex items-center gap-2 mt-1 flex-wrap">
+                                                    <span className="text-[11px] font-bold text-[#C59B27] font-sans">
+                                                        {prodPrice > 0 ? formatCurrency(prodPrice) : 'Price on Request'}
+                                                    </span>
+                                                    {prodCat && (
+                                                        <span className="text-[9px] font-semibold text-stone-400 uppercase tracking-wider">
+                                                            {prodCat}
+                                                        </span>
+                                                    )}
+                                                    {prodMat && (
+                                                        <span className="text-[8.5px] px-1.5 py-0.5 bg-[#FAF7F0] text-stone-600 rounded font-sans tracking-tight border border-[#E8DFD0]">
+                                                            {prodMat}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                            <button
+                                onClick={submitSearch}
+                                className="w-full mt-2 py-2.5 bg-[#FAF8F5] hover:bg-[#F5EFEB] text-[10px] font-bold text-[#706760] hover:text-[#1C1917] uppercase tracking-widest transition-colors rounded-xl border border-[#E8DFD0] flex items-center justify-center gap-2"
+                            >
+                                <span>View all results for "{searchTerm.trim()}"</span>
+                                <Search className="w-3 h-3 text-[#C59B27]" />
+                            </button>
+                        </div>
+                    ) : (
+                        <div className="p-6 text-center">
+                            <p className="text-sm font-medium text-stone-700 mb-1">No matching products found</p>
+                            <p className="text-xs text-stone-400 italic">Try searching for rings, necklaces, bangles, earrings, or gold.</p>
+                        </div>
+                    )}
+                </motion.div>
+            )}
+        </AnimatePresence>
+    );
 
     return (
         <nav
@@ -233,67 +334,7 @@ const Navbar = () => {
                         </div>
 
                         {/* Search Results Dropdown */}
-                        <AnimatePresence>
-                            {showResults && (searchTerm.length >= 2) && (
-                                <motion.div
-                                    initial={{ opacity: 0, y: 10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, y: 10 }}
-                                    className="absolute top-full left-0 right-0 mt-2 bg-white border border-[#E8DFD0] rounded-xl shadow-2xl z-[200] overflow-hidden"
-                                >
-                                    {isSearching ? (
-                                        <div className="p-8 text-center">
-                                            <div className="w-6 h-6 border-2 border-[#C59B27] border-t-transparent rounded-full animate-spin mx-auto mb-2" />
-                                            <span className="text-[10px] font-bold text-[#706760] uppercase tracking-widest">Searching...</span>
-                                        </div>
-                                    ) : searchResults.length > 0 ? (
-                                        <div className="p-2">
-                                            <div className="px-4 py-2 mb-1">
-                                                <span className="text-[9px] font-bold text-[#8C6A12] uppercase tracking-[0.2em]">Suggested Products</span>
-                                            </div>
-                                            <div className="grid grid-cols-1 gap-1">
-                                                {searchResults.map((product) => (
-                                                    <div
-                                                        key={product._id}
-                                                        onClick={() => {
-                                                            navigate(`/product/${product._id}`);
-                                                            setSearchTerm('');
-                                                            setShowResults(false);
-                                                        }}
-                                                        className="flex items-center gap-4 p-3 hover:bg-[#FAF8F5] rounded-lg cursor-pointer transition-colors group"
-                                                    >
-                                                        <div className="w-12 h-12 rounded-lg overflow-hidden bg-gray-50 flex-shrink-0">
-                                                            <img
-                                                                src={getSearchThumbUrl(product.images?.[0] || product.primaryImage)}
-                                                                alt={product.name}
-                                                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                                                            />
-                                                        </div>
-                                                        <div className="flex-1">
-                                                            <h4 className="text-[11px] font-bold text-gray-900 uppercase tracking-widest line-clamp-1">{product.name}</h4>
-                                                            <div className="flex items-center gap-2 mt-0.5">
-                                                                <span className="text-[10px] font-black text-[#C59B27]">{formatCurrency(getProductPrice(product))}</span>
-                                                                <span className="text-[9px] font-medium text-gray-400">{product.category?.name || product.category}</span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                            <button
-                                                onClick={submitSearch}
-                                                className="w-full mt-2 py-3 bg-[#FAF8F5] text-[10px] font-bold text-[#706760] uppercase tracking-widest hover:bg-[#F5EFEB] hover:text-[#1C1917] transition-colors border-t border-[#E8DFD0]"
-                                            >
-                                                View all results for "{searchTerm}"
-                                            </button>
-                                        </div>
-                                    ) : (
-                                        <div className="p-8 text-center">
-                                            <p className="text-sm font-medium text-gray-400 italic">No products found for "{searchTerm}"</p>
-                                        </div>
-                                    )}
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
+                        {renderSearchDropdown(false)}
                     </div>
 
                     {/* Right Section: Animated Icons */}
@@ -613,7 +654,7 @@ const Navbar = () => {
                             animate={{ height: 'auto', opacity: 1, y: 0 }}
                             exit={{ height: 0, opacity: 0, y: -8 }}
                             transition={{ duration: 0.28, ease: 'easeOut' }}
-                            className="w-full overflow-hidden"
+                            className="w-full relative z-[250] overflow-visible"
                             style={{
                                 background: '#FFFFFF',
                                 borderBottom: '1px solid #F0F0F0',
@@ -653,6 +694,7 @@ const Navbar = () => {
                                 >
                                     <Search className="w-[17px] h-[17px]" strokeWidth={2.2} />
                                 </button>
+                                {renderSearchDropdown(true)}
                             </div>
                         </motion.div>
                     )}

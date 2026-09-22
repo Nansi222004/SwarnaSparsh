@@ -1,19 +1,10 @@
 export const isUnrelatedProduct = (product = {}) => {
     const cat = String(product?.categorySlug || product?.category || '').toLowerCase();
     const name = String(product?.name || '').toLowerCase();
-    const material = String(product?.material || '').toLowerCase();
     return (
         /^(hand-bags|clutches|potli-bag|sling-bag)$/.test(cat) ||
         /\b(bag|clutch|potli|sling)\b/i.test(cat) ||
-        /\b(bag|clutch|potli|sling)\b/i.test(name) ||
-        // Plated, alloy, antique finish imitation, and oxidised products are not genuine gold/silver/diamond
-        material.includes('plated') ||
-        material.includes('alloy') ||
-        material.includes('antique finish') ||
-        name.includes('oxydis') ||
-        material.includes('oxydis') ||
-        name.includes('oxidi') ||
-        material.includes('oxidi')
+        /\b(bag|clutch|potli|sling)\b/i.test(name)
     );
 };
 
@@ -136,9 +127,38 @@ export const matchesRequestedMetal = (product = {}, requestedMetal = '') => {
     const normalizedRequest = String(requestedMetal || '').trim().toLowerCase();
     if (!normalizedRequest || normalizedRequest === 'all') return true;
 
-    if (normalizedRequest === 'diamond') return isDiamondProduct(product);
-    if (normalizedRequest === 'gold') return isGoldProduct(product);
-    if (normalizedRequest === 'silver') return isSilverProduct(product);
+    const material = String(product?.material || product?.metal || '').trim().toLowerCase();
+    const name = String(product?.name || '').trim().toLowerCase();
+    const settingMetal = String(product?.settingMetal || '').trim().toLowerCase();
+
+    if (normalizedRequest === 'diamond') {
+        return (
+            isDiamondProduct(product) ||
+            material.includes('diamond') ||
+            name.includes('diamond') ||
+            /\b(ad|american\s*diamond)\b/i.test(name)
+        );
+    }
+
+    if (normalizedRequest === 'gold') {
+        return (
+            isGoldProduct(product) ||
+            material.includes('gold') ||
+            settingMetal.includes('gold') ||
+            /\bgold\b/i.test(name) ||
+            Boolean(product?.goldCategory)
+        );
+    }
+
+    if (normalizedRequest === 'silver') {
+        return (
+            isSilverProduct(product) ||
+            material.includes('silver') ||
+            settingMetal.includes('silver') ||
+            /\bsilver\b/i.test(name) ||
+            Boolean(product?.silverCategory)
+        );
+    }
 
     return true;
 };

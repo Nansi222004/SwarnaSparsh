@@ -3,6 +3,11 @@ const Category = require("../../../models/Category");
 const mongoose = require("mongoose");
 const { success, error } = require("../../../utils/apiResponse");
 const { normalizeProductForResponse } = require("../../../utils/productCompatibility");
+const {
+  buildSearchMongoFilter,
+  scoreProductRelevance,
+  normalizeTerm
+} = require("../../../utils/searchHelper");
 
 const getApprovedSellerScope = async () => ({
   $or: [{ sellerId: null }, { sellerId: { $exists: false } }]
@@ -71,19 +76,16 @@ exports.getProducts = async (req, res) => {
     const effectiveMinPrice = req.query.minPrice ?? req.query.price_min ?? req.query.priceMin ?? null;
     const effectiveMaxPrice = req.query.maxPrice ?? req.query.price_max ?? req.query.priceMax ?? null;
 
+    const cleanSearch = String(search || "").trim();
     const resolvedPage = clampInt(page, 1, { min: 1, max: 100000 });
     const resolvedLimit = clampInt(limit, 20, { min: 1, max: 60 });
 
-    // 1. Text Search
-    if (search) {
-      andFilters.push({
-        $or: [
-          { name: { $regex: search, $options: "i" } },
-          { brand: { $regex: search, $options: "i" } },
-          { description: { $regex: search, $options: "i" } },
-          { settingMetal: { $regex: search, $options: "i" } }
-        ]
-      });
+    // 1. Text Search across name, category, material, settingMetal, tags, description
+    if (cleanSearch) {
+      const searchMongoFilter = buildSearchMongoFilter(cleanSearch);
+      if (searchMongoFilter) {
+        andFilters.push(searchMongoFilter);
+      }
     }
 
     // 2. Category Filter
@@ -106,27 +108,49 @@ exports.getProducts = async (req, res) => {
       if (effectiveMaxPrice) query["variants.price"].$lte = Number(effectiveMaxPrice);
     }
 
-    // Exclude unrelated categories (e.g. bags, clutches, potlis) and non-fine oxidised imitation items from public storefront
-    const excludedCategorySlugs = ["hand-bags", "clutches", "potli-bag", "sling-bag"];
-    andFilters.push({
-      categorySlug: { $nin: excludedCategorySlugs },
-      category: { $not: { $regex: "bag|clutch|potli|sling|oxidi|oxydis", $options: "i" } },
-      name: { $not: { $regex: "\\bbag\\b|\\bclutch\\b|\\bpotli\\b|\\bsling\\b|oxidi|oxydis", $options: "i" } },
-      material: { $not: { $regex: "oxidi|oxydis", $options: "i" } }
-    });
+    // Exclude unrelated categories (e.g. bags, clutches, potlis) unless explicitly searched for
+    const isBagExplicitlySearched = cleanSearch && /\b(bag|clutch|potli|sling)\b/i.test(cleanSearch);
+    if (!isBagExplicitlySearched) {
+      const excludedCategorySlugs = ["hand-bags", "clutches", "potli-bag", "sling-bag"];
+      andFilters.push({
+        categorySlug: { $nin: excludedCategorySlugs },
+        category: { $not: { $regex: "\\b(bag|clutch|potli|sling)\\b", $options: "i" } },
+        name: { $not: { $regex: "\\b(bag|clutch|potli|sling)\\b", $options: "i" } }
+      });
+    }
+
+    // When NOT searching, exclude oxidised imitation items if desired.
+    // When a search query is active, DO NOT block valid silver-plated / oxidised jewellery products!
+    if (!cleanSearch) {
+      andFilters.push({
+        material: { $not: { $regex: "oxidi|oxydis", $options: "i" } },
+        name: { $not: { $regex: "oxidi|oxydis", $options: "i" } }
+      });
+    }
 
     // Exclude Mala Set products from general All Jewellery storefront results
     // They remain active in MongoDB and accessible if category=malas or search=mala is specifically requested
     const isMalaExplicitlyRequested = Boolean(
       (category && /^(malas?|mala-set)$/i.test(String(category).trim())) ||
-      (search && /\bmala\b/i.test(String(search).trim()))
+      (cleanSearch && /\bmala\b/i.test(cleanSearch))
     );
+    const isChokerOrNecklaceSearch = cleanSearch && /\b(choker|chokar|necklace)\b/i.test(cleanSearch);
+
     if (!isMalaExplicitlyRequested) {
-      andFilters.push({
-        categorySlug: { $ne: "malas" },
-        category: { $not: { $regex: "^malas?$", $options: "i" } },
-        name: { $not: { $regex: "\\bmala(\\s*set)?\\b", $options: "i" } }
-      });
+      if (isChokerOrNecklaceSearch) {
+        // Allow choker necklaces with beads/moti mala in name, but exclude standalone mala sets
+        andFilters.push({
+          categorySlug: { $ne: "malas" },
+          category: { $not: { $regex: "^malas?$", $options: "i" } },
+          name: { $not: { $regex: "\\bmala\\s*set\\b", $options: "i" } }
+        });
+      } else {
+        andFilters.push({
+          categorySlug: { $ne: "malas" },
+          category: { $not: { $regex: "^malas?$", $options: "i" } },
+          name: { $not: { $regex: "\\bmala(\\s*set)?\\b", $options: "i" } }
+        });
+      }
     }
 
     // 3.1 Metal + purity filters
@@ -370,25 +394,84 @@ exports.getProducts = async (req, res) => {
       query.$and = andFilters;
     }
 
-    // 6. Execute Query with Pagination
-    let products = [];
-    if (sortOption) {
-      products = await Product.find(query)
-        .select("name slug productCode brand images videoUrl variants tags rating reviewCount categories category categorySlug categoryId navShopByCategory weight weightUnit goldCategory silverCategory material settingMetal settingPurity diamondType audience sold createdAt updatedAt")
-        .populate("categories", "name slug")
-        .sort(sortOption)
-        .limit(resolvedLimit)
-        .skip((resolvedPage - 1) * resolvedLimit)
-        .lean();
-    } else {
-      // random: sample results (pagination is not deterministic; we return a random page-1 slice).
-      products = await Product.aggregate([
-        { $match: query },
-        { $sample: { size: resolvedLimit } },
-      ]);
-    }
+    const selectFields = "name slug productCode brand images videoUrl variants tags rating reviewCount categories category categorySlug categoryId navShopByCategory weight weightUnit goldCategory silverCategory material settingMetal settingPurity diamondType audience sold createdAt updatedAt description";
 
-    const total = await Product.countDocuments(query);
+    let products = [];
+    let total = 0;
+
+    if (cleanSearch) {
+      // 6a. Search Mode: Retrieve candidates matching Mongo filter, score them for relevance, and sort
+      const candidates = await Product.find(query)
+        .select(selectFields)
+        .populate("categories", "name slug")
+        .lean();
+
+      // Score candidates and remove non-relevant (score === 0)
+      const scoredCandidates = candidates
+        .map((p) => {
+          const relevanceScore = scoreProductRelevance(p, cleanSearch);
+          return { product: p, relevanceScore };
+        })
+        .filter((item) => item.relevanceScore > 0);
+
+      // Helper to compute effective display/min price
+      const getMinPrice = (p) => {
+        if (Array.isArray(p.variants) && p.variants.length > 0) {
+          const prices = p.variants.map((v) => Number(v.price || 0)).filter((pr) => pr > 0);
+          if (prices.length > 0) return Math.min(...prices);
+        }
+        return Number(p.price || 0);
+      };
+
+      // Apply Sort:
+      // If user specified an explicit sort (e.g. priceLtoH, priceHtoL), respect it.
+      // Otherwise, default to relevance-based ranking (highest relevance score first).
+      if (sort === "priceLtoH" || sort === "price-asc") {
+        scoredCandidates.sort((a, b) => getMinPrice(a.product) - getMinPrice(b.product));
+      } else if (sort === "priceHtoL" || sort === "price-desc") {
+        scoredCandidates.sort((a, b) => getMinPrice(b.product) - getMinPrice(a.product));
+      } else if (sort === "rating") {
+        scoredCandidates.sort((a, b) => (Number(b.product.rating) || 0) - (Number(a.product.rating) || 0));
+      } else if (sort === "most-sold") {
+        scoredCandidates.sort((a, b) => (Number(b.product.sold) || 0) - (Number(a.product.sold) || 0));
+      } else if (sort === "discount") {
+        scoredCandidates.sort((a, b) => {
+          const discA = Number(a.product.variants?.[0]?.discount || 0);
+          const discB = Number(b.product.variants?.[0]?.discount || 0);
+          return discB - discA;
+        });
+      } else {
+        // Default search ranking: Highest relevance score first, tie-break by newest
+        scoredCandidates.sort((a, b) => {
+          if (b.relevanceScore !== a.relevanceScore) {
+            return b.relevanceScore - a.relevanceScore;
+          }
+          return new Date(b.product.createdAt || 0) - new Date(a.product.createdAt || 0);
+        });
+      }
+
+      total = scoredCandidates.length;
+      products = scoredCandidates
+        .slice((resolvedPage - 1) * resolvedLimit, resolvedPage * resolvedLimit)
+        .map((item) => item.product);
+    } else {
+      // 6b. Standard Catalogue Browsing: Database-level pagination & sort
+      if (sortOption) {
+        products = await Product.find(query)
+          .select(selectFields)
+          .populate("categories", "name slug")
+          .sort(sortOption)
+          .limit(resolvedLimit)
+          .skip((resolvedPage - 1) * resolvedLimit)
+          .lean();
+      } else {
+        products = await Product.aggregate([
+          { $match: query },
+          { $sample: { size: resolvedLimit } },
+        ]);
+      }
+      total = await Product.countDocuments(query);
+    }
 
     const isDiamondOriginFilter = effectiveStone === "natural" || effectiveStone === "lab_grown";
 
@@ -501,25 +584,90 @@ exports.getProductsByIds = async (req, res) => {
 };
 
 /**
- * GET /api/search/suggestions
- * Returns minimal product names matching search query
+ * GET /api/public/products/search
+ * Returns relevance-ranked product suggestions for header autocomplete.
  */
 exports.searchProducts = async (req, res) => {
   try {
-    const { q } = req.query;
-    if (!q) return success(res, { suggestions: [] });
+    const rawQ = req.query.q || req.query.search || "";
+    const cleanSearch = String(rawQ).trim();
+    if (!cleanSearch) return success(res, { suggestions: [] });
 
     const approvedSellerScope = await getApprovedSellerScope();
-    const suggestions = await Product.find({
+    const searchFilter = buildSearchMongoFilter(cleanSearch);
+    if (!searchFilter) return success(res, { suggestions: [] });
+
+    const query = {
       status: "Active",
       active: { $ne: false },
-      name: { $regex: q, $options: "i" },
-      ...approvedSellerScope
-    })
-    .select("name slug images")
-    .limit(10)
-    .lean();
+      ...approvedSellerScope,
+      $and: [searchFilter]
+    };
 
-    return success(res, { suggestions });
-  } catch (err) { return error(res, err.message); }
+    // Exclude bags unless explicitly searched
+    if (!/\b(bag|clutch|potli|sling)\b/i.test(cleanSearch)) {
+      query.$and.push({
+        categorySlug: { $nin: ["hand-bags", "clutches", "potli-bag", "sling-bag"] },
+        name: { $not: { $regex: "\\b(bag|clutch|potli|sling)\\b", $options: "i" } }
+      });
+    }
+
+    // Exclude malas unless explicitly searched
+    const isMalaExplicit = /\bmala\b/i.test(cleanSearch);
+    const isChokerOrNecklace = /\b(choker|chokar|necklace)\b/i.test(cleanSearch);
+    if (!isMalaExplicit) {
+      if (isChokerOrNecklace) {
+        query.$and.push({
+          categorySlug: { $ne: "malas" },
+          name: { $not: { $regex: "\\bmala\\s*set\\b", $options: "i" } }
+        });
+      } else {
+        query.$and.push({
+          categorySlug: { $ne: "malas" },
+          name: { $not: { $regex: "\\bmala(\\s*set)?\\b", $options: "i" } }
+        });
+      }
+    }
+
+    const candidates = await Product.find(query)
+      .select("name slug brand images variants tags rating reviewCount categories category categorySlug material settingMetal settingPurity diamondType goldCategory silverCategory description")
+      .populate("categories", "name slug")
+      .lean();
+
+    const scored = candidates
+      .map((p) => {
+        const score = scoreProductRelevance(p, cleanSearch);
+        return { product: p, score };
+      })
+      .filter((item) => item.score > 0)
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 8)
+      .map((item) => {
+        const p = item.product;
+        const normalized = normalizeProductForResponse(p);
+        const firstVariant = normalized.variants?.[0] || {};
+        const catName =
+          p.category ||
+          (Array.isArray(p.categories) && p.categories[0]?.name) ||
+          "";
+        return {
+          _id: p._id,
+          id: p._id,
+          name: p.name,
+          slug: p.slug,
+          category: catName,
+          categorySlug: p.categorySlug || (Array.isArray(p.categories) && p.categories[0]?.slug) || "",
+          material: p.material || "",
+          images: p.images || [],
+          primaryImage: p.images?.[0] || "",
+          price: Number(firstVariant.price || p.price || 0),
+          mrp: Number(firstVariant.mrp || p.mrp || 0),
+          relevanceScore: item.score
+        };
+      });
+
+    return success(res, { suggestions: scored });
+  } catch (err) {
+    return error(res, err.message);
+  }
 };
