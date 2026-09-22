@@ -11,7 +11,9 @@ export const isUnrelatedProduct = (product = {}) => {
         material.includes('alloy') ||
         material.includes('antique finish') ||
         name.includes('oxydis') ||
-        material.includes('oxydis')
+        material.includes('oxydis') ||
+        name.includes('oxidi') ||
+        material.includes('oxidi')
     );
 };
 
@@ -31,9 +33,16 @@ export const isDiamondProduct = (product = {}) => {
     });
     if (hasVariantDiamond) return true;
 
-    // 2. Explicit verified "Diamond" material (do NOT match "AD" alone)
+    // 2. Explicit verified "Diamond" material or metal (do NOT match "AD" alone)
     const material = String(product?.material || '').trim().toLowerCase();
-    if (material === 'diamond') {
+    const metal = String(product?.metal || '').trim().toLowerCase();
+    if (material === 'diamond' || metal === 'diamond') {
+        return true;
+    }
+
+    // 3. Category explicitly classified as diamond
+    const cat = String(product?.categorySlug || product?.category?.slug || product?.category?.name || product?.category || '').toLowerCase();
+    if (cat === 'diamond' || cat === 'diamonds' || cat.startsWith('diamond-')) {
         return true;
     }
 
@@ -98,16 +107,16 @@ export const matchesGoldTone = (product = {}, tone = '') => {
     const material = String(product?.material || '').trim().toLowerCase();
 
     if (normalizedTone === 'white-gold' || normalizedTone === 'white' || normalizedTone === 'white gold') {
-        return settingMetal === 'white gold' || material === 'white gold' || material.includes('white gold');
+        return settingMetal === 'white gold' || settingMetal === 'white-gold' || material === 'white gold' || material.includes('white gold');
     }
 
     if (normalizedTone === 'rose-gold' || normalizedTone === 'rose' || normalizedTone === 'rose gold') {
-        return settingMetal === 'rose gold' || material === 'rose gold' || material.includes('rose gold');
+        return settingMetal === 'rose gold' || settingMetal === 'rose-gold' || material === 'rose gold' || material.includes('rose gold');
     }
 
     if (normalizedTone === 'gold' || normalizedTone === 'yellow-gold' || normalizedTone === 'yellow' || normalizedTone === 'yellow gold') {
-        const isWhite = settingMetal === 'white gold' || material.includes('white gold');
-        const isRose = settingMetal === 'rose gold' || material.includes('rose gold');
+        const isWhite = settingMetal === 'white gold' || settingMetal === 'white-gold' || material.includes('white gold');
+        const isRose = settingMetal === 'rose gold' || settingMetal === 'rose-gold' || material.includes('rose gold');
         return !isWhite && !isRose;
     }
 

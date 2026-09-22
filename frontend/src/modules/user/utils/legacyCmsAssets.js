@@ -75,6 +75,9 @@ import goldSetsGreen from '@assets/categories/gold_sets_green.png';
 import goldNewArrivalsGreen from '@assets/categories/gold_new_arrivals_green.png';
 import diamondRingImg from '@assets/diamond_ring.png';
 import catWeddingDiamondImg from '@assets/cat_wedding_diamond.png';
+import catWeddingChokerImg from '@assets/cat_wedding_choker.png';
+import catWeddingMangalsutraImg from '@assets/cat_wedding_mangalsutra.png';
+import catWeddingBanglesImg from '@assets/cat_wedding_bangles.png';
 import eternalDiamondBrillianceImg from '@assets/hero/eternal_diamond_brilliance.png';
 import diamondEleganceCampaignImg from '@assets/hero/diamond_elegance_campaign.png';
 import diamondLuxuryImg from '@assets/hero/diamond_luxury.png';
@@ -316,6 +319,9 @@ const legacyAssetMap = {
   'gold_new_arrivals_green.png': goldNewArrivalsGreen,
   'diamond_ring.png': diamondRingImg,
   'cat_wedding_diamond.png': catWeddingDiamondImg,
+  'cat_wedding_choker.png': catWeddingChokerImg,
+  'cat_wedding_mangalsutra.png': catWeddingMangalsutraImg,
+  'cat_wedding_bangles.png': catWeddingBanglesImg,
   'eternal_diamond_brilliance.png': eternalDiamondBrillianceImg,
   'diamond_elegance_campaign.png': diamondEleganceCampaignImg,
   'diamond_luxury.png': diamondLuxuryImg,

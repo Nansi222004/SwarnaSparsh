@@ -49,7 +49,7 @@ const hotspots = [
     {
         id: 'rings',
         label: 'RINGS',
-        desc: "Oxidized Statement Ring",
+        desc: "Sterling Silver Statement Ring",
         price: "1,499",
         x1: 49, y1: 72,
         x2: 78, y2: 82, // Moved in from 83, 85

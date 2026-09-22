@@ -17,6 +17,7 @@ import {
   ArrowUpDown,
 } from "lucide-react";
 import HorizontalFilters from "../components/HorizontalFilters";
+import CategoryHeroBanner from "../components/CategoryHeroBanner";
 import { useRef } from "react";
 
 const useDragScroll = () => {
@@ -87,13 +88,97 @@ const stableKeyFromParams = (params) => {
 const Shop = () => {
   const { products, categories, isLoading } = useShop();
   const visibleCategories = categories.filter(
-    (cat) => cat.isActive !== false && cat.showInCollection !== false,
+    (cat) =>
+      cat.isActive !== false &&
+      cat.showInCollection !== false &&
+      !/oxidi|oxydis/i.test(cat.name || "") &&
+      !/oxidi|oxydis/i.test(cat.slug || "") &&
+      !/^malas?$/i.test(cat.slug || "") &&
+      !/^malas?$/i.test(cat.name || ""),
   );
   const location = useLocation();
   const navigate = useNavigate();
   const { category } = useParams();
+
+  const normalizeCategoryToken = (value) => {
+    // Accept ids, slugs, or legacy values like "/category/rings" and normalize to "rings".
+    let token = String(value || "").trim();
+    if (!token) return "";
+    try {
+      token = decodeURIComponent(token);
+    } catch {
+      // ignore
+    }
+    token = token.replace(/^\/+/, "");
+    if (token.toLowerCase().startsWith("category/")) {
+      token = token.slice("category/".length);
+    }
+    return token.trim();
+  };
+
+  const activeCategoryHint = useMemo(() => {
+    const qp = new URLSearchParams(location.search);
+    const fromQuery = normalizeCategoryToken(qp.get("category") || "");
+    if (fromQuery) return fromQuery;
+
+    const categorySlugParam = String(category || "").trim();
+    const isAudienceSlug = ["men", "women", "family"].includes(
+      categorySlugParam.toLowerCase(),
+    );
+    if (!isAudienceSlug && categorySlugParam)
+      return normalizeCategoryToken(categorySlugParam);
+
+    return "";
+  }, [location.search, category]);
+
+  const activeCategory = useMemo(() => {
+    if (!activeCategoryHint) return null;
+    if (!Array.isArray(categories) || categories.length === 0) return null;
+
+    const raw = String(activeCategoryHint).trim();
+    // 1. Direct ID match
+    const byId = categories.find((c) => String(c?._id || c?.id) === raw);
+    if (byId) return byId;
+
+    const lowered = raw.toLowerCase();
+    // 2. Slug match (case-insensitive)
+    const bySlug = categories.find(
+      (c) => String(c?.slug || "").toLowerCase() === lowered,
+    );
+    if (bySlug) return bySlug;
+
+    // 3. Path match
+    const byPath = categories.find(
+      (c) => normalizeCategoryToken(c?.path || "").toLowerCase() === lowered,
+    );
+    if (byPath) return byPath;
+
+    // 4. Name match (case-insensitive)
+    const byName = categories.find(
+      (c) => String(c?.name || "").toLowerCase() === lowered,
+    );
+    if (byName) return byName;
+
+    // 5. Slugified name or slug match (e.g. "toe-rings" <-> "Toe Rings")
+    const slugify = (str) =>
+      String(str || "")
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-+|-+$/g, "");
+
+    const rawSlugified = slugify(raw);
+    const bySlugified = categories.find(
+      (c) =>
+        slugify(c?.name) === rawSlugified ||
+        slugify(c?.slug) === rawSlugified,
+    );
+    return bySlugified || null;
+  }, [activeCategoryHint, categories]);
+
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [selectedCategory, setSelectedCategory] = useState(
+    () => activeCategory?.name || "All",
+  );
   const [filterNewArrivals, setFilterNewArrivals] = useState(false);
   const [filterTrending, setFilterTrending] = useState(false);
   const [isSortOpen, setIsSortOpen] = useState(false);
@@ -127,8 +212,8 @@ const Shop = () => {
   const queryParams = new URLSearchParams(location.search);
   const isComingSoonQuery = queryParams.get("status") === "coming-soon";
   const sourceQuery = queryParams.get("source");
-  const priceMaxQuery = queryParams.get("price_max"); // upper bound â€” e.g. price_max=3000
-  const priceMinQuery = queryParams.get("price_min"); // lower bound â€” e.g. price_min=1500
+  const priceMaxQuery = queryParams.get("price_max"); // upper bound — e.g. price_max=3000
+  const priceMinQuery = queryParams.get("price_min"); // lower bound — e.g. price_min=1500
   const productsQuery = queryParams.get("products");
   const limitQuery = queryParams.get("limit");
   const sortQuery = queryParams.get("sort");
@@ -145,53 +230,8 @@ const Shop = () => {
   const isMenFlow = sourceQuery === "men";
   const isWomenFlow = sourceQuery === "women";
 
-  const normalizeCategoryToken = (value) => {
-    // Accept ids, slugs, or legacy values like "/category/rings" and normalize to "rings".
-    let token = String(value || "").trim();
-    if (!token) return "";
-    token = token.replace(/^\/+/, "");
-    if (token.toLowerCase().startsWith("category/")) {
-      token = token.slice("category/".length);
-    }
-    // Don't decode object ids or plain slugs; just return the cleaned token.
-    return token;
-  };
-
   const [pinnedProducts, setPinnedProducts] = useState([]);
   const [isPinnedLoading, setIsPinnedLoading] = useState(false);
-
-  const activeCategoryHint = useMemo(() => {
-    const qp = new URLSearchParams(location.search);
-    const fromQuery = normalizeCategoryToken(qp.get("category") || "");
-    if (fromQuery) return fromQuery;
-
-    const categorySlugParam = String(category || "").trim();
-    const isAudienceSlug = ["men", "women", "family"].includes(
-      categorySlugParam.toLowerCase(),
-    );
-    if (!isAudienceSlug && categorySlugParam)
-      return normalizeCategoryToken(categorySlugParam);
-
-    return "";
-  }, [location.search, category]);
-
-  const activeCategory = useMemo(() => {
-    if (!activeCategoryHint) return null;
-    if (!Array.isArray(categories) || categories.length === 0) return null;
-
-    const raw = String(activeCategoryHint).trim();
-    const byId = categories.find((c) => String(c?._id) === raw);
-    if (byId) return byId;
-    const lowered = raw.toLowerCase();
-    const bySlug = categories.find(
-      (c) => String(c?.slug || "").toLowerCase() === lowered,
-    );
-    if (bySlug) return bySlug;
-    const byName = categories.find(
-      (c) => String(c?.name || "").toLowerCase() === lowered,
-    );
-    return byName || null;
-  }, [activeCategoryHint, categories]);
 
   const requestedPinnedIds = useMemo(() => {
     if (!productsQuery) return [];
@@ -245,7 +285,6 @@ const Shop = () => {
     const metal = qp.get("metal");
     const effectiveKarat = karatQuery || purityQuery || "";
     const effectiveCategory = normalizeCategoryToken(qp.get("category") || "");
-
     const categorySlugParam = String(category || "").trim();
     const isAudienceSlug = ["men", "women", "family"].includes(
       categorySlugParam.toLowerCase(),
@@ -253,6 +292,9 @@ const Shop = () => {
     const categoryParam =
       effectiveCategory ||
       (!isAudienceSlug ? normalizeCategoryToken(categorySlugParam) : "");
+    const resolvedCategoryParam =
+      activeCategory?._id ||
+      categoryParam;
 
     const isNewArrivalsRoute = location.pathname.includes("/new-arrivals");
     const isTrendingRoute = location.pathname.includes("/trending");
@@ -296,7 +338,7 @@ const Shop = () => {
 
     return {
       ...(searchQuery ? { search: searchQuery } : {}),
-      ...(categoryParam ? { category: categoryParam } : {}),
+      ...(resolvedCategoryParam ? { category: resolvedCategoryParam } : {}),
       ...(metal ? { metal } : {}),
       ...(toneQuery ? { tone: toneQuery } : {}),
       ...(purityParam ? { purity: purityParam } : {}),
@@ -306,9 +348,9 @@ const Shop = () => {
       ...(availabilityParam ? { availability: availabilityParam } : {}),
       ...(resolvedTags ? { tags: resolvedTags } : {}),
       ...(audienceParam ? { audience: audienceParam } : {}),
+      ...(sortParam ? { sort: sortParam } : {}),
       ...(priceMin ? { price_min: priceMin } : {}),
       ...(priceMax ? { price_max: priceMax } : {}),
-      ...(sortParam ? { sort: sortParam } : {}),
       inStockOnly,
       page: resolvedPage,
       limit: resolvedLimit,
@@ -317,6 +359,7 @@ const Shop = () => {
     productsQuery,
     location.search,
     category,
+    activeCategory,
     karatQuery,
     purityQuery,
     silverTypeQuery,
@@ -398,13 +441,34 @@ const Shop = () => {
   ]);
 
   const productsToRender = useMemo(() => {
-    if (productsQuery) return pinnedProducts;
-    if (serverModeEnabled) {
-      if (serverAccumulatedProducts.length > 0)
-        return serverAccumulatedProducts;
-      return serverProducts;
+    let list = [];
+    if (productsQuery) list = pinnedProducts;
+    else if (serverModeEnabled) {
+      list = serverAccumulatedProducts.length > 0 ? serverAccumulatedProducts : serverProducts;
+    } else {
+      list = filteredProducts;
     }
-    return filteredProducts;
+
+    const qp = new URLSearchParams(location.search);
+    const isExplicitMala = Boolean(
+      qp.get("category") === "malas" ||
+      category === "malas" ||
+      activeCategory?.slug === "malas" ||
+      selectedCategory === "Malas" ||
+      /\bmala\b/i.test(qp.get("search") || "")
+    );
+
+    if (!isExplicitMala && Array.isArray(list)) {
+      return list.filter((p) => {
+        const cat = String(p.categorySlug || p.category || "").toLowerCase();
+        const name = String(p.name || "").toLowerCase();
+        if (cat === "malas" || cat === "mala") return false;
+        if (/\bmala(\s*set)?\b/i.test(name)) return false;
+        return true;
+      });
+    }
+
+    return list;
   }, [
     productsQuery,
     pinnedProducts,
@@ -412,28 +476,39 @@ const Shop = () => {
     serverAccumulatedProducts,
     serverProducts,
     filteredProducts,
+    location.search,
+    category,
+    activeCategory,
+    selectedCategory,
   ]);
 
   useEffect(() => {
     // Use a local flag to avoid multiple updates in the same cycle
     let isCancelled = false;
 
-    const categoryQuery = queryParams.get("category");
     const parsedPrice = Number(
       String(priceMaxQuery || "").replace(/[^0-9]/g, ""),
     );
 
-    if (categoryQuery) {
-      const categoryFromQuery = categories.find(
-        (c) =>
-          c._id === categoryQuery ||
-          c.id === categoryQuery ||
-          c.slug === categoryQuery ||
-          c.path === categoryQuery ||
-          c.name === categoryQuery,
-      );
-      if (categoryFromQuery && selectedCategory !== categoryFromQuery.name) {
-        if (!isCancelled) setSelectedCategory(categoryFromQuery.name);
+    // Synchronize selectedCategory with the URL/route category
+    if (activeCategory) {
+      if (selectedCategory !== activeCategory.name) {
+        if (!isCancelled) setSelectedCategory(activeCategory.name);
+      }
+    } else if (activeCategoryHint) {
+      // activeCategoryHint is present, check if category can be matched
+      const matched = (categories || []).find((c) => {
+        const raw = String(activeCategoryHint).trim().toLowerCase();
+        return (
+          String(c?._id || c?.id) === activeCategoryHint ||
+          String(c?.slug || "").toLowerCase() === raw ||
+          String(c?.name || "").toLowerCase() === raw
+        );
+      });
+      if (matched && selectedCategory !== matched.name) {
+        if (!isCancelled) setSelectedCategory(matched.name);
+      } else if (!matched && categories && categories.length > 0 && selectedCategory !== "All") {
+        if (!isCancelled) setSelectedCategory("All");
       }
     } else if (selectedCategory !== "All") {
       if (!isCancelled) setSelectedCategory("All");
@@ -471,6 +546,9 @@ const Shop = () => {
   }, [
     location.search,
     location.pathname,
+    category,
+    activeCategory,
+    activeCategoryHint,
     categories,
     selectedCategory,
     filterNewArrivals,
@@ -759,19 +837,50 @@ const Shop = () => {
             ? "925 Sterling Silver"
             : "Fine Silver";
       }
-    } else if (category) {
-      const currentCat = categories.find(
-        (c) => c.path === category || c.slug === category,
-      );
+    } else if (activeCategory || category) {
+      const currentCat =
+        activeCategory ||
+        categories.find(
+          (c) =>
+            c.path === category ||
+            c.slug === category ||
+            String(c.slug || "").toLowerCase() ===
+              String(category || "").toLowerCase() ||
+            String(c.name || "").toLowerCase() ===
+              String(category || "").toLowerCase(),
+        );
       title = currentCat
         ? currentCat.name
-        : category.charAt(0).toUpperCase() + category.slice(1);
+        : category
+          ? category.charAt(0).toUpperCase() + category.slice(1)
+          : title;
       baseProducts = products.filter((p) =>
-        matchesCategory(p, category, currentCat),
+        matchesCategory(
+          p,
+          category || currentCat?.slug || currentCat?._id,
+          currentCat,
+        ),
       );
     }
 
     baseProducts = baseProducts.filter((p) => !isUnrelatedProduct(p));
+
+    const isMalaExplicitContext = Boolean(
+      categoryQuery === "malas" ||
+      category === "malas" ||
+      activeCategory?.slug === "malas" ||
+      selectedCategory === "Malas" ||
+      /\bmala\b/i.test(searchQuery || "")
+    );
+    if (!isMalaExplicitContext) {
+      baseProducts = baseProducts.filter((p) => {
+        const cat = String(p.categorySlug || p.category || "").toLowerCase();
+        const name = String(p.name || "").toLowerCase();
+        if (cat === "malas" || cat === "mala") return false;
+        if (/\bmala(\s*set)?\b/i.test(name)) return false;
+        return true;
+      });
+    }
 
     if (metalQuery?.toLowerCase() === "gold" && toneQuery) {
       baseProducts = baseProducts.filter((p) => matchesGoldTone(p, toneQuery));
@@ -872,12 +981,14 @@ const Shop = () => {
 
     // 2. Apply Local Category Filter (if selected)
     if (selectedCategory !== "All") {
-      const selectedCat = categories.find(
-        (c) =>
-          c.name === selectedCategory ||
-          c.slug === selectedCategory ||
-          c.path === selectedCategory,
-      );
+      const selectedCat =
+        activeCategory ||
+        categories.find(
+          (c) =>
+            c.name === selectedCategory ||
+            c.slug === selectedCategory ||
+            c.path === selectedCategory,
+        );
       result = result.filter((p) =>
         matchesCategory(p, selectedCategory, selectedCat),
       );
@@ -1026,6 +1137,7 @@ const Shop = () => {
     location,
     category,
     selectedCategory,
+    activeCategory,
     priceRange,
     filterNewArrivals,
     filterTrending,
@@ -1058,19 +1170,43 @@ const Shop = () => {
 
   // Handle Category Change
   const handleCategoryChange = (val) => {
-    setSelectedCategory(val);
-    const selectedCat = categories.find((cat) => cat.name === val);
-    const normalizedFromCat = normalizeCategoryToken(
-      selectedCat?.slug || selectedCat?.path || "",
+    if (val === "All") {
+      setSelectedCategory("All");
+      const params = new URLSearchParams(location.search);
+      params.delete("category");
+      params.delete("page");
+      const qs = params.toString();
+      navigate(`/shop${qs ? `?${qs}` : ""}`);
+      return;
+    }
+
+    const selectedCat = categories.find(
+      (cat) =>
+        cat.name === val ||
+        cat.slug === val ||
+        String(cat._id || cat.id) === val,
     );
-    const nextCategoryValue =
-      selectedCat?._id ||
-      selectedCat?.id ||
-      normalizedFromCat ||
-      normalizeCategoryToken(val);
-    updateShopQuery({
-      category: val === "All" ? null : nextCategoryValue,
-    });
+    const targetName = selectedCat?.name || val;
+    setSelectedCategory(targetName);
+
+    const slug =
+      selectedCat?.slug ||
+      normalizeCategoryToken(selectedCat?.path || "") ||
+      (selectedCat?._id ? null : normalizeCategoryToken(val));
+
+    const params = new URLSearchParams(location.search);
+    params.delete("category");
+    params.delete("page");
+    params.delete("search");
+    const qs = params.toString();
+
+    if (slug) {
+      navigate(`/category/${encodeURIComponent(slug)}${qs ? `?${qs}` : ""}`);
+    } else {
+      const catId = selectedCat?._id || selectedCat?.id || val;
+      params.set("category", String(catId));
+      navigate(`/shop?${params.toString()}`);
+    }
   };
 
   const handleSortChange = (option) => {
@@ -1172,12 +1308,7 @@ const Shop = () => {
     setFilterTrending(false);
     setPriceRange(50000);
     setSortBy("New Arrival");
-    const currentMetal = queryParams.get("metal");
-    if (currentMetal) {
-      navigate(`/shop?metal=${currentMetal}`);
-    } else {
-      navigate("/shop");
-    }
+    navigate("/shop");
   };
 
   return (
@@ -1209,7 +1340,7 @@ const Shop = () => {
         {activeCategory && <CategoryHeroBanner category={activeCategory} />}
         {/* Sticky Header & Filters Container */}
         <div
-          className={`sticky z-[100] bg-white transition-all duration-300 ${isNavVisible ? "top-[50px] md:top-[141px]" : "top-0"}`}
+          className={`sticky z-[40] bg-white transition-all duration-300 ${isNavVisible ? "top-[138px] md:top-[138px]" : "top-0"}`}
         >
           {/* Header Section - Back Left, Title Center, Items Right */}
           <div className="py-2 md:py-3 flex flex-row justify-between items-center gap-2 md:gap-4 border-b border-stone-200 px-4 md:px-0">
@@ -1324,8 +1455,8 @@ const Shop = () => {
 
             if (productsToRender.length > 0) {
               return (
-                <div>
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-8 gap-y-8 md:gap-y-12">
+                <div className="mt-6 md:mt-8">
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3.5 md:gap-6 gap-y-6 md:gap-y-10">
                     {productsToRender.map((product) => (
                       <ProductCard
                         key={product.id || product._id}
@@ -1484,16 +1615,16 @@ const Shop = () => {
               </div>
             </section>
 
-            {/* 2. Metal Filter */}
+            {/* 2. Metal / Material Filter */}
             <section className="pt-6 border-t border-stone-100">
               <h4 className="font-bold text-[#141211] text-[11px] uppercase tracking-[0.2em] mb-4">
-                Metal
+                Metal / Material
               </h4>
               <div className="grid grid-cols-4 gap-1.5">
                 {[
                   { id: "All", label: "All" },
-                  { id: "silver", label: "Silver" },
                   { id: "gold", label: "Gold" },
+                  { id: "silver", label: "Silver" },
                   { id: "diamond", label: "Diamond" },
                 ].map((m) => {
                   const currentMetal = queryParams.get("metal")?.toLowerCase();

@@ -7,7 +7,6 @@ import { resolveLegacyCmsAsset } from '../../utils/legacyCmsAssets';
 import SilverImg from '@assets/hues/silver_woman.png';
 import GoldImg from '@assets/hues/gold_woman.png';
 import RoseGoldImg from '@assets/hues/rosegold_woman.png';
-import OxidisedImg from '@assets/hues/oxidised_woman.png';
 
 const fallbackHues = [
     {
@@ -27,12 +26,6 @@ const fallbackHues = [
         title: "Rose Gold Plated",
         image: RoseGoldImg,
         path: buildWomenShopPath({ metal: 'rose-gold' })
-    },
-    {
-        id: 4,
-        title: "Oxidised Silver",
-        image: OxidisedImg,
-        path: buildWomenShopPath({ metal: 'oxidised-silver' })
     }
 ];
 
@@ -53,6 +46,12 @@ const WomenDiscoverHue = ({ sectionData }) => {
     const hues = useMemo(() => {
         const configuredItems = Array.isArray(sectionData?.items) ? sectionData.items : [];
         const normalized = configuredItems
+            .filter((item) => {
+                const title = String(item?.name || item?.label || '').toLowerCase();
+                const tag = String(item?.tag || '').toLowerCase();
+                const path = String(item?.path || '').toLowerCase();
+                return !title.includes('oxidi') && !tag.includes('oxidi') && !path.includes('oxidi');
+            })
             .map((item, index) => {
                 const hueKey = item.tag || parseHueFromPath(item.path) || '';
                 return {
@@ -63,9 +62,9 @@ const WomenDiscoverHue = ({ sectionData }) => {
                 };
             })
             .filter((item) => Boolean(item.title) && Boolean(item.image) && Boolean(item.path))
-            .slice(0, 4);
+            .slice(0, 3);
 
-        return normalized.length === 4 ? normalized : fallbackHues;
+        return normalized.length > 0 ? normalized : fallbackHues;
     }, [sectionData]);
 
     return (
@@ -83,7 +82,7 @@ const WomenDiscoverHue = ({ sectionData }) => {
                     <div className="w-20 h-1 bg-rose-200 mx-auto rounded-full" />
                 </div>
 
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8 pb-10">
+                <div className="grid grid-cols-1 sm:grid-cols-3 max-w-4xl mx-auto gap-4 sm:gap-6 md:gap-8 pb-10">
                     {hues.map((hue, index) => (
                         <motion.div
                             key={hue.id}

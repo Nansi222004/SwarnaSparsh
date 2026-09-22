@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ChevronDown } from 'lucide-react';
 import { useShop } from '../../../context/ShopContext';
 import AllJewelleryMegaMenu from './AllJewelleryMegaMenu';
 import AllJewelleryMenu from './CategoryNavComponents/AllJewelleryMenu';
+import BullionsMenu from './CategoryNavComponents/BullionsMenu';
 import FamilyMegaMenu from './FamilyMegaMenu';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -12,13 +13,17 @@ const CategoryNav = ({ showMetalToggle = true }) => {
     const navigate = useNavigate();
     const { activeMetal, updateActiveMetal } = useShop();
     const [hoveredItem, setHoveredItem] = useState(null);
+    const itemRefs = useRef({});
+    const [menuPlacement, setMenuPlacement] = useState({
+        availableHeight: 480,
+        shiftX: 0,
+        maxWidth: 920
+    });
 
     const navItems = [
-        { id: 'gold', name: 'Gold Jewellery', path: '/gold-collection', hasChevron: false },
-        { id: 'silver', name: 'Silver Jewellery', path: '/', hasChevron: false },
-        { id: 'diamond', name: 'Diamond Jewellery', path: '/diamond-collection', hasChevron: false },
         { id: 'cat', name: 'Shop by Category', path: '/collections', hasChevron: true },
         { id: 'all', name: 'All Jewellery', path: '/shop', hasChevron: true },
+        { id: 'bullions', name: 'Bullions', path: '/shop?metal=gold&karat=24', hasChevron: true },
         { id: 'him', name: 'Gifts for Him', path: '/category/men', hasChevron: false },
         { id: 'her', name: 'Gifts for Her', path: '/category/women', hasChevron: false },
         { id: 'family', name: 'Gifts for Family', path: '/category/family', hasChevron: false },
@@ -29,6 +34,47 @@ const CategoryNav = ({ showMetalToggle = true }) => {
     const resetMenu = () => {
         setHoveredItem(null);
     };
+
+    const updateMenuPlacement = useCallback(() => {
+        if (!hoveredItem || !itemRefs.current[hoveredItem]) return;
+        const trigger = itemRefs.current[hoveredItem];
+        const rect = trigger.getBoundingClientRect();
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+        const margin = 16;
+
+        // Space from bottom of trigger to bottom of viewport minus safety margin
+        const spaceBelow = Math.max(260, Math.floor(viewportHeight - rect.bottom - margin));
+
+        // Desired target width for each menu type
+        const targetWidth = hoveredItem === 'cat' ? 920 : (hoveredItem === 'all' ? 820 : (hoveredItem === 'bullions' ? 620 : 500));
+        const maxWidth = Math.min(targetWidth, viewportWidth - margin * 2);
+
+        // Calculate horizontal offset so menu never extends beyond right or left viewport edges
+        let shiftX = 0;
+        if (rect.left + maxWidth > viewportWidth - margin) {
+            shiftX = (viewportWidth - margin) - (rect.left + maxWidth);
+        }
+        if (rect.left + shiftX < margin) {
+            shiftX = margin - rect.left;
+        }
+
+        setMenuPlacement({
+            availableHeight: spaceBelow,
+            shiftX,
+            maxWidth
+        });
+    }, [hoveredItem]);
+
+    useEffect(() => {
+        updateMenuPlacement();
+        window.addEventListener('resize', updateMenuPlacement);
+        window.addEventListener('scroll', updateMenuPlacement, { passive: true });
+        return () => {
+            window.removeEventListener('resize', updateMenuPlacement);
+            window.removeEventListener('scroll', updateMenuPlacement);
+        };
+    }, [updateMenuPlacement]);
 
     // Keep the metal toggle consistent with the current route/query.
     // Silver remains the default landing selection.
@@ -54,17 +100,18 @@ const CategoryNav = ({ showMetalToggle = true }) => {
             `}</style>
             <div className="w-full max-w-[1600px] mx-auto px-2 sm:px-4 md:px-6 lg:px-8 relative" onMouseLeave={resetMenu}>
                 {/* Navigation Links - Responsive without left-clipping on any screen */}
-                <div className="w-full overflow-x-auto lg:overflow-visible category-nav-scroll scroll-smooth py-1 flex items-center">
+                <div className={`w-full ${hoveredItem ? 'overflow-visible' : 'overflow-x-auto lg:overflow-visible'} category-nav-scroll scroll-smooth py-1 flex items-center`}>
                     <ul
-                        className="flex items-center w-max min-w-full justify-start lg:justify-center gap-2 sm:gap-2.5 md:gap-3 lg:gap-4 xl:gap-5 2xl:gap-7 flex-nowrap py-1 px-1 sm:px-2"
+                        className="flex items-center w-max min-w-full justify-start lg:justify-center gap-3 sm:gap-4 md:gap-5 lg:gap-7 xl:gap-9 2xl:gap-12 flex-nowrap py-1 px-1 sm:px-2"
                         style={{ justifyContent: 'safe center' }}
                     >
                         {navItems.map((item) => (
                             <li
                                 key={item.id}
+                                ref={(el) => { itemRefs.current[item.id] = el; }}
                                 onMouseEnter={() => {
-                                    // Only 'Shop by Category' and 'All Jewellery' show dropdowns on hover
-                                    if (item.id === 'cat' || item.id === 'all') {
+                                    // 'Shop by Category', 'All Jewellery', and 'Bullions' show dropdowns on hover
+                                    if (item.id === 'cat' || item.id === 'all' || item.id === 'bullions') {
                                         setHoveredItem(item.id);
                                     } else {
                                         setHoveredItem(null);
@@ -75,25 +122,66 @@ const CategoryNav = ({ showMetalToggle = true }) => {
                             >
                                 <Link
                                     to={item.path}
-                                    className="text-[10px] sm:text-[10.5px] md:text-[11px] lg:text-[11.5px] xl:text-[12px] 2xl:text-[12.5px] font-bold uppercase tracking-tight sm:tracking-normal xl:tracking-[0.05em] font-sans text-[#242424] hover:text-[#C6A04A] flex items-center gap-0.5 sm:gap-1 transition-all duration-200 whitespace-nowrap"
+                                    onClick={(e) => {
+                                        if (item.hasChevron && window.innerWidth < 1024) {
+                                            e.preventDefault();
+                                            setHoveredItem(hoveredItem === item.id ? null : item.id);
+                                        }
+                                    }}
+                                    className="text-[10.5px] sm:text-[11px] md:text-[11.5px] lg:text-[12px] xl:text-[12.5px] 2xl:text-[13px] font-bold uppercase tracking-tight sm:tracking-normal xl:tracking-[0.04em] font-sans text-[#242424] hover:text-[#C6A04A] flex items-center gap-0.5 sm:gap-1 transition-all duration-200 whitespace-nowrap"
                                 >
                                     <span>{item.name}</span>
                                     {item.fullSuffix && <span className="hidden 2xl:inline">{item.fullSuffix}</span>}
-                                    {item.hasChevron && <ChevronDown className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#77716A] shrink-0" />}
+                                    {item.hasChevron && (
+                                        <ChevronDown
+                                            className={`w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#77716A] shrink-0 transition-transform duration-300 ${
+                                                hoveredItem === item.id ? 'rotate-180 text-[#C6A04A]' : ''
+                                            }`}
+                                        />
+                                    )}
                                 </Link>
 
                                 {/* Dropdowns Mapping */}
                                 <AnimatePresence>
                                     {hoveredItem === item.id && (
-                                        <div className="absolute top-full left-0 pt-2 z-[110]">
+                                        <div 
+                                            className="absolute top-full pt-2 z-[110]"
+                                            style={{
+                                                left: `${menuPlacement.shiftX || 0}px`
+                                            }}
+                                            data-lenis-prevent
+                                        >
                                             <motion.div
                                                 initial={{ opacity: 0, y: 10 }}
                                                 animate={{ opacity: 1, y: 0 }}
                                                 exit={{ opacity: 0, y: 5 }}
-                                                className="bg-white shadow-[0_20px_45px_rgba(23,23,23,0.12)] border border-[#E8E0D2] overflow-hidden rounded-b-2xl max-w-[calc(100vw-1.5rem)]"
+                                                className="bg-white shadow-[0_20px_45px_rgba(23,23,23,0.12)] border border-[#E8E0D2] overflow-hidden rounded-b-2xl max-w-[calc(100vw-2rem)]"
+                                                style={{
+                                                    maxHeight: `${menuPlacement.availableHeight}px`
+                                                }}
+                                                data-lenis-prevent
                                             >
-                                                {item.id === 'cat' && <AllJewelleryMenu resetMenu={resetMenu} />}
-                                                {item.id === 'all' && <AllJewelleryMegaMenu resetMenu={resetMenu} />}
+                                                {item.id === 'cat' && (
+                                                    <AllJewelleryMenu 
+                                                        resetMenu={resetMenu} 
+                                                        availableHeight={menuPlacement.availableHeight}
+                                                        maxWidth={menuPlacement.maxWidth}
+                                                    />
+                                                )}
+                                                {item.id === 'all' && (
+                                                    <AllJewelleryMegaMenu 
+                                                        resetMenu={resetMenu} 
+                                                        availableHeight={menuPlacement.availableHeight}
+                                                        maxWidth={menuPlacement.maxWidth}
+                                                    />
+                                                )}
+                                                {item.id === 'bullions' && (
+                                                    <BullionsMenu 
+                                                        resetMenu={resetMenu} 
+                                                        availableHeight={menuPlacement.availableHeight}
+                                                        maxWidth={menuPlacement.maxWidth}
+                                                    />
+                                                )}
                                                 {item.id === 'family' && <FamilyMegaMenu resetMenu={resetMenu} />}
                                             </motion.div>
                                         </div>

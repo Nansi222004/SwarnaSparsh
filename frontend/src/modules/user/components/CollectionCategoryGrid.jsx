@@ -69,25 +69,29 @@ const CollectionCategoryGrid = ({
     defaultEyebrow = 'Curated Dimensions',
     defaultSubtitle = '',
     defaultItems = [],
-    bgClass = 'bg-[#FAF8F5]'
+    bgClass = 'bg-[#FAF8F5]',
+    sectionData: externalSectionData = null,
+    sidePanelData: externalSidePanelData = null,
 }) => {
     const scrollRef = useRef(null);
     const { data: homepageSections = {}, isLoading: isCmsLoading, isSuccess } = useHomepageCms();
     const { categories: liveCategories = [], isLoading: isShopLoading } = useShop();
-    const sectionData = homepageSections?.[sectionKey];
+    const sectionData = externalSectionData !== null ? externalSectionData : homepageSections?.[sectionKey];
     const [activeIndex, setActiveIndex] = useState(0);
 
     // 1. Independent visibility check: respect isActive toggle from Admin CMS
     if (sectionData && sectionData.isActive === false) {
         return null;
     }
-    // If CMS loaded successfully and this section is omitted from active response, hide it
-    if (isSuccess && Object.keys(homepageSections).length > 0 && !sectionData) {
+    // If CMS loaded successfully and this section is omitted from active response, hide it (only when not passed externally)
+    if (externalSectionData === null && isSuccess && Object.keys(homepageSections).length > 0 && !sectionData) {
         return null;
     }
 
     const categories = useMemo(() => {
-        const rawItems = Array.isArray(sectionData?.items) ? sectionData.items : [];
+        const rawItems = Array.isArray(sectionData?.items) && sectionData.items.length > 0
+            ? sectionData.items
+            : defaultItems;
         return normalizeItems(rawItems, liveCategories, defaultItems);
     }, [sectionData?.items, liveCategories, defaultItems]);
 
@@ -97,18 +101,20 @@ const CollectionCategoryGrid = ({
     // Gold, Silver & Diamond Collection Side Panel Integration Checks
     const isGoldGrid = sectionKey === 'gold-collection-grid';
     const isSilverGrid = sectionKey === 'silver-collection-grid';
-    const isDiamondGrid = sectionKey === 'diamond-collection-grid';
+    const isDiamondGrid = sectionKey === 'diamond-collection-grid' || sectionKey === 'diamond-category-grid';
 
-    const goldSectionData = isGoldGrid ? homepageSections?.['shop-by-colour'] : null;
-    const isGoldPanelActive = isGoldGrid && goldSectionData?.isActive !== false && goldSectionData?.settings?.enabled !== false;
+    const goldSectionData = externalSidePanelData || (isGoldGrid ? (homepageSections?.['shop-by-colour'] || null) : null);
+    const isGoldPanelActive = isGoldGrid && (!goldSectionData || (goldSectionData?.isActive !== false && goldSectionData?.settings?.enabled !== false));
     const goldPanelPosition = goldSectionData?.settings?.position || 'right';
 
-    const silverSectionData = isSilverGrid ? homepageSections?.['shop-by-silver'] : null;
-    const isSilverPanelActive = isSilverGrid && silverSectionData?.isActive !== false && silverSectionData?.settings?.enabled !== false;
+    const silverSectionData = externalSidePanelData || (isSilverGrid ? homepageSections?.['shop-by-silver'] : null);
+    const isSilverPanelActive = isSilverGrid && (silverSectionData?.isActive !== false && silverSectionData?.settings?.enabled !== false);
     const silverPanelPosition = silverSectionData?.settings?.position || 'right';
 
-    const diamondSectionData = isDiamondGrid ? homepageSections?.['shop-by-diamond'] : null;
-    const isDiamondPanelActive = isDiamondGrid && diamondSectionData?.isActive !== false && diamondSectionData?.settings?.enabled !== false;
+    const diamondSectionData = externalSidePanelData !== null
+        ? externalSidePanelData
+        : (isDiamondGrid ? (homepageSections?.['shop-by-diamond'] || {}) : null);
+    const isDiamondPanelActive = isDiamondGrid && (diamondSectionData?.isActive !== false && diamondSectionData?.settings?.enabled !== false);
     const diamondPanelPosition = diamondSectionData?.settings?.position || 'right';
 
     const isSidePanelActive = isGoldPanelActive || isSilverPanelActive || isDiamondPanelActive;
@@ -122,7 +128,7 @@ const CollectionCategoryGrid = ({
         }
     };
 
-    if ((isCmsLoading && !sectionData) || (categories.length === 0 && (isCmsLoading || isShopLoading))) {
+    if ((isCmsLoading && !sectionData && externalSectionData === null) || (categories.length === 0 && (isCmsLoading || isShopLoading))) {
         return (
             <div className={`w-full ${bgClass} py-8 md:py-12 border-y border-[#E8DFD0]/60`}>
                 <div className="container mx-auto px-4 md:px-8 max-w-[1440px]">

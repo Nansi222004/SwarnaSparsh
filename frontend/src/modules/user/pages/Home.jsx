@@ -9,9 +9,7 @@ import LazySection from '../../../components/LazySection';
 import PromoSlider from '../components/PromoSlider';
 import NewLaunchSection from '../components/NewLaunchSection';
 import CategoryGrid, {
-    GoldCollectionGrid,
-    SilverCollectionGrid,
-    DiamondCollectionGrid
+    SilverCollectionGrid
 } from '../components/CategoryGrid';
 import DynamicPromoBanner from '../components/DynamicPromoBanner';
 import TrustMarkers from '../components/TrustMarkers';
@@ -89,9 +87,7 @@ const Home = () => {
             <PromoSlider />
             <CategoryGrid />
             <NewLaunchSection />
-            <GoldCollectionGrid />
             <SilverCollectionGrid />
-            <DiamondCollectionGrid />
             <DynamicPromoBanner />
             <TrustMarkers />
 

@@ -29,7 +29,7 @@ const BannerSectionEditor = ({ sectionData, onSave, defaultItems = [] }) => {
     const isGoldPageBanner = pageKey === 'gold-collection';
     const isSingleBannerSection = isWomenPersonalizedBanner || isFamilyPromoBanner;
 
-    const isLandscapeBanner = sectionKey === 'hero-banners' || sectionKey === 'auto-banner-section' || sectionKey === 'hero-banners-gold';
+    const isLandscapeBanner = sectionKey === 'hero-banners' || sectionKey === 'auto-banner-section' || sectionKey === 'hero-banners-gold' || sectionKey === 'hero-banners-diamond';
     const isDynamicPromoBanner = sectionKey === 'dynamic-promo-banner';
     
     const bannerPreviewAspect = isDynamicPromoBanner ? 'aspect-[4/1]' : (isLandscapeBanner ? 'aspect-[4/1]' : 'aspect-[4/5]');

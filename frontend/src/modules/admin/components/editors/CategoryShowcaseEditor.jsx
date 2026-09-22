@@ -67,10 +67,13 @@ const CategoryShowcaseEditor = ({ sectionData, onSave, defaultItems = [] }) => {
         ? "shop-family"
         : String(sectionData?.sectionId || "").startsWith("gold-collection:")
           ? "gold-collection"
-          : "");
+          : String(sectionData?.sectionId || "").startsWith("diamond-collection:")
+            ? "diamond-collection"
+            : "");
   const isShopWomenSection = sectionPageKey === "shop-women";
   const isShopFamilySection = sectionPageKey === "shop-family";
   const isGoldCollectionSection = sectionPageKey === "gold-collection";
+  const isDiamondCollectionSection = sectionPageKey === "diamond-collection";
   const isGoldCategoryGridSection =
     sectionId === "gold-category-grid" && isGoldCollectionSection;
   const isGoldShopByColourSection =
@@ -837,7 +840,6 @@ const CategoryShowcaseEditor = ({ sectionData, onSave, defaultItems = [] }) => {
     { id: "women-hue-1", name: "Pure 925 Silver" },
     { id: "women-hue-2", name: "Gold Plated" },
     { id: "women-hue-3", name: "Rose Gold Plated" },
-    { id: "women-hue-4", name: "Oxidised Silver" },
   ];
 
   const fixedWomenPromoDefaults = [
@@ -2692,7 +2694,9 @@ const CategoryShowcaseEditor = ({ sectionData, onSave, defaultItems = [] }) => {
       {(sectionId === "silver-collection" ||
         sectionId === "silver-curated" ||
         sectionId === "new-launch" ||
-        isHomeCategoryGrid) && (
+        isHomeCategoryGrid ||
+        isDiamondCollectionSection ||
+        String(sectionId).startsWith("diamond-")) && (
           <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm space-y-6">
             <div className="flex items-center justify-between border-b border-gray-50 pb-4">
               <h3 className="font-display text-base font-bold text-gray-800">

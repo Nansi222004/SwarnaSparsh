@@ -25,7 +25,7 @@ exports.login = async (req, res) => {
     const identifier = String(email).trim();
 
     // 1. Auto-seeding check: Ensure correct credentials exist in DB from .env
-    const envAdminEmail = (process.env.ADMIN_EMAIL || "admin@swarnasparsh.com").trim().toLowerCase();
+    const envAdminEmail = (process.env.ADMIN_EMAIL || "admin@alankarjewellers.com").trim().toLowerCase();
     const envAdminPassword = process.env.ADMIN_PASSWORD || "admin123";
     const envAdminName = process.env.ADMIN_NAME || "Super Admin";
 

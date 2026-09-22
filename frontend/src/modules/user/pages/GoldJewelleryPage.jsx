@@ -13,6 +13,7 @@ import {
 import GoldExploreCollections from "../components/GoldExploreCollections";
 import BestStylesSection from "../components/BestStylesSection";
 import GoldCategoryGrid from "../components/GoldCategoryGrid";
+import { GoldCollectionGrid } from "../components/CategoryGrid";
 import GoldNewLaunchBanner from "../components/GoldNewLaunchBanner";
 import PromoSlider from "../components/PromoSlider";
 import GoldRingCarousel from "../components/GoldRingCarousel";
@@ -21,7 +22,6 @@ import CuratedForEveryBond from "../components/CuratedForEveryBond";
 import GoldCuratedShowcase from "../components/GoldCuratedShowcase";
 import GoldExclusiveLaunch from "../components/GoldExclusiveLaunch";
 import GoldLifestyleGrid from "../components/GoldLifestyleGrid";
-import GoldShopByColour from "../components/GoldShopByColour";
 import GoldLuxuryWithinReach from "../components/GoldLuxuryWithinReach";
 import GoldDirectProducts from "../components/GoldDirectProducts";
 import GoldTrustStrip from "../components/GoldTrustStrip";
@@ -188,10 +188,14 @@ const GoldJewelleryPage = () => {
   }
 
   return (
-    <div className="bg-white min-h-screen font-body">
+    <div className="bg-white min-h-screen font-body overflow-x-hidden">
       <PromoSlider externalSlides={heroSlides} autoplayInterval={autoplayMs} />
 
       <GoldCategoryGrid sectionData={sectionMap["gold-category-grid"]} />
+      <GoldCollectionGrid
+        sectionData={sectionMap["gold-collection-grid"]}
+        sidePanelData={sectionMap["gold-shop-by-colour"]}
+      />
       <HeerCustomisationBanner />
       <GoldExploreCollections
         sectionData={sectionMap["gold-explore-collections"]}
@@ -241,7 +245,6 @@ const GoldJewelleryPage = () => {
       <GoldExclusiveLaunch sectionData={sectionMap["gold-exclusive-launch"]} />
       <GoldRingCarousel sectionData={sectionMap["gold-ring-carousel"]} />
       <HeerCustomisationBanner />
-      <GoldShopByColour sectionData={sectionMap["gold-shop-by-colour"]} />
       <GoldLuxuryWithinReach
         sectionData={sectionMap["gold-luxury-within-reach"]}
       />

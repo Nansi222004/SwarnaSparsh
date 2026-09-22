@@ -187,7 +187,7 @@ const AppContent = () => {
             <CategoryNav showMetalToggle={showMetalToggle} />
           </div>
           {/* Spacer so page content doesn't get hidden under fixed header */}
-          <div className={`${showMetalToggle ? 'h-[148px] md:h-[156px]' : 'h-[110px] md:h-[118px]'}`} />
+          <div className={`${showMetalToggle ? 'h-[148px] md:h-[156px]' : 'h-[138px] md:h-[138px]'}`} />
         </>
       )}
       <main className={`flex-grow ${!isAdminPath && !isLoginPath ? 'pb-16 md:pb-0' : ''}`}>

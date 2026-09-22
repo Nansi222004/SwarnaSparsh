@@ -106,13 +106,28 @@ exports.getProducts = async (req, res) => {
       if (effectiveMaxPrice) query["variants.price"].$lte = Number(effectiveMaxPrice);
     }
 
-    // Exclude unrelated categories (e.g. bags, clutches, potlis) from public storefront
+    // Exclude unrelated categories (e.g. bags, clutches, potlis) and non-fine oxidised imitation items from public storefront
     const excludedCategorySlugs = ["hand-bags", "clutches", "potli-bag", "sling-bag"];
     andFilters.push({
       categorySlug: { $nin: excludedCategorySlugs },
-      category: { $not: { $regex: "bag|clutch|potli|sling", $options: "i" } },
-      name: { $not: { $regex: "\\bbag\\b|\\bclutch\\b|\\bpotli\\b|\\bsling\\b", $options: "i" } }
+      category: { $not: { $regex: "bag|clutch|potli|sling|oxidi|oxydis", $options: "i" } },
+      name: { $not: { $regex: "\\bbag\\b|\\bclutch\\b|\\bpotli\\b|\\bsling\\b|oxidi|oxydis", $options: "i" } },
+      material: { $not: { $regex: "oxidi|oxydis", $options: "i" } }
     });
+
+    // Exclude Mala Set products from general All Jewellery storefront results
+    // They remain active in MongoDB and accessible if category=malas or search=mala is specifically requested
+    const isMalaExplicitlyRequested = Boolean(
+      (category && /^(malas?|mala-set)$/i.test(String(category).trim())) ||
+      (search && /\bmala\b/i.test(String(search).trim()))
+    );
+    if (!isMalaExplicitlyRequested) {
+      andFilters.push({
+        categorySlug: { $ne: "malas" },
+        category: { $not: { $regex: "^malas?$", $options: "i" } },
+        name: { $not: { $regex: "\\bmala(\\s*set)?\\b", $options: "i" } }
+      });
+    }
 
     // 3.1 Metal + purity filters
     // Backwards-compat: older links may pass karat/silver_type without metal.
@@ -139,7 +154,7 @@ exports.getProducts = async (req, res) => {
               ]
             },
             { material: { $not: { $regex: "plated|alloy|imitation|antique finish", $options: "i" } } },
-            { name: { $not: { $regex: "plated|alloy|imitation|oxydis", $options: "i" } } }
+            { name: { $not: { $regex: "plated|alloy|imitation|oxydis|oxidi", $options: "i" } } }
           ]
         });
 
@@ -162,7 +177,7 @@ exports.getProducts = async (req, res) => {
               ]
             },
             { material: { $not: { $regex: "plated|alloy|imitation|antique finish", $options: "i" } } },
-            { name: { $not: { $regex: "plated|alloy|imitation|oxydis", $options: "i" } } },
+            { name: { $not: { $regex: "plated|alloy|imitation|oxydis|oxidi", $options: "i" } } },
             { name: { $not: { $regex: "\\bdiamond\\b", $options: "i" } } },
             { diamondType: { $nin: ["lab_grown", "natural"] } }
           ]
@@ -173,15 +188,15 @@ exports.getProducts = async (req, res) => {
         if (effectiveTone === "white-gold" || effectiveTone === "white" || effectiveTone === "white gold") {
           andFilters.push({
             $or: [
-              { settingMetal: "White Gold" },
-              { material: { $regex: "white\\s*gold", $options: "i" } }
+              { settingMetal: { $regex: "white[\\s-]*gold", $options: "i" } },
+              { material: { $regex: "white[\\s-]*gold", $options: "i" } }
             ]
           });
         } else if (effectiveTone === "rose-gold" || effectiveTone === "rose" || effectiveTone === "rose gold") {
           andFilters.push({
             $or: [
-              { settingMetal: "Rose Gold" },
-              { material: { $regex: "rose\\s*gold", $options: "i" } }
+              { settingMetal: { $regex: "rose[\\s-]*gold", $options: "i" } },
+              { material: { $regex: "rose[\\s-]*gold", $options: "i" } }
             ]
           });
         } else if (effectiveTone === "gold" || effectiveTone === "yellow-gold" || effectiveTone === "yellow" || effectiveTone === "yellow gold") {
@@ -189,13 +204,13 @@ exports.getProducts = async (req, res) => {
             $and: [
               {
                 $or: [
-                  { settingMetal: "Gold" },
-                  { material: { $in: ["Gold", "Yellow Gold", "22K Gold", "18K Gold", "24K Gold", "14K Gold", "Solid Gold"] } },
+                  { settingMetal: { $regex: "^(gold|yellow[\\s-]*gold)$", $options: "i" } },
+                  { material: { $regex: "^(gold|yellow[\\s-]*gold|22k[\\s-]*gold|18k[\\s-]*gold|24k[\\s-]*gold|14k[\\s-]*gold|solid[\\s-]*gold)$", $options: "i" } },
                   { goldCategory: { $in: ["14", "18", "22", "24"] } }
                 ]
               },
-              { settingMetal: { $nin: ["White Gold", "Rose Gold"] } },
-              { material: { $not: { $regex: "white\\s*gold|rose\\s*gold", $options: "i" } } }
+              { settingMetal: { $not: { $regex: "white|rose", $options: "i" } } },
+              { material: { $not: { $regex: "white[\\s-]*gold|rose[\\s-]*gold", $options: "i" } } }
             ]
           });
         }
@@ -221,7 +236,7 @@ exports.getProducts = async (req, res) => {
               ]
             },
             { material: { $not: { $regex: "plated|alloy|imitation|antique finish", $options: "i" } } },
-            { name: { $not: { $regex: "plated|alloy|imitation|oxydis", $options: "i" } } },
+            { name: { $not: { $regex: "plated|alloy|imitation|oxydis|oxidi", $options: "i" } } },
             { name: { $not: { $regex: "\\bdiamond\\b", $options: "i" } } }
           ]
         });

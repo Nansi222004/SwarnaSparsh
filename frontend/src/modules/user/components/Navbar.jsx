@@ -1,7 +1,7 @@
 import React, { useMemo, useState, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Search, Heart, ShoppingCart, User, Users, Menu, X, ChevronDown, ChevronRight, Bell, Sparkles, Coins, Gem, Droplet, LifeBuoy, Sun, Hexagon, Gift, MoreHorizontal, ShoppingBag, Info } from 'lucide-react';
+import { Search, Heart, ShoppingCart, User, Users, Menu, X, ChevronDown, ChevronRight, Bell, Sparkles, Coins, Gem, Droplet, LifeBuoy, Sun, Hexagon, Gift, MoreHorizontal, ShoppingBag, Info, Landmark } from 'lucide-react';
 import { useShop } from '../../../context/ShopContext';
 import { useNotification } from '../../../context/NotificationContext';
 import defaultLogo from '@/assets/Alankar jewllers.png';
@@ -710,7 +710,9 @@ const Navbar = () => {
                                     {[
                                         { label: 'All Jewellery', path: '/shop', icon: Sparkles },
                                         { label: 'Gold', path: '/gold-collection', icon: Coins },
-                                        { label: 'Silver', path: '/', icon: Gem },
+                                        { label: 'Silver', path: '/', icon: Droplet },
+                                        { label: 'Diamond', path: '/diamond-collection', icon: Gem },
+                                        { label: 'Bullions', path: '/shop?metal=gold&karat=24', icon: Landmark },
                                         { label: 'Rings', path: '/shop?category=rings', icon: LifeBuoy },
                                         { label: 'Daily Wear', path: '/shop?category=daily-wear', icon: Sun },
                                         { label: 'Wedding', path: '/shop?category=wedding', icon: Heart },
@@ -722,19 +724,30 @@ const Navbar = () => {
                                         <Link
                                             key={index}
                                             to={item.path}
-                                            onClick={() => setIsMenuOpen(false)}
+                                            onClick={() => {
+                                                setIsMenuOpen(false);
+                                                if (item.label === 'Gold' || item.label === 'Bullions') updateActiveMetal('gold');
+                                                if (item.label === 'Silver') updateActiveMetal('silver');
+                                                if (item.label === 'Diamond') updateActiveMetal('diamond');
+                                            }}
                                             className={`flex items-center justify-between py-4 px-4 hover:shadow-sm rounded-xl transition-all group border-b border-[#E8DFD0] last:border-0 relative overflow-hidden ${item.label === 'Gold' ? 'bg-gradient-to-r from-amber-50 to-white hover:from-amber-100 border-amber-200' :
                                                     item.label === 'Silver' ? 'bg-gradient-to-r from-slate-50 to-white hover:from-slate-100 border-slate-200' :
+                                                    item.label === 'Diamond' ? 'bg-gradient-to-r from-sky-50/70 via-[#FAFBFD] to-white hover:from-sky-100/70 border-sky-200' :
+                                                    item.label === 'Bullions' ? 'bg-gradient-to-r from-[#FAF8F5] via-white to-amber-50/50 hover:from-amber-100/60 border-amber-200/80' :
                                                         'text-gray-800 hover:bg-white hover:text-[#C59B27]'
                                                 }`}
                                         >
                                             <div className="flex items-center gap-5 relative z-10">
                                                 <item.icon className={`w-5 h-5 transition-colors ${item.label === 'Gold' ? 'text-amber-500 group-hover:text-amber-600 animate-pulse' :
                                                         item.label === 'Silver' ? 'text-slate-400 group-hover:text-slate-600 animate-pulse' :
+                                                        item.label === 'Diamond' ? 'text-sky-600 group-hover:text-sky-700 animate-pulse' :
+                                                        item.label === 'Bullions' ? 'text-[#C59B27] group-hover:text-[#141211]' :
                                                             'text-gray-600 group-hover:text-[#C59B27]'
                                                     }`} strokeWidth={1.5} />
                                                 <span className={`text-[15px] tracking-wide ${item.label === 'Gold' ? 'text-amber-700 font-bold group-hover:text-amber-800' :
                                                         item.label === 'Silver' ? 'text-slate-600 font-bold group-hover:text-slate-800' :
+                                                        item.label === 'Diamond' ? 'text-stone-900 font-bold group-hover:text-[#C6A04A]' :
+                                                        item.label === 'Bullions' ? 'text-[#141211] font-bold group-hover:text-[#C59B27]' :
                                                             'font-medium text-gray-800 group-hover:font-semibold group-hover:text-[#C59B27]'
                                                     }`}>{item.label}</span>
                                             </div>

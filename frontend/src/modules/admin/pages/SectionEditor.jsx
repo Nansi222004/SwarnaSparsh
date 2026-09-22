@@ -21,6 +21,7 @@ import WomenFeaturedProductsEditor from '../components/editors/WomenFeaturedProd
 import FamilyFeaturedProductsEditor from '../components/editors/FamilyFeaturedProductsEditor';
 import GoldFeaturedProductsEditor from '../components/editors/GoldFeaturedProductsEditor';
 import GoldTrustMarkersEditor from '../components/editors/GoldTrustMarkersEditor';
+import DiamondTrustMarkersEditor from '../components/editors/DiamondTrustMarkersEditor';
 import CategoryShowcaseEditor from '../components/editors/CategoryShowcaseEditor';
 import BannerSectionEditor from '../components/editors/BannerSectionEditor';
 import BrandPromisesEditor from '../components/editors/BrandPromisesEditor';
@@ -192,7 +193,7 @@ const SectionEditor = () => {
             return <BestStylesSectionEditor sectionData={sectionData} onSave={handleSave} defaultSection={defaultSection} />;
         }
 
-        if ((sectionData.sectionKey || id) === 'shop-by-colour') {
+        if ((sectionData.sectionKey || id) === 'shop-by-colour' || (sectionData.sectionKey || id) === 'gold-shop-by-colour') {
             return <ShopByColourEditor sectionData={sectionData} onSave={handleSave} defaultSection={defaultSection} />;
         }
 
@@ -200,8 +201,16 @@ const SectionEditor = () => {
             return <ShopBySilverEditor sectionData={sectionData} onSave={handleSave} defaultSection={defaultSection} />;
         }
 
-        if ((sectionData.sectionKey || id) === 'shop-by-diamond') {
+        if ((sectionData.sectionKey || id) === 'shop-by-diamond' || (sectionData.sectionKey || id) === 'diamond-shop-by-type') {
             return <ShopByDiamondEditor sectionData={sectionData} onSave={handleSave} defaultSection={defaultSection} />;
+        }
+
+        if ((sectionData.sectionKey || id) === 'diamond-trust-markers' && pageKey === 'diamond-collection') {
+            return <DiamondTrustMarkersEditor sectionData={sectionData} onSave={handleSave} defaultItems={defaultItems} />;
+        }
+
+        if ((sectionData.sectionKey || id) === 'diamond-products-listing' && pageKey === 'diamond-collection') {
+            return <GoldFeaturedProductsEditor sectionData={sectionData} onSave={handleSave} defaultSection={defaultSection} />;
         }
 
         if ((sectionData.sectionKey || id) === 'shop-by-bond') {
@@ -306,7 +315,6 @@ const SectionEditor = () => {
             'gold-new-launch-banner',
             'gold-exclusive-launch',
             'gold-ring-carousel',
-            'gold-shop-by-colour',
             'gold-luxury-within-reach',
             'gold-curated-bond',
             'gold-curated-showcase',
@@ -314,9 +322,13 @@ const SectionEditor = () => {
             'gold-products-listing',
             'hero-banners-diamond',
             'diamond-category-grid',
-            'diamond-featured-creations',
+            'diamond-shapes',
+            'diamond-4cs-guide',
             'diamond-trust-markers',
-            'diamond-products-listing'
+            'diamond-curated-collections',
+            'diamond-products-listing',
+            'diamond-bespoke-consultation',
+            'diamond-featured-creations'
         ];
 
         if (supportedSections.includes(sectionData.sectionKey || id)) {

@@ -7,8 +7,8 @@ exports.getCategories = async (req, res) => {
     const excludedSlugs = ["hand-bags", "clutches", "potli-bag", "sling-bag"];
     const query = { 
       isActive: true,
-      slug: { $nin: excludedSlugs },
-      name: { $not: { $regex: "bag|clutch|potli|sling", $options: "i" } }
+      slug: { $nin: excludedSlugs, $not: { $regex: "oxidi|oxydis", $options: "i" } },
+      name: { $not: { $regex: "bag|clutch|potli|sling|oxidi|oxydis", $options: "i" } }
     };
 
     if (scope === "navbar") {

@@ -159,10 +159,10 @@ const HorizontalFilters = ({
         },
         {
             id: 'metal',
-            label: 'Metal',
+            label: 'Metal / Material',
             value: metal || 'All',
             displayValue: metal !== 'All' ? (metal.charAt(0).toUpperCase() + metal.slice(1)) : '',
-            options: ['All', 'Silver', 'Gold', 'Diamond'],
+            options: ['All', 'Gold', 'Silver', 'Diamond'],
             onChange: onMetalChange
         },
         {
@@ -241,7 +241,7 @@ const HorizontalFilters = ({
 
     return (
         <div className="hidden md:block w-full border-b border-stone-200 bg-white">
-            <div className="container mx-auto px-6 py-3 flex items-center justify-between gap-4">
+            <div className="py-2.5 flex items-center justify-between gap-4">
                 <div 
                     {...filterScroll.events}
                     ref={filterScroll.ref}

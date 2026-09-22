@@ -47,6 +47,29 @@ const ProductCard = ({ product, isWishlistPage = false, requireLogin = false, lo
     const reviewCount = Number(product.reviewCount ?? product.reviews ?? 0);
     const ratingValue = Number(product.rating || 4.8).toFixed(1);
 
+    // Purity or Material derivation (only genuine product data)
+    const purityOrMaterial = (() => {
+        if (product?.goldCategory) return `${product.goldCategory}K Gold`;
+        if (product?.silverCategory) return `${product.silverCategory} Silver`;
+        if (product?.settingPurity) return product.settingPurity;
+        if (product?.material && product.material !== 'Silver') return product.material;
+        return null;
+    })();
+
+    // Editorial status badge (display only ONE relevant badge)
+    const activeBadge = (() => {
+        if (hasDiscount && discountPercent > 0) {
+            return { type: 'discount', label: `${discountPercent}% Off` };
+        }
+        if (product.isTrending || product.tags?.isTrending) {
+            return { type: 'bestseller', label: 'Bestseller' };
+        }
+        if (product.tags?.isNewArrival || product.tags?.isNewLaunch || product.isNew) {
+            return { type: 'new', label: 'New Arrival' };
+        }
+        return null;
+    })();
+
     const handleProductOpen = () => {
         navigate(`/product/${product.id || product._id}`);
     };
@@ -87,24 +110,24 @@ const ProductCard = ({ product, isWishlistPage = false, requireLogin = false, lo
                 <img
                     src={primaryImage}
                     alt=""
-                    className={`fixed z-[9999] w-44 h-44 object-cover shadow-2xl pointer-events-none border-2 border-[#C6A04A] rounded-xl ${flyingType === 'cart' ? 'animate-fly-cart' : 'animate-fly-heart'}`}
+                    className={`fixed z-[9999] w-44 h-44 object-cover shadow-2xl pointer-events-none border-2 border-[#C59B27] rounded-xl ${flyingType === 'cart' ? 'animate-fly-cart' : 'animate-fly-heart'}`}
                     style={{ left: '50%', top: '50%' }}
                 />
             )}
 
             <div
-                className="group/card relative w-full flex flex-col bg-white overflow-hidden cursor-pointer border border-[#E8E0D2] hover:border-[#C6A04A] rounded-2xl transition-all duration-500 hover:shadow-[0_8px_24px_rgba(23,23,23,0.08)]"
+                className="group/card relative w-full h-full flex flex-col bg-white overflow-hidden cursor-pointer border border-[#E8DFD0] hover:border-[#C59B27] rounded-2xl transition-all duration-400 hover:shadow-[0_10px_28px_rgba(20,18,17,0.06)]"
                 onClick={handleProductOpen}
             >
-                {/* Visual Area — Editorial ratio & warm surface */}
-                <div className="relative aspect-[4/4] overflow-hidden bg-[#FAF7F0] border-b border-[#E8E0D2]">
+                {/* Visual Area — Consistent square ratio & warm surface */}
+                <div className="relative aspect-square w-full overflow-hidden bg-[#FAF8F5] border-b border-[#E8DFD0]/60">
                     <img
                         src={getProductCardUrl(primaryImage)}
                         alt={product.name}
                         loading="lazy"
                         decoding="async"
                         onError={(e) => handleImageError(e, fallbackImage)}
-                        className="w-full h-full object-cover transition-transform duration-[1.4s] ease-out group-hover/card:scale-106"
+                        className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover/card:scale-105"
                     />
 
                     {secondaryImage && (
@@ -114,93 +137,107 @@ const ProductCard = ({ product, isWishlistPage = false, requireLogin = false, lo
                             loading="lazy"
                             decoding="async"
                             onError={(e) => handleImageError(e, fallbackImage)}
-                            className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover/card:opacity-100 transition-opacity duration-700 ease-in-out"
+                            className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover/card:opacity-100 transition-opacity duration-500 ease-in-out"
                         />
                     )}
 
-                    {/* Editorial Urgency / Status Badges */}
-                    <div className="absolute top-2.5 left-2.5 flex flex-col gap-1 z-10">
-                        {(product.isTrending || product.tags?.isTrending) && (
-                            <span className="bg-[#171717] text-[#E5CC85] border border-[#C6A04A]/40 text-[8px] md:text-[9px] font-bold px-2 py-0.5 uppercase tracking-widest rounded-md shadow-sm">
-                                Bestseller
-                            </span>
-                        )}
-                        {(product.tags?.isNewArrival || product.tags?.isNewLaunch) && (
-                            <span className="bg-[#FAF7F0] text-[#171717] border border-[#C6A04A] text-[8px] md:text-[9px] font-bold px-2 py-0.5 uppercase tracking-widest rounded-md shadow-sm">
-                                New Arrival
-                            </span>
-                        )}
-                        {hasDiscount && discountPercent > 0 && (
-                            <span className="bg-[#C6A04A] text-[#171717] text-[8px] md:text-[9px] font-black px-1.5 py-0.5 uppercase tracking-wider rounded-md shadow-sm">
-                                {discountPercent}% Off
-                            </span>
-                        )}
-                    </div>
+                    {/* Single Elegant Badge in Top-Left */}
+                    {activeBadge && (
+                        <div className="absolute top-2.5 left-2.5 z-10">
+                            {activeBadge.type === 'bestseller' && (
+                                <span className="bg-[#141211] text-[#E8D198] border border-[#C59B27]/40 text-[9px] font-bold px-2.5 py-0.5 uppercase tracking-wider rounded-full shadow-xs">
+                                    {activeBadge.label}
+                                </span>
+                            )}
+                            {activeBadge.type === 'new' && (
+                                <span className="bg-white/95 text-[#141211] border border-[#E8DFD0] text-[9px] font-semibold px-2.5 py-0.5 uppercase tracking-wider rounded-full shadow-xs backdrop-blur-xs">
+                                    {activeBadge.label}
+                                </span>
+                            )}
+                            {activeBadge.type === 'discount' && (
+                                <span className="bg-[#C59B27] text-white text-[9px] font-black px-2 py-0.5 uppercase tracking-wider rounded-full shadow-xs">
+                                    {activeBadge.label}
+                                </span>
+                            )}
+                        </div>
+                    )}
 
-                    {/* Quick Action Buttons (Glassmorphic & Restrained) */}
-                    <div className="absolute top-2.5 right-2.5 flex items-center gap-1.5 z-20">
+                    {/* Wishlist Action Button (Glassmorphic & Restrained) */}
+                    <div className="absolute top-2.5 right-2.5 z-20">
                         <button
                             onClick={handleWishlist}
-                            className={`w-7 h-7 md:w-8 md:h-8 rounded-full bg-white/90 backdrop-blur-md border border-[#E8E0D2] flex items-center justify-center shadow-xs transition-all duration-300 hover:border-[#C6A04A] hover:scale-105 ${isWishlisted ? 'text-[#C6A04A] bg-[#FAF7F0]' : 'text-[#77716A] hover:text-[#C6A04A]'}`}
+                            className={`w-8 h-8 rounded-full bg-white/90 backdrop-blur-sm border border-[#E8DFD0] flex items-center justify-center shadow-xs transition-all duration-300 hover:border-[#C59B27] hover:scale-105 ${isWishlisted ? 'text-[#C59B27] bg-[#FAF8F5]' : 'text-stone-500 hover:text-[#C59B27]'}`}
                             title={isWishlisted ? "In your wishlist" : "Add to wishlist"}
                             aria-label="Wishlist"
                         >
-                            <Heart className={`w-3.5 h-3.5 ${isWishlisted ? 'fill-current text-[#C6A04A]' : ''}`} />
-                        </button>
-
-                        <button
-                            onClick={handleAddToCart}
-                            className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-white/90 backdrop-blur-md border border-[#E8E0D2] flex items-center justify-center shadow-xs transition-all duration-300 hover:border-[#C6A04A] hover:scale-105 text-[#77716A] hover:text-[#C6A04A]"
-                            title="Add to shopping bag"
-                            aria-label="Add to cart"
-                        >
-                            <ShoppingBag className="w-3.5 h-3.5" />
+                            <Heart className={`w-3.5 h-3.5 ${isWishlisted ? 'fill-current text-[#C59B27]' : ''}`} />
                         </button>
                     </div>
                 </div>
 
                 {/* Editorial Product Information Hierarchy */}
-                <div className="flex flex-col p-3 md:p-3.5 flex-1 bg-white">
-                    {/* 1. Category micro-eyebrow */}
-                    <div className="flex items-center justify-between mb-1">
-                        <span className="text-[9px] md:text-[10px] font-sans font-semibold uppercase tracking-[0.18em] text-[#C6A04A] line-clamp-1">
-                            {categoryName || 'Fine Jewellery'}
-                        </span>
-                        
-                        {/* 3. Rating */}
-                        <div className="flex items-center gap-1">
-                            <Star className="w-2.5 h-2.5 fill-[#C6A04A] text-[#C6A04A]" />
-                            <span className="text-[10px] font-bold text-[#242424]">{ratingValue}</span>
-                            {reviewCount > 0 && (
-                                <span className="text-[9px] text-[#77716A]">({reviewCount})</span>
+                <div className="flex flex-col p-3.5 md:p-4 flex-1 bg-white justify-between">
+                    <div>
+                        {/* 1. Category eyebrow & Rating */}
+                        <div className="flex items-center justify-between gap-2 mb-1.5">
+                            <span className="text-[9px] md:text-[10px] font-sans font-semibold uppercase tracking-[0.16em] text-[#C59B27] truncate">
+                                {categoryName || 'Fine Jewellery'}
+                            </span>
+                            
+                            {/* Rating (only when supported by real reviews/data) */}
+                            {reviewCount > 0 && Number(product.rating) > 0 && (
+                                <div className="flex items-center gap-1 shrink-0">
+                                    <Star className="w-2.5 h-2.5 fill-[#C59B27] text-[#C59B27]" />
+                                    <span className="text-[10px] font-bold text-stone-800">{Number(product.rating).toFixed(1)}</span>
+                                    <span className="text-[9px] text-stone-400">({reviewCount})</span>
+                                </div>
                             )}
                         </div>
-                    </div>
 
-                    {/* 2. Product Name in Elegant Serif */}
-                    <h3 className="font-serif text-[12px] md:text-[14px] font-medium text-[#171717] line-clamp-1 group-hover/card:text-[#C6A04A] transition-colors leading-snug mb-2">
-                        {product.name}
-                    </h3>
+                        {/* 2. Product Name in Elegant Serif */}
+                        <h3 className="font-serif text-[13px] md:text-[15px] font-medium text-[#141211] line-clamp-1 group-hover/card:text-[#C59B27] transition-colors leading-snug mb-1">
+                            {product.name}
+                        </h3>
 
-                    {/* 4 & 5. Price and MRP / Discount */}
-                    <div className="flex items-baseline gap-2 mb-3 mt-auto">
-                        <span className="text-[15px] md:text-[17px] font-bold text-[#171717] font-sans tracking-tight">
-                            {formatCurrency(effectivePrice)}
-                        </span>
-                        {hasDiscount && (
-                            <span className="text-[11px] md:text-[12px] text-[#77716A] line-through font-normal">
-                                {formatCurrency(effectiveOriginalPrice)}
-                            </span>
+                        {/* 3. Genuine Material / Purity Detail */}
+                        {purityOrMaterial && (
+                            <p className="text-[11px] text-stone-500 font-sans tracking-wide truncate mb-2.5">
+                                {purityOrMaterial}
+                            </p>
                         )}
                     </div>
 
-                    {/* Editorial CTA */}
-                    <button
-                        onClick={handleProductOpen}
-                        className="w-full bg-[#171717] text-[#FAF7F0] hover:bg-[#C6A04A] hover:text-[#171717] font-sans font-semibold text-[10px] md:text-[11px] py-2 rounded-xl transition-all duration-300 uppercase tracking-[0.14em] active:scale-[0.99] flex items-center justify-center gap-1 shadow-xs border border-[#171717] hover:border-[#C6A04A]"
-                    >
-                        Explore Piece
-                    </button>
+                    {/* 4. Price and Add to Cart CTA */}
+                    <div className="mt-auto pt-2">
+                        {/* Genuine Price or Price on Request */}
+                        <div className="flex items-baseline gap-2 mb-3">
+                            {effectivePrice > 0 ? (
+                                <>
+                                    <span className="text-[15px] md:text-[17px] font-bold text-[#141211] font-sans tracking-tight">
+                                        {formatCurrency(effectivePrice)}
+                                    </span>
+                                    {hasDiscount && (
+                                        <span className="text-[11px] md:text-[12px] text-stone-400 line-through font-normal">
+                                            {formatCurrency(effectiveOriginalPrice)}
+                                        </span>
+                                    )}
+                                </>
+                            ) : (
+                                <span className="text-[12px] md:text-[13px] font-semibold text-stone-600 tracking-wide">
+                                    Price on Request
+                                </span>
+                            )}
+                        </div>
+
+                        {/* Refined Add to Cart Button */}
+                        <button
+                            onClick={handleAddToCart}
+                            className="w-full bg-[#141211] text-[#FAF8F5] hover:bg-[#C59B27] hover:text-[#141211] font-sans font-semibold text-[11px] md:text-xs py-2 md:py-2.5 rounded-xl transition-all duration-300 uppercase tracking-[0.12em] active:scale-[0.98] flex items-center justify-center gap-2 shadow-xs border border-[#141211] hover:border-[#C59B27] group/btn"
+                        >
+                            <ShoppingBag className="w-3.5 h-3.5 transition-transform duration-300 group-hover/btn:-translate-y-0.5" />
+                            <span>Add to Cart</span>
+                        </button>
+                    </div>
                 </div>
             </div>
         </>

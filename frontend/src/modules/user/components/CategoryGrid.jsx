@@ -20,7 +20,7 @@ export const CategoryGrid = () => {
     );
 };
 
-export const GoldCollectionGrid = () => {
+export const GoldCollectionGrid = (props) => {
     return (
         <CollectionCategoryGrid
             sectionKey="gold-collection-grid"
@@ -28,7 +28,8 @@ export const GoldCollectionGrid = () => {
             defaultEyebrow="Pure Radiance"
             defaultSubtitle="Timeless gold jewellery crafted with exceptional artistry"
             defaultItems={goldCollectionGridDefaults}
-            bgClass="bg-white"
+            bgClass="bg-[#FAF8F5]"
+            {...props}
         />
     );
 };

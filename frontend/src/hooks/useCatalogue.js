@@ -91,6 +91,13 @@ export const useCatalogue = () => {
                 faqs: prod.faqs || [], // Added FAQs
                 goldCategory: prod.goldCategory || '',
                 silverCategory: prod.silverCategory || '',
+                diamondType: prod.diamondType || '',
+                metal: prod.metal || '',
+                settingMetal: prod.settingMetal || '',
+                settingPurity: prod.settingPurity || '',
+                description: prod.description || '',
+                status: prod.status || 'Active',
+                active: prod.active !== false,
                 variants: (prod.variants || []).map((v, index) => ({
                     ...v,
                     id: v._id || v.id || `${prod._id}-variant-${index}`

@@ -3,9 +3,11 @@ import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useShop } from '../../../../context/ShopContext';
 
-const AllJewelleryMenu = ({ resetMenu }) => {
+const AllJewelleryMenu = ({ resetMenu, availableHeight, maxWidth }) => {
     const { categories } = useShop();
     const [hoveredCategory, setHoveredCategory] = useState('All');
+
+    const menuMaxHeight = availableHeight ? Math.min(480, availableHeight) : undefined;
 
     const withQuery = (basePath, queryString) => {
         const base = String(basePath || '').trim() || '/shop';
@@ -96,7 +98,7 @@ const AllJewelleryMenu = ({ resetMenu }) => {
         {
             title: 'Shop by Metal',
             items: [
-                // Align with purity behavior: 925 = sterling-only, pure gold = 24K.
+                { name: 'Diamond Collection', path: '/diamond-collection' },
                 { name: '925 Silver', path: '/shop?metal=silver&silver_type=sterling' },
                 { name: 'Pure Gold',  path: '/shop?metal=gold&karat=24' },
             ]
@@ -108,7 +110,6 @@ const AllJewelleryMenu = ({ resetMenu }) => {
                 { name: 'Silver',      path: '/shop?metal=silver' },
                 { name: 'Gold Plated', path: '/shop?metal=gold' },
                 { name: 'Rose Gold',   path: '/shop?search=rose+gold' },
-                { name: 'Oxidised',    path: '/shop?search=oxidised' },
             ]
         },
         {
@@ -144,6 +145,7 @@ const AllJewelleryMenu = ({ resetMenu }) => {
                     // Keep consistent with the ALL TYPE purity behavior.
                     { name: '925 Silver', path: withQuery(catPath, 'metal=silver&silver_type=sterling') },
                     { name: 'Pure Gold',  path: withQuery(catPath, 'metal=gold&karat=24') },
+                    { name: 'Diamond',    path: withQuery(catPath, 'metal=diamond') },
                 ]
             },
             {
@@ -152,7 +154,6 @@ const AllJewelleryMenu = ({ resetMenu }) => {
                     { name: 'Silver',      path: withQuery(catPath, 'metal=silver') },
                     { name: 'Gold Plated', path: withQuery(catPath, 'metal=gold') },
                     { name: 'Rose Gold',   path: withQuery(catPath, 'search=rose+gold') },
-                    { name: 'Oxidised',    path: withQuery(catPath, 'search=oxidised') },
                 ]
             },
         ];
@@ -163,18 +164,34 @@ const AllJewelleryMenu = ({ resetMenu }) => {
         : getCategoryFilters(hoveredCategory);
 
     return (
-        <div className="flex bg-white h-[480px] w-[950px] max-w-[calc(100vw-2rem)] shadow-[0_25px_60px_rgba(0,0,0,0.18)] overflow-hidden border border-gray-100 rounded-b-2xl font-sans">
-
+        <div 
+            className="flex bg-white w-[920px] max-w-[calc(100vw-2rem)] shadow-[0_25px_60px_rgba(0,0,0,0.18)] overflow-hidden border border-gray-100 rounded-b-2xl font-sans"
+            style={{
+                maxHeight: menuMaxHeight ? `${menuMaxHeight}px` : 'min(480px, calc(100vh - 140px))',
+                height: menuMaxHeight ? `${menuMaxHeight}px` : 'min(480px, calc(100vh - 140px))',
+                width: maxWidth ? `${maxWidth}px` : undefined,
+            }}
+            data-lenis-prevent
+            onWheel={(e) => e.stopPropagation()}
+        >
             {/* ── Left Sidebar: Category list (Compact & Scrollable) ─────────────────────────────── */}
-            <div className="w-[220px] bg-[#F9FAFB] border-r border-gray-100 py-6 shrink-0 overflow-y-auto custom-scrollbar">
-                <ul className="flex flex-col gap-1">
+            <div 
+                className="w-[180px] sm:w-[200px] lg:w-[220px] bg-[#F9FAFB] border-r border-gray-100 py-3 sm:py-4 shrink-0 overflow-y-auto custom-scrollbar h-full min-h-0 max-h-full overscroll-contain"
+                data-lenis-prevent
+                onWheel={(e) => e.stopPropagation()}
+                style={{
+                    scrollbarWidth: 'thin',
+                    scrollbarColor: '#C59B27 transparent',
+                }}
+            >
+                <ul className="flex flex-col gap-0.5 sm:gap-1">
                     {mainCategories.map((cat) => (
                         <li key={cat.id}>
                             <Link
                                 to={cat.path}
                                 onMouseEnter={() => setHoveredCategory(cat.name)}
                                 onClick={resetMenu}
-                                className={`flex items-center px-6 py-2.5 text-[14px] transition-all duration-200 border-l-[3px] ${
+                                className={`flex items-center px-4 sm:px-5 lg:px-6 py-2 sm:py-2.5 text-[13px] lg:text-[14px] transition-all duration-200 border-l-[3px] ${
                                     hoveredCategory === cat.name
                                         ? 'text-[#C59B27] font-semibold bg-[#FAF8F5] border-[#C59B27]'
                                         : 'text-gray-600 font-medium border-transparent hover:text-stone-900 hover:bg-[#FAF8F5]/60'
@@ -188,7 +205,15 @@ const AllJewelleryMenu = ({ resetMenu }) => {
             </div>
 
             {/* ── Right Content: Dynamic (Compact & Scrollable) ─────────── */}
-            <div className="flex-1 bg-white py-6 px-6 lg:px-10 overflow-y-auto custom-scrollbar min-w-0">
+            <div 
+                className="flex-1 bg-white py-4 sm:py-5 px-4 sm:px-6 lg:px-8 overflow-y-auto custom-scrollbar min-w-0 h-full min-h-0 max-h-full overscroll-contain"
+                data-lenis-prevent
+                onWheel={(e) => e.stopPropagation()}
+                style={{
+                    scrollbarWidth: 'thin',
+                    scrollbarColor: '#C59B27 transparent',
+                }}
+            >
                 <AnimatePresence mode="wait">
                     <motion.div
                         key={hoveredCategory}
@@ -198,11 +223,11 @@ const AllJewelleryMenu = ({ resetMenu }) => {
                         transition={{ duration: 0.2 }}
                     >
                         {/* Compact View All Button - Requested by USER */}
-                        <div className="flex justify-end mb-4 border-b border-stone-100 pb-2.5">
+                        <div className="flex justify-end mb-3 border-b border-stone-100 pb-2">
                             <Link
                                 to={mainCategories.find(c => c.name === hoveredCategory)?.path || '/shop'}
                                 onClick={resetMenu}
-                                className="inline-flex items-center text-[10px] font-bold text-[#141211] hover:text-[#C59B27] transition-all uppercase tracking-[0.2em] bg-[#FAF8F5] px-4 py-1.5 rounded-full border border-[#E8DFD0] hover:border-[#C59B27]/40 hover:shadow-sm active:scale-95 whitespace-nowrap"
+                                className="inline-flex items-center text-[10px] font-bold text-[#141211] hover:text-[#C59B27] transition-all uppercase tracking-[0.2em] bg-[#FAF8F5] px-3.5 py-1.5 rounded-full border border-[#E8DFD0] hover:border-[#C59B27]/40 hover:shadow-sm active:scale-95 whitespace-nowrap"
                             >
                                 {hoveredCategory === 'All' ? 'Explore All Jewellery' : `View All ${hoveredCategory}`} →
                             </Link>
@@ -210,13 +235,13 @@ const AllJewelleryMenu = ({ resetMenu }) => {
 
                         {hoveredCategory === 'All' ? (
                             /* All Jewellery: 3-column breathable grid */
-                            <div className="grid grid-cols-3 gap-x-12 gap-y-2">
+                            <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-6 sm:gap-x-10 gap-y-1.5 sm:gap-y-2">
                                 {allJewelleryLinks.map((sub) => (
                                     <Link
                                         key={sub.id}
                                         to={sub.path}
                                         onClick={resetMenu}
-                                        className="text-[13px] font-medium text-stone-600 hover:text-[#C59B27] transition-all hover:translate-x-1.5 duration-200 py-0.5 block truncate"
+                                        className="text-[12.5px] sm:text-[13px] font-medium text-stone-600 hover:text-[#C59B27] transition-all hover:translate-x-1 duration-200 py-0.5 block truncate"
                                         title={sub.name}
                                     >
                                         {sub.name}
@@ -225,19 +250,19 @@ const AllJewelleryMenu = ({ resetMenu }) => {
                             </div>
                         ) : (
                             /* Category-specific: Refined filter columns */
-                            <div className="flex flex-wrap gap-x-16 gap-y-12">
+                            <div className="flex flex-wrap gap-x-8 sm:gap-x-12 gap-y-5 sm:gap-y-7">
                                 {currentFilters.map((group) => (
-                                    <div key={group.title} className="flex flex-col gap-4" style={{ minWidth: '150px' }}>
-                                        <h4 className="text-[11px] font-bold text-stone-400 tracking-[0.2em] uppercase whitespace-nowrap pb-1 border-b border-stone-100">
+                                    <div key={group.title} className="flex flex-col gap-2.5 sm:gap-3" style={{ minWidth: '135px' }}>
+                                        <h4 className="text-[10.5px] sm:text-[11px] font-bold text-stone-400 tracking-[0.2em] uppercase whitespace-nowrap pb-1 border-b border-stone-100">
                                             {group.title}
                                         </h4>
-                                        <div className="flex flex-col gap-3">
+                                        <div className="flex flex-col gap-2">
                                             {group.items.map((item) => (
                                                 <Link
                                                     key={item.name}
                                                     to={item.path}
                                                     onClick={resetMenu}
-                                                    className="text-[13px] font-medium text-stone-600 hover:text-[#C59B27] transition-all hover:translate-x-1.5 duration-200 w-fit"
+                                                    className="text-[12.5px] sm:text-[13px] font-medium text-stone-600 hover:text-[#C59B27] transition-all hover:translate-x-1 duration-200 w-fit"
                                                 >
                                                     {item.name}
                                                 </Link>

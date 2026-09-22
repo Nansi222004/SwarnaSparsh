@@ -18,6 +18,9 @@ import mensilverImg from '@assets/categories/mensilver.png';
 
 import diamondRingImg from '@assets/diamond_ring.png';
 import catWeddingDiamondImg from '@assets/cat_wedding_diamond.png';
+import catWeddingChokerImg from '@assets/cat_wedding_choker.png';
+import catWeddingMangalsutraImg from '@assets/cat_wedding_mangalsutra.png';
+import catWeddingBanglesImg from '@assets/cat_wedding_bangles.png';
 import eternalDiamondBrillianceImg from '@assets/hero/eternal_diamond_brilliance.png';
 import diamondEleganceCampaignImg from '@assets/hero/diamond_elegance_campaign.png';
 import diamondLuxuryImg from '@assets/hero/diamond_luxury.png';
@@ -164,21 +167,21 @@ export const diamondCollectionGridDefaults = [
         id: 'diamond-necklaces',
         name: 'Diamond Necklaces',
         label: 'Diamond Necklaces',
-        image: eternalDiamondBrillianceImg,
+        image: catWeddingChokerImg,
         path: '/shop?metal=diamond&category=necklace'
     },
     {
         id: 'diamond-pendants',
         name: 'Diamond Pendants',
         label: 'Diamond Pendants',
-        image: diamondEleganceCampaignImg,
+        image: catWeddingMangalsutraImg,
         path: '/shop?metal=diamond&category=chain-pendent'
     },
     {
-        id: 'diamond-bracelets',
-        name: 'Diamond Bracelets',
-        label: 'Diamond Bracelets',
-        image: diamondLuxuryImg,
-        path: '/shop?metal=diamond&category=bracelet'
+        id: 'diamond-bangles',
+        name: 'Diamond Bangles',
+        label: 'Diamond Bangles',
+        image: catWeddingBanglesImg,
+        path: '/shop?metal=diamond&category=bangles'
     }
 ];

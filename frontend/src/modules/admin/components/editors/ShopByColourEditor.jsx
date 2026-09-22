@@ -37,7 +37,7 @@ const DEFAULT_TONE_ITEMS = [
         label: 'Gold',
         tag: 'Classic 22K Radiance',
         image: yellowImg,
-        path: '/shop?metal=gold',
+        path: '/shop?metal=gold&tone=gold',
         sortOrder: 2
     }
 ];
@@ -159,6 +159,7 @@ const ShopByColourEditor = ({ sectionData, onSave, defaultSection = {} }) => {
                 },
                 items: items.map((item, index) => ({
                     ...item,
+                    id: item.id || item.itemId,
                     itemId: item.itemId || item.id,
                     sortOrder: index
                 }))

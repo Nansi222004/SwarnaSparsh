@@ -5,7 +5,6 @@ import { useHomepageCms } from '../hooks/useHomepageCms';
 import silverHeartImg from '@assets/categories/gold_pendants.png';
 import goldRingImg from '@assets/categories/rings.png';
 import roseGoldBraceletImg from '@assets/categories/gold_bracelet.png';
-import oxidisedRingsImg from '@assets/categories/earrings.png';
 
 const METAL_STYLES = {
     silver: {
@@ -22,11 +21,6 @@ const METAL_STYLES = {
         color: 'bg-gradient-to-br from-[#FFD1DA] to-[#EE9CA7]',
         badgeBg: 'bg-gradient-to-r from-[#FFD1DA] to-[#EE9CA7]',
         path: '/shop?metal=rose-gold'
-    },
-    oxidised: {
-        color: 'bg-gradient-to-br from-[#94A3B8] to-[#475569]',
-        badgeBg: 'bg-gradient-to-r from-gray-300 to-gray-600',
-        path: '/shop?metal=oxidised'
     }
 };
 
@@ -51,13 +45,6 @@ const DEFAULT_COLOUR_CATEGORIES = [
         tag: '18KT Rose Gold Plated',
         image: roseGoldBraceletImg,
         metalKey: 'rose-gold'
-    },
-    {
-        id: 4,
-        name: 'Oxidised Silver',
-        tag: 'Pure 925 Silver',
-        image: oxidisedRingsImg,
-        metalKey: 'oxidised'
     }
 ];
 
@@ -68,7 +55,12 @@ const ShopByColour = () => {
     const cards = useMemo(() => {
         const configuredItems = Array.isArray(sectionData?.items) ? sectionData.items : [];
         const normalizedConfigured = configuredItems
-            .filter((item) => Boolean(item?.image && item?.metalKey))
+            .filter((item) => {
+                if (!item?.image || !item?.metalKey) return false;
+                const mk = String(item.metalKey).toLowerCase();
+                const name = String(item.name || '').toLowerCase();
+                return mk !== 'oxidised' && !name.includes('oxidi') && !name.includes('oxydis');
+            })
             .map((item, index) => {
                 const metalStyle = METAL_STYLES[item.metalKey] || METAL_STYLES.silver;
 
@@ -100,7 +92,7 @@ const ShopByColour = () => {
                     </h2>
                 </div>
 
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 md:gap-10 lg:gap-14">
+                <div className="grid grid-cols-1 sm:grid-cols-3 max-w-4xl mx-auto gap-8 md:gap-10 lg:gap-14">
                     {cards.map((item) => (
                         <div key={item.id} className="group cursor-pointer">
                             <Link to={item.path} className="flex flex-col items-center">

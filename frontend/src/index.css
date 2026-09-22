@@ -238,6 +238,11 @@ html.lenis body {
     scrollbar-width: none;
 }
 
+.custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: #C59B27 transparent;
+}
+
 .custom-scrollbar::-webkit-scrollbar {
     width: 6px;
 }
@@ -247,12 +252,12 @@ html.lenis body {
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: rgba(156, 91, 97, 0.2);
+    background: #C59B27;
     border-radius: 10px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: rgba(156, 91, 97, 0.4);
+    background: #96713A;
 }
 
 @keyframes slowZoom {
